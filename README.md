@@ -27,6 +27,63 @@
 
 ---
 
+## 프로젝트 폴더 구조
+
+```
+ChordMind/
+├── frontend/                    # React/Next.js 웹앱
+│   ├── src/
+│   │   ├── components/         # 재사용 가능한 컴포넌트
+│   │   ├── pages/             # 페이지 컴포넌트
+│   │   ├── hooks/             # 커스텀 훅
+│   │   ├── services/          # API 호출 서비스
+│   │   ├── types/             # TypeScript 타입 정의
+│   │   └── utils/             # 유틸리티 함수
+│   ├── public/                # 정적 파일
+│   └── package.json
+├── backend/                    # 백엔드 마이크로서비스들
+│   ├── api-gateway/           # Spring Cloud Gateway
+│   │   ├── src/main/kotlin/
+│   │   └── build.gradle.kts
+│   ├── user-service/          # 사용자 관리 서비스
+│   │   ├── src/main/kotlin/
+│   │   └── build.gradle.kts
+│   ├── practice-service/      # 연습 기록 관리 서비스
+│   │   ├── src/main/kotlin/
+│   │   └── build.gradle.kts
+│   ├── feedback-service/      # 피드백/코칭 서비스
+│   │   ├── src/main/kotlin/
+│   │   └── build.gradle.kts
+│   ├── game-service/          # 게임/퀴즈 서비스
+│   │   ├── src/main/kotlin/
+│   │   └── build.gradle.kts
+│   ├── harmony-service/       # 화성학 분석 서비스
+│   │   ├── src/main/kotlin/
+│   │   └── build.gradle.kts
+│   └── ai-analysis-service/   # AI 분석 서비스 (Python)
+│       ├── src/
+│       │   ├── app/           # FastAPI 애플리케이션
+│       │   ├── models/        # AI 모델
+│       │   ├── services/      # 분석 서비스
+│       │   └── utils/         # 유틸리티
+│       ├── requirements.txt
+│       └── Dockerfile
+├── shared/                    # 공통 라이브러리/설정
+│   ├── proto/                 # gRPC 프로토콜 정의
+│   ├── config/                # 공통 설정
+│   └── docker/                # Docker 설정
+├── docs/                      # 문서
+│   ├── api/                   # API 문서
+│   ├── architecture/          # 아키텍처 문서
+│   └── deployment/            # 배포 가이드
+├── scripts/                   # 빌드/배포 스크립트
+├── docker-compose.yml         # 로컬 개발 환경
+├── .gitignore
+└── README.md
+```
+
+---
+
 ## 시스템 아키텍처(초안)
 
 ```
