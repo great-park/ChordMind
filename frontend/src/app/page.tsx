@@ -18,7 +18,7 @@ export default function Home() {
       
       <main className="min-h-screen">
         {/* Hero Section with Animation */}
-        <section className="section relative overflow-hidden">
+        <section className="rounded-3xl shadow-xl bg-white/80 backdrop-blur-md p-8 mb-12 relative overflow-hidden">
           <div className="absolute inset-0 bg-gradient-to-br from-pastelBlue via-pastelPurple to-pastelPink opacity-60"></div>
           <div className="relative max-w-7xl mx-auto text-center">
             <div className={`transition-all duration-1000 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
@@ -30,26 +30,26 @@ export default function Home() {
                 실시간으로 연주를 분석하고 맞춤형 피드백을 받아보세요.<br className="hidden md:block" />박자, 음정, 코드, 리듬까지 AI가 정확하게 분석해드립니다.
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center mb-12">
-                <Link href="/practice" className="btn-music btn-music-primary text-lg flex items-center justify-center gap-2">
+                <Link href="/practice" className="rounded-xl px-8 py-4 font-semibold shadow-md transition-all duration-300 bg-indigo-500 text-white hover:bg-indigo-600 text-lg flex items-center justify-center gap-2">
                   <svg className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M9 19V6l12-3v13" /></svg>
                   연주 분석 시작하기
                 </Link>
-                <button className="btn-music btn-music-outline text-lg flex items-center justify-center gap-2">
+                <button className="rounded-xl px-8 py-4 font-semibold shadow-md transition-all duration-300 border-2 border-indigo-400 text-indigo-600 bg-white hover:bg-indigo-50 text-lg flex items-center justify-center gap-2">
                   <svg className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" /><path d="M8 12h8" /></svg>
                   데모 보기
                 </button>
               </div>
               {/* Stats */}
               <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-4xl mx-auto">
-                <div className="music-card text-center py-8">
+                <div className="rounded-2xl shadow-lg bg-gradient-to-br from-pastelBlue to-pastelPurple border border-pastelPurple/30 transition-all duration-300 text-center py-8">
                   <div className="text-3xl font-bold text-indigo-600 mb-2">10,000+</div>
                   <div className="text-gray-700">활성 사용자</div>
                 </div>
-                <div className="music-card text-center py-8">
+                <div className="rounded-2xl shadow-lg bg-gradient-to-br from-pastelBlue to-pastelPurple border border-pastelPurple/30 transition-all duration-300 text-center py-8">
                   <div className="text-3xl font-bold text-indigo-600 mb-2">50,000+</div>
                   <div className="text-gray-700">분석된 연주</div>
                 </div>
-                <div className="music-card text-center py-8">
+                <div className="rounded-2xl shadow-lg bg-gradient-to-br from-pastelBlue to-pastelPurple border border-pastelPurple/30 transition-all duration-300 text-center py-8">
                   <div className="text-3xl font-bold text-indigo-600 mb-2">95%</div>
                   <div className="text-gray-700">정확도</div>
                 </div>
@@ -59,7 +59,7 @@ export default function Home() {
         </section>
 
         {/* Features Section with Cards */}
-        <section className="section">
+        <section className="rounded-3xl shadow-xl bg-white/80 backdrop-blur-md p-8 mb-12">
           <div className="max-w-7xl mx-auto">
             <div className="text-center mb-16">
               <h2 className="text-4xl font-extrabold text-gray-900 mb-4 drop-shadow-sm">
@@ -70,7 +70,7 @@ export default function Home() {
               </p>
             </div>
             <div className="grid md:grid-cols-3 gap-8">
-              <div className="music-card p-8">
+              <div className="rounded-2xl shadow-lg bg-gradient-to-br from-pastelBlue to-pastelPurple border border-pastelPurple/30 transition-all duration-300 p-8">
                 <div className="w-16 h-16 bg-pastelPurple/60 rounded-2xl flex items-center justify-center mb-6 shadow">
                   <svg className="w-8 h-8 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3" />
@@ -101,7 +101,7 @@ export default function Home() {
                   </li>
                 </ul>
               </div>
-              <div className="music-card p-8">
+              <div className="rounded-2xl shadow-lg bg-gradient-to-br from-pastelGreen to-pastelBlue border border-pastelPurple/30 transition-all duration-300 p-8">
                 <div className="w-16 h-16 bg-pastelGreen/60 rounded-2xl flex items-center justify-center mb-6 shadow">
                   <svg className="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
@@ -132,7 +132,7 @@ export default function Home() {
                   </li>
                 </ul>
               </div>
-              <div className="music-card p-8">
+              <div className="rounded-2xl shadow-lg bg-gradient-to-br from-pastelPink to-pastelPurple border border-pastelPurple/30 transition-all duration-300 p-8">
                 <div className="w-16 h-16 bg-pastelPink/60 rounded-2xl flex items-center justify-center mb-6 shadow">
                   <svg className="w-8 h-8 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
@@ -308,11 +308,11 @@ export default function Home() {
               AI와 함께 더 나은 음악 연주를 경험해보세요
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Link href="/practice" className="btn-music btn-music-primary text-lg flex items-center justify-center gap-2">
+              <Link href="/practice" className="rounded-xl px-8 py-4 font-semibold shadow-md transition-all duration-300 bg-indigo-500 text-white hover:bg-indigo-600 text-lg flex items-center justify-center gap-2">
                 <svg className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M9 19V6l12-3v13" /></svg>
                 무료로 시작하기
               </Link>
-              <button className="btn-music btn-music-outline text-lg flex items-center justify-center gap-2">
+              <button className="rounded-xl px-8 py-4 font-semibold shadow-md transition-all duration-300 border-2 border-indigo-400 text-indigo-600 bg-white hover:bg-indigo-50 text-lg flex items-center justify-center gap-2">
                 <svg className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" /><path d="M8 12h8" /></svg>
                 더 알아보기
               </button>

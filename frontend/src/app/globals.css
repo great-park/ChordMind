@@ -22,30 +22,6 @@ body {
   font-family: 'Inter', 'Noto Sans KR', 'Pretendard', ui-sans-serif, system-ui;
 }
 
-.section {
-  @apply rounded-3xl shadow-xl bg-white/80 backdrop-blur-md p-8 mb-12;
-}
-
-.music-card {
-  @apply rounded-2xl shadow-lg bg-gradient-to-br from-pastelBlue to-pastelPurple border border-pastelPurple/30 transition-all duration-300;
-}
-
-.music-card:hover {
-  @apply scale-105 shadow-2xl;
-}
-
-.btn-music {
-  @apply rounded-xl px-8 py-4 font-semibold shadow-md transition-all duration-300;
-}
-
-.btn-music-primary {
-  @apply bg-indigo-500 text-white hover:bg-indigo-600;
-}
-
-.btn-music-outline {
-  @apply border-2 border-indigo-400 text-indigo-600 bg-white hover:bg-indigo-50;
-}
-
 @layer utilities {
   .text-balance {
     text-wrap: balance;
