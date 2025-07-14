@@ -2,19 +2,39 @@ import React from 'react';
 
 export default function Sidebar() {
   return (
-    <aside className="w-full md:w-64 bg-white border-r border-gray-100 flex md:flex-col flex-row items-center md:items-start md:justify-between px-4 md:px-8 py-4 md:py-10 fixed md:static top-0 left-0 z-40 md:h-screen h-16 md:h-auto shadow md:shadow-none">
-      <div className="flex items-center gap-2 md:mb-10">
-        <span className="font-extrabold text-2xl text-indigo-600 tracking-tight">ChordMind</span>
+    <nav className="navbar navbar-expand-lg navbar-light bg-white border-end border-2 border-light shadow-sm">
+      <div className="container-fluid d-flex flex-column h-100">
+        {/* 로고 */}
+        <div className="navbar-brand mb-4">
+          <span className="fw-bold fs-3 text-primary">ChordMind</span>
+        </div>
+        
+        {/* 네비게이션 메뉴 */}
+        <div className="navbar-nav flex-column w-100 mb-auto">
+          <a className="nav-link active d-flex align-items-center py-3" href="#analyze">
+            <i className="bi bi-music-note me-3"></i>
+            연주 분석
+          </a>
+          <a className="nav-link d-flex align-items-center py-3" href="#features">
+            <i className="bi bi-gear me-3"></i>
+            기능 소개
+          </a>
+          <a className="nav-link d-flex align-items-center py-3" href="#practice">
+            <i className="bi bi-graph-up me-3"></i>
+            연습 기록
+          </a>
+        </div>
+        
+        {/* 하단 프로필/로그인 */}
+        <div className="mt-auto pt-3 border-top">
+          <div className="d-flex align-items-center justify-content-between mb-3">
+            <button className="btn btn-outline-primary btn-sm">로그인</button>
+            <div className="rounded-circle bg-light d-flex align-items-center justify-content-center" style={{width: '36px', height: '36px'}}>
+              <span className="fw-bold text-primary">유</span>
+            </div>
+          </div>
+        </div>
       </div>
-      <nav className="flex-1 flex gap-6 md:flex-col md:gap-4 text-gray-700 font-medium text-base md:mb-10">
-        <a href="#analyze" className="hover:text-indigo-600 transition">연주 분석</a>
-        <a href="#features" className="hover:text-indigo-600 transition">기능 소개</a>
-        <a href="#practice" className="hover:text-indigo-600 transition">연습 기록</a>
-      </nav>
-      <div className="flex items-center gap-3 md:mb-0">
-        <button className="rounded-full px-5 py-2 bg-indigo-50 text-indigo-600 font-semibold hover:bg-indigo-100 transition text-sm">로그인</button>
-        <div className="w-9 h-9 rounded-full bg-gray-200 flex items-center justify-center text-indigo-500 font-bold text-lg">유</div>
-      </div>
-    </aside>
+    </nav>
   );
 } 
