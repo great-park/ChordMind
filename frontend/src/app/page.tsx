@@ -18,41 +18,40 @@ export default function Home() {
       
       <main className="min-h-screen">
         {/* Hero Section with Animation */}
-        <section className="py-20 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
-          <div className="absolute inset-0 bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50"></div>
+        <section className="section relative overflow-hidden">
+          <div className="absolute inset-0 bg-gradient-to-br from-pastelBlue via-pastelPurple to-pastelPink opacity-60"></div>
           <div className="relative max-w-7xl mx-auto text-center">
             <div className={`transition-all duration-1000 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
-              <h1 className="text-5xl md:text-7xl font-bold text-gray-900 mb-6">
+              <h1 className="text-5xl md:text-7xl font-extrabold text-gray-900 mb-6 drop-shadow-sm">
                 AI와 함께하는
                 <span className="gradient-text block mt-2">음악 연주 분석</span>
               </h1>
-              <p className="text-xl md:text-2xl text-gray-600 mb-8 max-w-4xl mx-auto leading-relaxed">
-                실시간으로 연주를 분석하고 맞춤형 피드백을 받아보세요. 
-                <br className="hidden md:block" />
-                박자, 음정, 코드, 리듬까지 AI가 정확하게 분석해드립니다.
+              <p className="text-xl md:text-2xl text-gray-700 mb-8 max-w-4xl mx-auto leading-relaxed">
+                실시간으로 연주를 분석하고 맞춤형 피드백을 받아보세요.<br className="hidden md:block" />박자, 음정, 코드, 리듬까지 AI가 정확하게 분석해드립니다.
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center mb-12">
-                <Link href="/practice" className="bg-indigo-600 text-white px-8 py-4 rounded-xl text-lg font-semibold hover:bg-indigo-700 transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl inline-block text-center">
+                <Link href="/practice" className="btn-music btn-music-primary text-lg flex items-center justify-center gap-2">
+                  <svg className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M9 19V6l12-3v13" /></svg>
                   연주 분석 시작하기
                 </Link>
-                <button className="border-2 border-indigo-600 text-indigo-600 px-8 py-4 rounded-xl text-lg font-semibold hover:bg-indigo-50 transition-all duration-300 transform hover:scale-105">
+                <button className="btn-music btn-music-outline text-lg flex items-center justify-center gap-2">
+                  <svg className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" /><path d="M8 12h8" /></svg>
                   데모 보기
                 </button>
               </div>
-              
               {/* Stats */}
               <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-4xl mx-auto">
-                <div className="text-center">
+                <div className="music-card text-center py-8">
                   <div className="text-3xl font-bold text-indigo-600 mb-2">10,000+</div>
-                  <div className="text-gray-600">활성 사용자</div>
+                  <div className="text-gray-700">활성 사용자</div>
                 </div>
-                <div className="text-center">
+                <div className="music-card text-center py-8">
                   <div className="text-3xl font-bold text-indigo-600 mb-2">50,000+</div>
-                  <div className="text-gray-600">분석된 연주</div>
+                  <div className="text-gray-700">분석된 연주</div>
                 </div>
-                <div className="text-center">
+                <div className="music-card text-center py-8">
                   <div className="text-3xl font-bold text-indigo-600 mb-2">95%</div>
-                  <div className="text-gray-600">정확도</div>
+                  <div className="text-gray-700">정확도</div>
                 </div>
               </div>
             </div>
@@ -60,30 +59,28 @@ export default function Home() {
         </section>
 
         {/* Features Section with Cards */}
-        <section className="py-20 px-4 sm:px-6 lg:px-8 bg-white">
+        <section className="section">
           <div className="max-w-7xl mx-auto">
             <div className="text-center mb-16">
-              <h2 className="text-4xl font-bold text-gray-900 mb-4">
+              <h2 className="text-4xl font-extrabold text-gray-900 mb-4 drop-shadow-sm">
                 강력한 기능들
               </h2>
-              <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+              <p className="text-xl text-gray-700 max-w-3xl mx-auto">
                 AI 기술을 활용한 혁신적인 음악 학습 경험을 제공합니다
               </p>
             </div>
-            
             <div className="grid md:grid-cols-3 gap-8">
-              <div className="bg-gradient-to-br from-indigo-50 to-blue-50 p-8 rounded-2xl shadow-lg card-hover border border-indigo-100">
-                <div className="w-16 h-16 bg-indigo-100 rounded-2xl flex items-center justify-center mb-6">
+              <div className="music-card p-8">
+                <div className="w-16 h-16 bg-pastelPurple/60 rounded-2xl flex items-center justify-center mb-6 shadow">
                   <svg className="w-8 h-8 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3" />
                   </svg>
                 </div>
                 <h3 className="text-2xl font-semibold text-gray-900 mb-4">실시간 연주 분석</h3>
-                <p className="text-gray-600 mb-6 leading-relaxed">
-                  마이크나 파일 업로드를 통해 연주를 실시간으로 분석하고 
-                  음정, 박자, 코드를 정확하게 인식합니다.
+                <p className="text-gray-700 mb-6 leading-relaxed">
+                  마이크나 파일 업로드를 통해 연주를 실시간으로 분석하고 음정, 박자, 코드를 정확하게 인식합니다.
                 </p>
-                <ul className="text-sm text-gray-600 space-y-2">
+                <ul className="text-sm text-gray-700 space-y-2">
                   <li className="flex items-center">
                     <svg className="w-4 h-4 text-green-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
                       <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
@@ -104,19 +101,17 @@ export default function Home() {
                   </li>
                 </ul>
               </div>
-
-              <div className="bg-gradient-to-br from-green-50 to-emerald-50 p-8 rounded-2xl shadow-lg card-hover border border-green-100">
-                <div className="w-16 h-16 bg-green-100 rounded-2xl flex items-center justify-center mb-6">
+              <div className="music-card p-8">
+                <div className="w-16 h-16 bg-pastelGreen/60 rounded-2xl flex items-center justify-center mb-6 shadow">
                   <svg className="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
                   </svg>
                 </div>
                 <h3 className="text-2xl font-semibold text-gray-900 mb-4">AI 코칭</h3>
-                <p className="text-gray-600 mb-6 leading-relaxed">
-                  개인 맞춤형 피드백과 연습 추천을 제공합니다. 
-                  취약점을 분석하고 개선 방향을 제시합니다.
+                <p className="text-gray-700 mb-6 leading-relaxed">
+                  개인 맞춤형 피드백과 연습 추천을 제공합니다. 취약점을 분석하고 개선 방향을 제시합니다.
                 </p>
-                <ul className="text-sm text-gray-600 space-y-2">
+                <ul className="text-sm text-gray-700 space-y-2">
                   <li className="flex items-center">
                     <svg className="w-4 h-4 text-green-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
                       <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
@@ -137,19 +132,17 @@ export default function Home() {
                   </li>
                 </ul>
               </div>
-
-              <div className="bg-gradient-to-br from-purple-50 to-pink-50 p-8 rounded-2xl shadow-lg card-hover border border-purple-100">
-                <div className="w-16 h-16 bg-purple-100 rounded-2xl flex items-center justify-center mb-6">
+              <div className="music-card p-8">
+                <div className="w-16 h-16 bg-pastelPink/60 rounded-2xl flex items-center justify-center mb-6 shadow">
                   <svg className="w-8 h-8 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
                   </svg>
                 </div>
                 <h3 className="text-2xl font-semibold text-gray-900 mb-4">진행상황 추적</h3>
-                <p className="text-gray-600 mb-6 leading-relaxed">
-                  연습 기록과 성장 그래프를 통해 발전 과정을 시각적으로 확인하고 
-                  동기부여를 받을 수 있습니다.
+                <p className="text-gray-700 mb-6 leading-relaxed">
+                  연습 기록과 성장 그래프를 통해 발전 과정을 시각적으로 확인하고 동기부여를 받을 수 있습니다.
                 </p>
-                <ul className="text-sm text-gray-600 space-y-2">
+                <ul className="text-sm text-gray-700 space-y-2">
                   <li className="flex items-center">
                     <svg className="w-4 h-4 text-green-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
                       <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
@@ -315,10 +308,12 @@ export default function Home() {
               AI와 함께 더 나은 음악 연주를 경험해보세요
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Link href="/practice" className="bg-white text-indigo-600 px-8 py-4 rounded-xl text-lg font-semibold hover:bg-gray-100 transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl inline-block">
+              <Link href="/practice" className="btn-music btn-music-primary text-lg flex items-center justify-center gap-2">
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M9 19V6l12-3v13" /></svg>
                 무료로 시작하기
               </Link>
-              <button className="border-2 border-white text-white px-8 py-4 rounded-xl text-lg font-semibold hover:bg-white hover:text-indigo-600 transition-all duration-300 transform hover:scale-105">
+              <button className="btn-music btn-music-outline text-lg flex items-center justify-center gap-2">
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" /><path d="M8 12h8" /></svg>
                 더 알아보기
               </button>
             </div>
