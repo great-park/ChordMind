@@ -1,0 +1,154 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: api-gateway
+  cloud:
+    gateway:
+      discovery:
+        locator:
+          enabled: true
+          lower-case-service-id: true
+      routes:
+        # Practice Service
+        - id: practice-service
+          uri: lb://practice-service
+          predicates:
+            - Path=/api/practice/**
+          filters:
+            - StripPrefix=1
+            - name: CircuitBreaker
+              args:
+                name: practice-service-circuit-breaker
+                fallbackUri: forward:/fallback/practice
+
+        # AI Analysis Service
+        - id: ai-analysis-service
+          uri: lb://ai-analysis-service
+          predicates:
+            - Path=/api/analysis/**
+          filters:
+            - StripPrefix=1
+            - name: CircuitBreaker
+              args:
+                name: ai-analysis-service-circuit-breaker
+                fallbackUri: forward:/fallback/analysis
+
+        # User Service
+        - id: user-service
+          uri: lb://user-service
+          predicates:
+            - Path=/api/users/**
+          filters:
+            - StripPrefix=1
+            - name: CircuitBreaker
+              args:
+                name: user-service-circuit-breaker
+                fallbackUri: forward:/fallback/users
+
+        # Feedback Service
+        - id: feedback-service
+          uri: lb://feedback-service
+          predicates:
+            - Path=/api/feedback/**
+          filters:
+            - StripPrefix=1
+            - name: CircuitBreaker
+              args:
+                name: feedback-service-circuit-breaker
+                fallbackUri: forward:/fallback/feedback
+
+        # Game Service
+        - id: game-service
+          uri: lb://game-service
+          predicates:
+            - Path=/api/games/**
+          filters:
+            - StripPrefix=1
+            - name: CircuitBreaker
+              args:
+                name: game-service-circuit-breaker
+                fallbackUri: forward:/fallback/games
+
+        # Harmony Service
+        - id: harmony-service
+          uri: lb://harmony-service
+          predicates:
+            - Path=/api/harmony/**
+          filters:
+            - StripPrefix=1
+            - name: CircuitBreaker
+              args:
+                name: harmony-service-circuit-breaker
+                fallbackUri: forward:/fallback/harmony
+
+      globalcors:
+        cors-configurations:
+          '[/**]':
+            allowed-origins:
+              - "http://localhost:3000"
+              - "http://localhost:3001"
+            allowed-methods:
+              - GET
+              - POST
+              - PUT
+              - DELETE
+              - OPTIONS
+            allowed-headers:
+              - "*"
+            allow-credentials: true
+
+  # Circuit Breaker Configuration
+  cloud:
+    circuitbreaker:
+      resilience4j:
+        instances:
+          practice-service-circuit-breaker:
+            sliding-window-size: 10
+            failure-rate-threshold: 50
+            wait-duration-in-open-state: 10000
+            permitted-number-of-calls-in-half-open-state: 3
+          ai-analysis-service-circuit-breaker:
+            sliding-window-size: 10
+            failure-rate-threshold: 50
+            wait-duration-in-open-state: 10000
+            permitted-number-of-calls-in-half-open-state: 3
+          user-service-circuit-breaker:
+            sliding-window-size: 10
+            failure-rate-threshold: 50
+            wait-duration-in-open-state: 10000
+            permitted-number-of-calls-in-half-open-state: 3
+          feedback-service-circuit-breaker:
+            sliding-window-size: 10
+            failure-rate-threshold: 50
+            wait-duration-in-open-state: 10000
+            permitted-number-of-calls-in-half-open-state: 3
+          game-service-circuit-breaker:
+            sliding-window-size: 10
+            failure-rate-threshold: 50
+            wait-duration-in-open-state: 10000
+            permitted-number-of-calls-in-half-open-state: 3
+          harmony-service-circuit-breaker:
+            sliding-window-size: 10
+            failure-rate-threshold: 50
+            wait-duration-in-open-state: 10000
+            permitted-number-of-calls-in-half-open-state: 3
+
+# Logging Configuration
+logging:
+  level:
+    org.springframework.cloud.gateway: DEBUG
+    com.chordmind.gateway: DEBUG
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} - %msg%n"
+
+# Management Endpoints
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,gateway
+  endpoint:
+    health:
+      show-details: always 
