@@ -1,261 +1,287 @@
-# Dependencies
-node_modules/
-*/node_modules/
-*/build/
-*/dist/
-*/target/
+# ========================================
+# Global Ignore Rules
+# ========================================
 
-# Environment variables
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+Desktop.ini
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Logs
+*.log
+logs/
+
+# Temporary files
+tmp/
+temp/
+*.tmp
+*.temp
+
+# ========================================
+# Frontend (React/Next.js)
+# ========================================
+
+frontend/node_modules/
+frontend/.next/
+frontend/out/
+frontend/build/
+frontend/dist/
+frontend/.env*
+frontend/npm-debug.log*
+frontend/yarn-debug.log*
+frontend/yarn-error.log*
+frontend/.eslintcache
+frontend/.cache/
+frontend/.parcel-cache/
+frontend/coverage/
+frontend/.nyc_output/
+frontend/.rpt2_cache/
+frontend/.rts2_cache_cjs/
+frontend/.rts2_cache_es/
+frontend/.rts2_cache_umd/
+
+# ========================================
+# Backend (Spring Boot/Kotlin)
+# ========================================
+
+# Gradle
+backend/*/build/
+backend/*/.gradle/
+backend/*/gradle-app.setting
+backend/*/!gradle-wrapper.jar
+backend/*/!**/src/main/**/build/
+backend/*/!**/src/test/**/build/
+
+# Compiled class files
+backend/*/target/
+backend/*/*.class
+backend/*/*.jar
+backend/*/*.war
+backend/*/*.ear
+
+# Maven
+backend/*/target/
+backend/*/pom.xml.tag
+backend/*/pom.xml.releaseBackup
+backend/*/pom.xml.versionsBackup
+backend/*/pom.xml.next
+backend/*/release.properties
+backend/*/dependency-reduced-pom.xml
+backend/*/buildNumber.properties
+backend/*/.mvn/timing.properties
+backend/*/.mvn/wrapper/maven-wrapper.jar
+
+# IntelliJ IDEA
+backend/*/.idea/
+backend/*/*.iws
+backend/*/*.iml
+backend/*/*.ipr
+
+# Eclipse
+backend/*/.apt_generated
+backend/*/.classpath
+backend/*/.factorypath
+backend/*/.project
+backend/*/.settings
+backend/*/.springBeans
+backend/*/.sts4-cache
+
+# NetBeans
+backend/*/nbproject/private/
+backend/*/nbbuild/
+backend/*/dist/
+backend/*/nbdist/
+backend/*/.nb-gradle/
+
+# ========================================
+# AI Analysis Service (Python)
+# ========================================
+
+# Python
+backend/ai-analysis-service/__pycache__/
+backend/ai-analysis-service/*.py[cod]
+backend/ai-analysis-service/*$py.class
+backend/ai-analysis-service/*.so
+backend/ai-analysis-service/.Python
+backend/ai-analysis-service/build/
+backend/ai-analysis-service/develop-eggs/
+backend/ai-analysis-service/dist/
+backend/ai-analysis-service/downloads/
+backend/ai-analysis-service/eggs/
+backend/ai-analysis-service/.eggs/
+backend/ai-analysis-service/lib/
+backend/ai-analysis-service/lib64/
+backend/ai-analysis-service/parts/
+backend/ai-analysis-service/sdist/
+backend/ai-analysis-service/var/
+backend/ai-analysis-service/wheels/
+backend/ai-analysis-service/*.egg-info/
+backend/ai-analysis-service/.installed.cfg
+backend/ai-analysis-service/*.egg
+backend/ai-analysis-service/MANIFEST
+
+# PyInstaller
+backend/ai-analysis-service/*.manifest
+backend/ai-analysis-service/*.spec
+
+# Installer logs
+backend/ai-analysis-service/pip-log.txt
+backend/ai-analysis-service/pip-delete-this-directory.txt
+
+# Unit test / coverage reports
+backend/ai-analysis-service/htmlcov/
+backend/ai-analysis-service/.tox/
+backend/ai-analysis-service/.coverage
+backend/ai-analysis-service/.coverage.*
+backend/ai-analysis-service/.cache
+backend/ai-analysis-service/nosetests.xml
+backend/ai-analysis-service/coverage.xml
+backend/ai-analysis-service/*.cover
+backend/ai-analysis-service/.hypothesis/
+backend/ai-analysis-service/.pytest_cache/
+
+# Translations
+backend/ai-analysis-service/*.mo
+backend/ai-analysis-service/*.pot
+
+# Django stuff
+backend/ai-analysis-service/*.log
+backend/ai-analysis-service/local_settings.py
+backend/ai-analysis-service/db.sqlite3
+
+# Flask stuff
+backend/ai-analysis-service/instance/
+backend/ai-analysis-service/.webassets-cache
+
+# Scrapy stuff
+backend/ai-analysis-service/.scrapy
+
+# Sphinx documentation
+backend/ai-analysis-service/docs/_build/
+
+# PyBuilder
+backend/ai-analysis-service/target/
+
+# Jupyter Notebook
+backend/ai-analysis-service/.ipynb_checkpoints
+
+# pyenv
+backend/ai-analysis-service/.python-version
+
+# celery beat schedule file
+backend/ai-analysis-service/celerybeat-schedule
+
+# SageMath parsed files
+backend/ai-analysis-service/*.sage.py
+
+# Environments
+backend/ai-analysis-service/.env
+backend/ai-analysis-service/.venv
+backend/ai-analysis-service/env/
+backend/ai-analysis-service/venv/
+backend/ai-analysis-service/ENV/
+backend/ai-analysis-service/env.bak/
+backend/ai-analysis-service/venv.bak/
+
+# Spyder project settings
+backend/ai-analysis-service/.spyderproject
+backend/ai-analysis-service/.spyproject
+
+# Rope project settings
+backend/ai-analysis-service/.ropeproject
+
+# mkdocs documentation
+backend/ai-analysis-service/site
+
+# mypy
+backend/ai-analysis-service/.mypy_cache/
+backend/ai-analysis-service/.dmypy.json
+backend/ai-analysis-service/dmypy.json
+
+# ========================================
+# Shared
+# ========================================
+
+shared/.env
+shared/.env.local
+shared/.env.development.local
+shared/.env.test.local
+shared/.env.production.local
+
+# ========================================
+# Documentation
+# ========================================
+
+docs/_build/
+docs/.doctrees/
+
+# ========================================
+# Scripts
+# ========================================
+
+scripts/*.log
+scripts/tmp/
+scripts/temp/
+
+# ========================================
+# Docker
+# ========================================
+
+.dockerignore
+docker-compose.override.yml
+
+# ========================================
+# Environment Variables
+# ========================================
+
 .env
 .env.local
 .env.development.local
 .env.test.local
 .env.production.local
 
-# IDE
-.vscode/
-.idea/
-*.swp
-*.swo
+# ========================================
+# Database
+# ========================================
 
-# OS
-.DS_Store
-Thumbs.db
+*.db
+*.sqlite
+*.sqlite3
 
-# Logs
-*.log
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
+# ========================================
+# Media Files (for development)
+# ========================================
 
-# Runtime data
-pids
-*.pid
-*.seed
-*.pid.lock
+uploads/
+media/
+*.mp3
+*.wav
+*.mid
+*.midi
+*.flac
+*.aac
+*.ogg
 
-# Coverage directory used by tools like istanbul
-coverage/
-*.lcov
+# ========================================
+# Security
+# ========================================
 
-# nyc test coverage
-.nyc_output
-
-# Dependency directories
-jspm_packages/
-
-# Optional npm cache directory
-.npm
-
-# Optional eslint cache
-.eslintcache
-
-# Microbundle cache
-.rpt2_cache/
-.rts2_cache_cjs/
-.rts2_cache_es/
-.rts2_cache_umd/
-
-# Optional REPL history
-.node_repl_history
-
-# Output of 'npm pack'
-*.tgz
-
-# Yarn Integrity file
-.yarn-integrity
-
-# parcel-bundler cache (https://parceljs.org/)
-.cache
-.parcel-cache
-
-# Next.js build output
-.next
-out
-
-# Nuxt.js build / generate output
-.nuxt
-dist
-
-# Gatsby files
-.cache/
-public
-
-# Storybook build outputs
-.out
-.storybook-out
-
-# Temporary folders
-tmp/
-temp/
-
-# Python
-__pycache__/
-*.py[cod]
-*$py.class
-*.so
-.Python
-build/
-develop-eggs/
-dist/
-downloads/
-eggs/
-.eggs/
-lib/
-lib64/
-parts/
-sdist/
-var/
-wheels/
-*.egg-info/
-.installed.cfg
-*.egg
-MANIFEST
-
-# PyInstaller
-*.manifest
-*.spec
-
-# Installer logs
-pip-log.txt
-pip-delete-this-directory.txt
-
-# Unit test / coverage reports
-htmlcov/
-.tox/
-.coverage
-.coverage.*
-.cache
-nosetests.xml
-coverage.xml
-*.cover
-.hypothesis/
-.pytest_cache/
-
-# Translations
-*.mo
-*.pot
-
-# Django stuff:
-*.log
-local_settings.py
-db.sqlite3
-
-# Flask stuff:
-instance/
-.webassets-cache
-
-# Scrapy stuff:
-.scrapy
-
-# Sphinx documentation
-docs/_build/
-
-# PyBuilder
-target/
-
-# Jupyter Notebook
-.ipynb_checkpoints
-
-# pyenv
-.python-version
-
-# celery beat schedule file
-celerybeat-schedule
-
-# SageMath parsed files
-*.sage.py
-
-# Environments
-.env
-.venv
-env/
-venv/
-ENV/
-env.bak/
-venv.bak/
-
-# Spyder project settings
-.spyderproject
-.spyproject
-
-# Rope project settings
-.ropeproject
-
-# mkdocs documentation
-/site
-
-# mypy
-.mypy_cache/
-.dmypy.json
-dmypy.json
-
-# Java
-*.class
-*.jar
-*.war
-*.ear
-*.zip
-*.tar.gz
-*.rar
-
-# Maven
-target/
-pom.xml.tag
-pom.xml.releaseBackup
-pom.xml.versionsBackup
-pom.xml.next
-release.properties
-dependency-reduced-pom.xml
-buildNumber.properties
-.mvn/timing.properties
-.mvn/wrapper/maven-wrapper.jar
-
-# Gradle
-.gradle/
-build/
-!gradle/wrapper/gradle-wrapper.jar
-!**/src/main/**/build/
-!**/src/test/**/build/
-
-# IntelliJ IDEA
-.idea/
-*.iws
-*.iml
-*.ipr
-
-# Eclipse
-.apt_generated
-.classpath
-.factorypath
-.project
-.settings
-.springBeans
-.sts4-cache
-
-# NetBeans
-/nbproject/private/
-/nbbuild/
-/dist/
-/nbdist/
-/.nb-gradle/
-build/
-!**/src/main/**/build/
-!**/src/test/**/build/
-
-# VS Code
-.vscode/
-
-# Mac
-.DS_Store
-
-# Windows
-Thumbs.db
-ehthumbs.db
-Desktop.ini
-
-# Linux
-*~
-
-# Docker
-.dockerignore 
+*.pem
+*.key
+*.crt
+*.p12
+*.pfx
+secrets/
+secrets.json 
