@@ -29,8 +29,16 @@ export default function Sidebar() {
         <div className="mt-auto pt-3 border-top">
           <div className="d-flex align-items-center justify-content-between mb-3">
             <button className="btn btn-outline-primary btn-sm">로그인</button>
-            <div className="rounded-circle bg-light d-flex align-items-center justify-content-center" style={{width: '36px', height: '36px'}}>
-              <span className="fw-bold text-primary">유</span>
+            <div className="position-relative">
+              <img 
+                src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop&crop=face" 
+                alt="프로필" 
+                className="rounded-circle border border-2 border-light"
+                style={{width: '36px', height: '36px', objectFit: 'cover'}}
+              />
+              <div className="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-success" style={{fontSize: '8px'}}>
+                <i className="bi bi-circle-fill"></i>
+              </div>
             </div>
           </div>
         </div>
