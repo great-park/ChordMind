@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from 'react';
 import MainLayout from '../components/MainLayout';
-import LoadingSpinner from '../components/LoadingSpinner';
 import { 
   TRENDING_KEYWORDS, 
   RECENT_KEYWORDS, 
@@ -11,26 +10,31 @@ import {
 } from '../constants/data';
 
 export default function Home() {
-  const [isLoading, setIsLoading] = useState(true);
+  const [isVisible, setIsVisible] = useState(false);
 
   useEffect(() => {
-    // 로딩 시뮬레이션
-    const timer = setTimeout(() => setIsLoading(false), 1000);
+    // 페이지 로드 후 바로 콘텐츠 표시
+    const timer = setTimeout(() => setIsVisible(true), 50);
     return () => clearTimeout(timer);
   }, []);
 
-  if (isLoading) {
-    return (
-      <MainLayout>
-        <LoadingSpinner size="lg" text="ChordMind를 준비하고 있습니다..." />
-      </MainLayout>
-    );
-  }
+  const handleReviewClick = () => {
+    // 후기 페이지로 이동 (임시로 alert)
+    alert('후기 페이지로 이동합니다!');
+  };
+
+  const handleGrowthClick = () => {
+    // 성장 그래프 페이지로 이동 (임시로 alert)
+    alert('성장 그래프 페이지로 이동합니다!');
+  };
 
   return (
     <MainLayout>
       {/* 히어로 섹션 */}
-      <section className="hero-section mb-5" aria-labelledby="hero-title">
+      <section 
+        className={`hero-section mb-5 fade-in ${isVisible ? 'visible' : ''}`}
+        aria-labelledby="hero-title"
+      >
         <div className="row align-items-center">
           <div className="col-lg-6">
             <h1 id="hero-title" className="display-4 fw-bold text-dark mb-4">
@@ -66,7 +70,12 @@ export default function Home() {
       </section>
 
       {/* 주요 기능 카드 */}
-      <section className="mb-5" id="features" aria-labelledby="features-title">
+      <section 
+        className={`mb-5 fade-in ${isVisible ? 'visible' : ''}`}
+        id="features" 
+        aria-labelledby="features-title"
+        style={{ animationDelay: '0.1s' }}
+      >
         <h2 id="features-title" className="text-center mb-5">주요 기능</h2>
         <div className="row g-4">
           {FEATURES.map((feature, index) => (
@@ -86,7 +95,10 @@ export default function Home() {
       </section>
 
       {/* 실시간 검색어 */}
-      <section className="mb-5">
+      <section 
+        className={`mb-5 fade-in ${isVisible ? 'visible' : ''}`}
+        style={{ animationDelay: '0.2s' }}
+      >
         <div className="row g-4">
           <div className="col-lg-6">
             <h3 className="mb-4">실시간 인기 검색어</h3>
@@ -118,14 +130,17 @@ export default function Home() {
       </section>
 
       {/* 사용자 후기 + 성장 그래프 */}
-      <section className="mb-5">
+      <section 
+        className={`mb-5 fade-in ${isVisible ? 'visible' : ''}`}
+        style={{ animationDelay: '0.3s' }}
+      >
         <div className="row g-4">
           <div className="col-lg-8">
             <h3 className="mb-4">실제 사용자 후기</h3>
             <div className="row g-3">
               {REVIEWS.map((review, index) => (
                 <div key={index} className="col-md-6">
-                  <div className={`card border-${review.color} border-2`}>
+                  <div className={`card border-${review.color} border-2 hover-shadow clickable`} onClick={handleReviewClick}>
                     <div className="card-body">
                       <div className="d-flex align-items-center mb-3">
                         <div className={`rounded-circle bg-${review.color} bg-opacity-10 d-flex align-items-center justify-content-center me-3`} style={{width: '48px', height: '48px'}}>
@@ -137,6 +152,9 @@ export default function Home() {
                         </div>
                       </div>
                       <p className="card-text">"{review.text}"</p>
+                      <div className="text-end">
+                        <small className="text-muted">더보기 <i className="bi bi-arrow-right"></i></small>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -145,7 +163,7 @@ export default function Home() {
           </div>
           <div className="col-lg-4">
             <h3 className="mb-4">나의 성장 그래프</h3>
-            <div className="card border-0 shadow">
+            <div className="card border-0 shadow hover-shadow clickable" onClick={handleGrowthClick}>
               <div className="card-body p-4">
                 <div className="text-center mb-3">
                   <i className="bi bi-graph-up-arrow text-success display-4" aria-hidden="true"></i>
@@ -156,6 +174,9 @@ export default function Home() {
                 <p className="text-center mb-0">
                   <span className="fw-bold text-success">85%</span> 성장률
                 </p>
+                <div className="text-center mt-2">
+                  <small className="text-muted">자세히 보기 <i className="bi bi-arrow-right"></i></small>
+                </div>
               </div>
             </div>
           </div>
