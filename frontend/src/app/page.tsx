@@ -2,56 +2,38 @@
 
 import { useState, useEffect } from 'react';
 import MainLayout from '../components/MainLayout';
-import { Feature, Review, Keyword } from '../types';
-
-// 인기 검색어 데이터 (예시)
-const trendingKeywords: Keyword[] = [
-  { text: '실시간 연주 분석', rank: 1 },
-  { text: 'AI 피드백', rank: 2 },
-  { text: '음정 인식', rank: 3 },
-  { text: '박자 교정', rank: 4 },
-  { text: '코드 분석', rank: 5 },
-  { text: '리듬 트레이닝', rank: 6 },
-  { text: '연습 기록', rank: 7 },
-  { text: '성장 그래프', rank: 8 },
-  { text: '개인 맞춤 코칭', rank: 9 },
-  { text: '음악 연습 챌린지', rank: 10 },
-]
-
-const recentKeywords: Keyword[] = [
-  { text: '피아노 연습' },
-  { text: '기타 코드' },
-  { text: '재즈 리듬' },
-  { text: '템포 조절' },
-  { text: '화성 분석' },
-]
-
-const features: Feature[] = [
-  { icon: '🎵', title: '실시간 연주 분석', desc: '마이크/파일로 연주를 즉시 분석' },
-  { icon: '🤖', title: 'AI 피드백', desc: '개인 맞춤형 연습 코칭 제공' },
-  { icon: '📈', title: '성장 그래프', desc: '연습 기록과 성장 시각화' },
-  { icon: '🎹', title: '음정/박자 인식', desc: '정확한 음정·박자 분석' },
-  { icon: '🎸', title: '코드/리듬 분석', desc: '코드, 리듬까지 AI가 분석' },
-  { icon: '🏆', title: '연습 챌린지', desc: '목표 설정과 도전 미션' },
-]
-
-const reviews: Review[] = [
-  { user: '김민수', role: '피아노 연주자', text: 'AI 피드백 덕분에 실력이 쑥쑥 늘어요!', color: 'primary' },
-  { user: '이서연', role: '기타 입문자', text: '코드 분석이 정말 정확해서 연습이 재밌어요.', color: 'success' },
-  { user: '박지훈', role: '작곡가', text: '연습 기록과 성장 그래프가 동기부여에 최고!', color: 'info' },
-]
+import LoadingSpinner from '../components/LoadingSpinner';
+import { 
+  TRENDING_KEYWORDS, 
+  RECENT_KEYWORDS, 
+  FEATURES, 
+  REVIEWS 
+} from '../constants/data';
 
 export default function Home() {
-  const [isVisible, setIsVisible] = useState(false);
-  useEffect(() => { setIsVisible(true); }, []);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    // 로딩 시뮬레이션
+    const timer = setTimeout(() => setIsLoading(false), 1000);
+    return () => clearTimeout(timer);
+  }, []);
+
+  if (isLoading) {
+    return (
+      <MainLayout>
+        <LoadingSpinner size="lg" text="ChordMind를 준비하고 있습니다..." />
+      </MainLayout>
+    );
+  }
 
   return (
     <MainLayout>
       {/* 히어로 섹션 */}
-      <section className="hero-section mb-5">
+      <section className="hero-section mb-5" aria-labelledby="hero-title">
         <div className="row align-items-center">
           <div className="col-lg-6">
-            <h1 className="display-4 fw-bold text-dark mb-4">
+            <h1 id="hero-title" className="display-4 fw-bold text-dark mb-4">
               AI와 함께하는<br />
               <span className="text-primary">음악 연주 분석</span>
             </h1>
@@ -60,13 +42,23 @@ export default function Home() {
               박자, 음정, 코드, 리듬까지 AI가 정확하게 분석해드립니다.
             </p>
             <div className="d-flex gap-3">
-              <button className="btn btn-primary btn-lg">연주 분석 시작하기</button>
-              <button className="btn btn-outline-primary btn-lg">기능 살펴보기</button>
+              <button 
+                className="btn btn-primary btn-lg"
+                aria-label="연주 분석 시작하기"
+              >
+                연주 분석 시작하기
+              </button>
+              <button 
+                className="btn btn-outline-primary btn-lg"
+                aria-label="기능 살펴보기"
+              >
+                기능 살펴보기
+              </button>
             </div>
           </div>
           <div className="col-lg-6 text-center">
             <div className="bg-gradient-primary rounded-3 p-5 shadow-lg">
-              <i className="bi bi-music-note-beamed display-1 text-white"></i>
+              <i className="bi bi-music-note-beamed display-1 text-white" aria-hidden="true"></i>
               <p className="text-white mt-3">AI Music Analysis</p>
             </div>
           </div>
@@ -74,14 +66,16 @@ export default function Home() {
       </section>
 
       {/* 주요 기능 카드 */}
-      <section className="mb-5" id="features">
-        <h2 className="text-center mb-5">주요 기능</h2>
+      <section className="mb-5" id="features" aria-labelledby="features-title">
+        <h2 id="features-title" className="text-center mb-5">주요 기능</h2>
         <div className="row g-4">
-          {features.map((feature, index) => (
+          {FEATURES.map((feature, index) => (
             <div key={index} className="col-lg-4 col-md-6">
               <div className="card h-100 border-0 shadow-sm hover-shadow">
                 <div className="card-body text-center p-4">
-                  <div className="display-6 mb-3">{feature.icon}</div>
+                  <div className="display-6 mb-3" role="img" aria-label={feature.title}>
+                    {feature.icon}
+                  </div>
                   <h5 className="card-title fw-bold mb-3">{feature.title}</h5>
                   <p className="card-text text-muted">{feature.desc}</p>
                 </div>
@@ -97,7 +91,7 @@ export default function Home() {
           <div className="col-lg-6">
             <h3 className="mb-4">실시간 인기 검색어</h3>
             <div className="row g-3">
-              {trendingKeywords.slice(0, 6).map((keyword, index) => (
+              {TRENDING_KEYWORDS.slice(0, 6).map((keyword, index) => (
                 <div key={index} className="col-6">
                   <div className="card border-0 bg-light">
                     <div className="card-body text-center p-3">
@@ -112,7 +106,7 @@ export default function Home() {
           <div className="col-lg-6">
             <h3 className="mb-4">최근 검색어</h3>
             <div className="list-group">
-              {recentKeywords.map((keyword, index) => (
+              {RECENT_KEYWORDS.map((keyword, index) => (
                 <div key={index} className="list-group-item d-flex align-items-center">
                   <span className="badge bg-primary rounded-pill me-3">{index + 1}</span>
                   <span className="fw-medium">{keyword.text}</span>
@@ -129,7 +123,7 @@ export default function Home() {
           <div className="col-lg-8">
             <h3 className="mb-4">실제 사용자 후기</h3>
             <div className="row g-3">
-              {reviews.map((review, index) => (
+              {REVIEWS.map((review, index) => (
                 <div key={index} className="col-md-6">
                   <div className={`card border-${review.color} border-2`}>
                     <div className="card-body">
@@ -154,9 +148,9 @@ export default function Home() {
             <div className="card border-0 shadow">
               <div className="card-body p-4">
                 <div className="text-center mb-3">
-                  <i className="bi bi-graph-up-arrow text-success display-4"></i>
+                  <i className="bi bi-graph-up-arrow text-success display-4" aria-hidden="true"></i>
                 </div>
-                <div className="progress mb-3" style={{height: '8px'}}>
+                <div className="progress mb-3" style={{height: '8px'}} role="progressbar" aria-valuenow={85} aria-valuemin={0} aria-valuemax={100}>
                   <div className="progress-bar bg-success" style={{width: '85%'}}></div>
                 </div>
                 <p className="text-center mb-0">
@@ -176,7 +170,12 @@ export default function Home() {
               <h5 className="mb-0">AI와 함께 음악 연주 실력을 키워보세요!</h5>
             </div>
             <div className="col-md-4 text-md-end">
-              <button className="btn btn-light btn-lg">지금 연주 분석 시작하기</button>
+              <button 
+                className="btn btn-light btn-lg"
+                aria-label="지금 연주 분석 시작하기"
+              >
+                지금 연주 분석 시작하기
+              </button>
             </div>
           </div>
         </div>
