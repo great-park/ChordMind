@@ -5,6 +5,7 @@ import './globals.css'
 const inter = Inter({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
+  metadataBase: new URL('https://chordmind.com'),
   title: 'ChordMind - AI와 함께하는 음악 연주 분석',
   description: '실시간으로 연주를 분석하고, 맞춤형 피드백과 성장 과정을 확인하세요. 박자, 음정, 코드, 리듬까지 AI가 정확하게 분석해드립니다.',
   keywords: '음악, 연주, 분석, AI, 피드백, 연습, 피아노, 기타, 코드, 리듬',
@@ -15,6 +16,13 @@ export const metadata: Metadata = {
     description: '실시간으로 연주를 분석하고, 맞춤형 피드백과 성장 과정을 확인하세요.',
     type: 'website',
     locale: 'ko_KR',
+    url: 'https://chordmind.com',
+    siteName: 'ChordMind',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'ChordMind - AI와 함께하는 음악 연주 분석',
+    description: '실시간으로 연주를 분석하고, 맞춤형 피드백과 성장 과정을 확인하세요.',
   },
 }
 
