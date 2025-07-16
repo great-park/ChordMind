@@ -6,6 +6,15 @@ plugins {
     kotlin("jvm") version "1.9.20"
     kotlin("plugin.spring") version "1.9.20"
     kotlin("plugin.jpa") version "1.9.20"
+    kotlin("plugin.allopen") version "1.9.20"
+}
+
+allOpen {
+    annotation("org.springframework.stereotype.Component")
+    annotation("org.springframework.stereotype.Service")
+    annotation("org.springframework.stereotype.Repository")
+    annotation("org.springframework.web.bind.annotation.RestController")
+    annotation("org.springframework.context.annotation.Configuration")
 }
 
 group = "com.chordmind"
@@ -32,6 +41,11 @@ dependencies {
     implementation("org.jetbrains.kotlin:kotlin-reflect")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testImplementation("org.springframework.security:spring-security-test")
+    testImplementation("org.mockito:mockito-core:5.2.0")
+    testImplementation("org.mockito:mockito-junit-jupiter:5.2.0")
+    testImplementation("org.mockito:mockito-inline:5.2.0")
+    testImplementation("org.mockito.kotlin:mockito-kotlin:5.2.1")
+    testImplementation("net.bytebuddy:byte-buddy:1.14.12")
 }
 
 tasks.withType<KotlinCompile> {

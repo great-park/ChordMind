@@ -3,8 +3,6 @@ package com.chordmind.user.domain
 import jakarta.persistence.*
 import java.time.LocalDateTime
 
-@Entity
-@Table(name = "users")
 data class User(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

@@ -9,9 +9,7 @@ import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.time.LocalDateTime
 
-@Service
-@Transactional
-class UserService(
+open class UserService(
     private val userRepository: UserRepository,
     private val passwordEncoder: PasswordEncoder,
     private val jwtService: JwtService
