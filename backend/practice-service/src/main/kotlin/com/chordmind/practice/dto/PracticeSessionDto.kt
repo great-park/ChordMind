@@ -28,4 +28,11 @@ data class PracticeSessionSummary(
     val score: Int,
     val completed: Boolean,
     val createdAt: LocalDateTime
+)
+
+// 연습 세션 정보 수정 요청
+data class UpdatePracticeSessionRequest(
+    val goal: String? = null,
+    val status: SessionStatus? = null,
+    val endedAt: LocalDateTime? = null
 ) 

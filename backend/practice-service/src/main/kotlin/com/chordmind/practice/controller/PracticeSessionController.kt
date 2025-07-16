@@ -40,4 +40,13 @@ class PracticeSessionController(
     @GetMapping("/{sessionId}/progress")
     fun getProgressBySession(@PathVariable sessionId: Long): ResponseEntity<List<PracticeProgressResponse>> =
         ResponseEntity.ok(practiceSessionService.getProgressBySession(sessionId))
+
+    @PatchMapping("/{sessionId}")
+    fun updateSession(
+        @PathVariable sessionId: Long,
+        @RequestBody request: UpdatePracticeSessionRequest
+    ): ResponseEntity<PracticeSessionResponse> {
+        val updated = practiceSessionService.updateSession(sessionId, request)
+        return if (updated != null) ResponseEntity.ok(updated) else ResponseEntity.notFound().build()
+    }
 } 

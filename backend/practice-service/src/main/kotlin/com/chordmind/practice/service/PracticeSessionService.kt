@@ -42,6 +42,17 @@ class PracticeSessionService(
     }
 
     @Transactional
+    fun updateSession(sessionId: Long, request: UpdatePracticeSessionRequest): PracticeSessionResponse? {
+        val session = sessionRepository.findById(sessionId).orElse(null) ?: return null
+        val updated = session.copy(
+            goal = request.goal ?: session.goal,
+            status = request.status ?: session.status,
+            endedAt = request.endedAt ?: session.endedAt
+        )
+        return sessionRepository.save(updated).toResponse()
+    }
+
+    @Transactional
     fun addProgress(request: CreatePracticeProgressRequest): PracticeProgressResponse {
         val progress = PracticeProgress(
             sessionId = request.sessionId,
