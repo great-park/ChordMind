@@ -45,4 +45,13 @@ data class UserPracticeSummaryResponse(
     val averageScore: Double?,
     val averageProgressScore: Double?,
     val lastSessionAt: LocalDateTime?
+)
+
+// 연습 세션 검색/필터 요청 DTO
+data class PracticeSessionSearchRequest(
+    val userId: Long? = null,
+    val goal: String? = null,
+    val status: SessionStatus? = null,
+    val startedAtFrom: LocalDateTime? = null,
+    val startedAtTo: LocalDateTime? = null
 ) 

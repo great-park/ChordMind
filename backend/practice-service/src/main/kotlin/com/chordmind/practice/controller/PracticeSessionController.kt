@@ -4,6 +4,8 @@ import com.chordmind.practice.dto.*
 import com.chordmind.practice.service.PracticeSessionService
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
+import java.time.LocalDateTime
+import com.chordmind.practice.domain.SessionStatus
 
 @RestController
 @RequestMapping("/api/practice-sessions")
@@ -56,5 +58,17 @@ class PracticeSessionController(
         } else {
             ResponseEntity.notFound().build()
         }
+    }
+
+    @GetMapping("/search")
+    fun searchSessions(
+        @RequestParam(required = false) userId: Long?,
+        @RequestParam(required = false) goal: String?,
+        @RequestParam(required = false) status: SessionStatus?,
+        @RequestParam(required = false) startedAtFrom: LocalDateTime?,
+        @RequestParam(required = false) startedAtTo: LocalDateTime?
+    ): ResponseEntity<List<PracticeSessionResponse>> {
+        val request = PracticeSessionSearchRequest(userId, goal, status, startedAtFrom, startedAtTo)
+        return ResponseEntity.ok(practiceSessionService.searchSessions(request))
     }
 } 

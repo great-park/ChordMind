@@ -31,6 +31,17 @@ class PracticeSessionService(
     fun getSessionsByUser(userId: Long): List<PracticeSessionResponse> =
         sessionRepository.findByUserId(userId).map { it.toResponse() }
 
+    fun searchSessions(request: PracticeSessionSearchRequest): List<PracticeSessionResponse> {
+        val all = sessionRepository.findAll()
+        return all.filter { session ->
+            (request.userId == null || session.userId == request.userId) &&
+            (request.goal == null || session.goal?.contains(request.goal, ignoreCase = true) == true) &&
+            (request.status == null || session.status == request.status) &&
+            (request.startedAtFrom == null || session.startedAt >= request.startedAtFrom) &&
+            (request.startedAtTo == null || session.startedAt <= request.startedAtTo)
+        }.map { it.toResponse() }
+    }
+
     fun getUserPracticeSummary(userId: Long): UserPracticeSummaryResponse {
         val sessions = sessionRepository.findByUserId(userId)
         val totalSessions = sessions.size

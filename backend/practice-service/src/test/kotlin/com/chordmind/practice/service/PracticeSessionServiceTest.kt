@@ -14,6 +14,7 @@ import org.junit.jupiter.api.DisplayName
 import org.mockito.kotlin.*
 import java.time.LocalDateTime
 import java.util.*
+import com.chordmind.practice.dto.PracticeSessionSearchRequest
 
 class PracticeSessionServiceTest {
     private lateinit var sessionRepository: PracticeSessionRepository
@@ -285,5 +286,32 @@ class PracticeSessionServiceTest {
             method.invoke(service, session)
         }
         assertTrue(ex.cause is NullPointerException)
+    }
+
+    @Test
+    fun `세션 검색 - goal, status, 기간 필터`() {
+        val now = LocalDateTime.now()
+        val sessions = listOf(
+            PracticeSession(id = 1L, userId = 1L, goal = "코드 연습", startedAt = now.minusDays(2), status = SessionStatus.IN_PROGRESS),
+            PracticeSession(id = 2L, userId = 1L, goal = "즉흥 연주", startedAt = now.minusDays(1), status = SessionStatus.COMPLETED),
+            PracticeSession(id = 3L, userId = 2L, goal = "코드 연습", startedAt = now, status = SessionStatus.COMPLETED)
+        )
+        whenever(sessionRepository.findAll()).thenReturn(sessions)
+        val req1 = PracticeSessionSearchRequest(goal = "코드", status = null, startedAtFrom = null, startedAtTo = null)
+        val result1 = service.searchSessions(req1)
+        assertEquals(2, result1.size)
+        val req2 = PracticeSessionSearchRequest(status = SessionStatus.COMPLETED)
+        val result2 = service.searchSessions(req2)
+        assertEquals(2, result2.size)
+        val req3 = PracticeSessionSearchRequest(startedAtFrom = now.minusDays(1), startedAtTo = now)
+        val result3 = service.searchSessions(req3)
+        assertEquals(2, result3.size)
+        val req4 = PracticeSessionSearchRequest(userId = 1L)
+        val result4 = service.searchSessions(req4)
+        assertEquals(2, result4.size)
+        val req5 = PracticeSessionSearchRequest(goal = "즉흥", status = SessionStatus.COMPLETED)
+        val result5 = service.searchSessions(req5)
+        assertEquals(1, result5.size)
+        assertEquals("즉흥 연주", result5[0].goal)
     }
 }
