@@ -10,7 +10,8 @@ import com.chordmind.practice.domain.SessionStatus
 @RestController
 @RequestMapping("/api/practice-sessions")
 class PracticeSessionController(
-    private val practiceSessionService: PracticeSessionService
+    private val practiceSessionService: PracticeSessionService,
+    private val practiceProgressService: com.chordmind.practice.service.PracticeProgressService
 ) {
     @PostMapping
     fun createSession(@RequestBody request: CreatePracticeSessionRequest): ResponseEntity<PracticeSessionResponse> =
@@ -70,5 +71,18 @@ class PracticeSessionController(
     ): ResponseEntity<List<PracticeSessionResponse>> {
         val request = PracticeSessionSearchRequest(userId, goal, status, startedAtFrom, startedAtTo)
         return ResponseEntity.ok(practiceSessionService.searchSessions(request))
+    }
+
+    @GetMapping("/progress/search")
+    fun searchProgresses(
+        @RequestParam(required = false) sessionId: Long?,
+        @RequestParam(required = false) note: String?,
+        @RequestParam(required = false) scoreMin: Int?,
+        @RequestParam(required = false) scoreMax: Int?,
+        @RequestParam(required = false) timestampFrom: LocalDateTime?,
+        @RequestParam(required = false) timestampTo: LocalDateTime?
+    ): ResponseEntity<List<com.chordmind.practice.dto.PracticeProgressResponse>> {
+        val request = com.chordmind.practice.dto.PracticeProgressSearchRequest(sessionId, note, scoreMin, scoreMax, timestampFrom, timestampTo)
+        return ResponseEntity.ok(practiceProgressService.searchProgresses(request))
     }
 } 

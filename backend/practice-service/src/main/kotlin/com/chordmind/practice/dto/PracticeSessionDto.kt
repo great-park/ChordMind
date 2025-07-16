@@ -54,4 +54,14 @@ data class PracticeSessionSearchRequest(
     val status: SessionStatus? = null,
     val startedAtFrom: LocalDateTime? = null,
     val startedAtTo: LocalDateTime? = null
+)
+
+// 진행상황 검색/필터 요청 DTO
+data class PracticeProgressSearchRequest(
+    val sessionId: Long? = null,
+    val note: String? = null,
+    val scoreMin: Int? = null,
+    val scoreMax: Int? = null,
+    val timestampFrom: LocalDateTime? = null,
+    val timestampTo: LocalDateTime? = null
 ) 

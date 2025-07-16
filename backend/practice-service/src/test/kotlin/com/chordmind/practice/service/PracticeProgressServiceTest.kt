@@ -66,4 +66,32 @@ class PracticeProgressServiceTest {
         assertEquals("수정된 메모", result.note)
         assertEquals(99, result.score)
     }
+
+    @Test
+    fun `진행상황 검색 - note, score, 기간 필터`() {
+        val now = java.time.LocalDateTime.now()
+        val progresses = listOf(
+            com.chordmind.practice.domain.PracticeProgress(id = 1L, sessionId = 1L, note = "코드 연습", score = 80, timestamp = now.minusDays(2)),
+            com.chordmind.practice.domain.PracticeProgress(id = 2L, sessionId = 1L, note = "즉흥 연주", score = 90, timestamp = now.minusDays(1)),
+            com.chordmind.practice.domain.PracticeProgress(id = 3L, sessionId = 2L, note = "코드 연습", score = 70, timestamp = now)
+        )
+        org.mockito.kotlin.whenever(progressRepository.findAll()).thenReturn(progresses)
+        val service = com.chordmind.practice.service.PracticeProgressService(progressRepository)
+        val req1 = com.chordmind.practice.dto.PracticeProgressSearchRequest(note = "코드")
+        val result1 = service.searchProgresses(req1)
+        org.junit.jupiter.api.Assertions.assertEquals(2, result1.size)
+        val req2 = com.chordmind.practice.dto.PracticeProgressSearchRequest(scoreMin = 80)
+        val result2 = service.searchProgresses(req2)
+        org.junit.jupiter.api.Assertions.assertEquals(2, result2.size)
+        val req3 = com.chordmind.practice.dto.PracticeProgressSearchRequest(timestampFrom = now.minusDays(1), timestampTo = now)
+        val result3 = service.searchProgresses(req3)
+        org.junit.jupiter.api.Assertions.assertEquals(2, result3.size)
+        val req4 = com.chordmind.practice.dto.PracticeProgressSearchRequest(sessionId = 1L)
+        val result4 = service.searchProgresses(req4)
+        org.junit.jupiter.api.Assertions.assertEquals(2, result4.size)
+        val req5 = com.chordmind.practice.dto.PracticeProgressSearchRequest(note = "즉흥", scoreMax = 90)
+        val result5 = service.searchProgresses(req5)
+        org.junit.jupiter.api.Assertions.assertEquals(1, result5.size)
+        org.junit.jupiter.api.Assertions.assertEquals("즉흥 연주", result5[0].note)
+    }
 } 

@@ -26,6 +26,18 @@ class PracticeProgressService(
     fun getProgressBySession(sessionId: Long): List<PracticeProgressResponse> =
         progressRepository.findBySessionId(sessionId).map { it.toResponse() }
 
+    fun searchProgresses(request: com.chordmind.practice.dto.PracticeProgressSearchRequest): List<PracticeProgressResponse> {
+        val all = progressRepository.findAll()
+        return all.filter { progress ->
+            (request.sessionId == null || progress.sessionId == request.sessionId) &&
+            (request.note == null || progress.note.contains(request.note, ignoreCase = true)) &&
+            (request.scoreMin == null || (progress.score ?: 0) >= request.scoreMin) &&
+            (request.scoreMax == null || (progress.score ?: 0) <= request.scoreMax) &&
+            (request.timestampFrom == null || progress.timestamp >= request.timestampFrom) &&
+            (request.timestampTo == null || progress.timestamp <= request.timestampTo)
+        }.map { it.toResponse() }
+    }
+
     @Transactional
     fun updateProgress(progressId: Long, request: UpdatePracticeProgressRequest): PracticeProgressResponse? {
         val progress = progressRepository.findById(progressId).orElse(null) ?: return null
