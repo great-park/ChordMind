@@ -3,6 +3,7 @@ package com.chordmind.practice.service
 import com.chordmind.practice.domain.PracticeProgress
 import com.chordmind.practice.dto.CreatePracticeProgressRequest
 import com.chordmind.practice.dto.PracticeProgressResponse
+import com.chordmind.practice.dto.UpdatePracticeProgressRequest
 import com.chordmind.practice.repository.PracticeProgressRepository
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -24,6 +25,16 @@ class PracticeProgressService(
 
     fun getProgressBySession(sessionId: Long): List<PracticeProgressResponse> =
         progressRepository.findBySessionId(sessionId).map { it.toResponse() }
+
+    @Transactional
+    fun updateProgress(progressId: Long, request: UpdatePracticeProgressRequest): PracticeProgressResponse? {
+        val progress = progressRepository.findById(progressId).orElse(null) ?: return null
+        val updated = progress.copy(
+            note = request.note ?: progress.note,
+            score = request.score ?: progress.score
+        )
+        return progressRepository.save(updated).toResponse()
+    }
 
     private fun PracticeProgress.toResponse() = PracticeProgressResponse(
         id = id!!,

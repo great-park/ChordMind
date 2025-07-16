@@ -40,4 +40,10 @@ data class SongPracticeStats(
     val averageAccuracy: Double,
     val averageScore: Int,
     val lastPracticedAt: LocalDateTime?
+)
+
+// 진행상황 정보 수정 요청
+data class UpdatePracticeProgressRequest(
+    val note: String? = null,
+    val score: Int? = null
 ) 
