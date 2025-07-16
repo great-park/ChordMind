@@ -30,6 +30,27 @@ class PracticeSessionService(
     fun getSessionsByUser(userId: Long): List<PracticeSessionResponse> =
         sessionRepository.findByUserId(userId).map { it.toResponse() }
 
+    fun getUserPracticeSummary(userId: Long): UserPracticeSummaryResponse {
+        val sessions = sessionRepository.findByUserId(userId)
+        val totalSessions = sessions.size
+        val completedSessions = sessions.count { it.status == SessionStatus.COMPLETED }
+        val averageScore = sessions.filter { it.status == SessionStatus.COMPLETED }
+            .mapNotNull { progressRepository.findBySessionId(it.id!!).map { p -> p.score }.averageOrNull() }
+            .averageOrNull()
+        val averageProgressScore = sessions.flatMap { session ->
+            progressRepository.findBySessionId(session.id!!).mapNotNull { it.score }
+        }.averageOrNull()
+        val lastSessionAt = sessions.maxOfOrNull { it.endedAt ?: it.startedAt }
+        return UserPracticeSummaryResponse(
+            userId = userId,
+            totalSessions = totalSessions,
+            completedSessions = completedSessions,
+            averageScore = averageScore,
+            averageProgressScore = averageProgressScore,
+            lastSessionAt = lastSessionAt
+        )
+    }
+
     @Transactional
     fun endSession(sessionId: Long): PracticeSessionResponse? {
         val session = sessionRepository.findById(sessionId).orElse(null) ?: return null
@@ -69,4 +90,6 @@ class PracticeSessionService(
         status = status,
         goal = goal
     )
-} 
+}
+
+private fun List<Double?>.averageOrNull(): Double? = this.filterNotNull().takeIf { it.isNotEmpty() }?.average() 

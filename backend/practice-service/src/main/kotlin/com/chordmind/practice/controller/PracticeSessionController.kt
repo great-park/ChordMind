@@ -24,6 +24,10 @@ class PracticeSessionController(
     fun getSessionsByUser(@PathVariable userId: Long): ResponseEntity<List<PracticeSessionResponse>> =
         ResponseEntity.ok(practiceSessionService.getSessionsByUser(userId))
 
+    @GetMapping("/user/{userId}/summary")
+    fun getUserPracticeSummary(@PathVariable userId: Long): ResponseEntity<UserPracticeSummaryResponse> =
+        ResponseEntity.ok(practiceSessionService.getUserPracticeSummary(userId))
+
     @PostMapping("/{sessionId}/end")
     fun endSession(@PathVariable sessionId: Long): ResponseEntity<PracticeSessionResponse> {
         val session = practiceSessionService.endSession(sessionId)

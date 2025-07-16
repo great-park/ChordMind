@@ -35,4 +35,14 @@ data class UpdatePracticeSessionRequest(
     val goal: String? = null,
     val status: SessionStatus? = null,
     val endedAt: LocalDateTime? = null
+)
+
+// 사용자별 연습 요약/통계 응답
+data class UserPracticeSummaryResponse(
+    val userId: Long,
+    val totalSessions: Int,
+    val completedSessions: Int,
+    val averageScore: Double?,
+    val averageProgressScore: Double?,
+    val lastSessionAt: LocalDateTime?
 ) 
