@@ -236,6 +236,47 @@ class PracticeSessionServiceTest {
     }
 
     @Test
+    fun `세션별 연습 요약 통계`() {
+        val sessionId = 100L
+        val session = PracticeSession(id = sessionId, userId = 1L, goal = "테스트 목표", startedAt = LocalDateTime.now().minusDays(1), status = SessionStatus.COMPLETED)
+        val progresses = listOf(
+            PracticeProgress(id = 1L, sessionId = sessionId, note = "A", score = 80, timestamp = LocalDateTime.now().minusHours(2)),
+            PracticeProgress(id = 2L, sessionId = sessionId, note = "B", score = 90, timestamp = LocalDateTime.now().minusHours(1))
+        )
+        whenever(sessionRepository.findById(sessionId)).thenReturn(Optional.of(session))
+        whenever(progressRepository.findBySessionId(sessionId)).thenReturn(progresses)
+
+        val result = service.getSessionSummary(sessionId)
+        assertNotNull(result)
+        assertEquals(sessionId, result!!.id)
+        assertEquals("테스트 목표", result.songTitle)
+        assertEquals(85.0, result.accuracy)
+        assertEquals(90, result.score)
+        assertTrue(result.completed)
+        assertEquals(session.startedAt, result.createdAt)
+    }
+
+    @Test
+    fun `세션별 연습 요약 통계_진행상황 없음`() {
+        val sessionId = 101L
+        val session = PracticeSession(id = sessionId, userId = 1L, goal = "목표", startedAt = LocalDateTime.now(), status = SessionStatus.IN_PROGRESS)
+        whenever(sessionRepository.findById(sessionId)).thenReturn(Optional.of(session))
+        whenever(progressRepository.findBySessionId(sessionId)).thenReturn(emptyList())
+        val result = service.getSessionSummary(sessionId)
+        assertNotNull(result)
+        assertEquals(0.0, result!!.accuracy)
+        assertEquals(0, result.score)
+        assertFalse(result.completed)
+    }
+
+    @Test
+    fun `세션별 연습 요약 통계_세션 없음`() {
+        whenever(sessionRepository.findById(999L)).thenReturn(Optional.empty())
+        val result = service.getSessionSummary(999L)
+        assertNull(result)
+    }
+
+    @Test
     fun `toResponse id가 null이면 NPE`() {
         val session = PracticeSession(id = null, userId = 1L, goal = "test", startedAt = LocalDateTime.now(), status = SessionStatus.IN_PROGRESS)
         val method = PracticeSessionService::class.java.getDeclaredMethod("toResponse", PracticeSession::class.java)

@@ -28,6 +28,12 @@ class PracticeSessionController(
     fun getUserPracticeSummary(@PathVariable userId: Long): ResponseEntity<UserPracticeSummaryResponse> =
         ResponseEntity.ok(practiceSessionService.getUserPracticeSummary(userId))
 
+    @GetMapping("/{sessionId}/summary")
+    fun getSessionSummary(@PathVariable sessionId: Long): ResponseEntity<PracticeSessionSummary> {
+        val summary = practiceSessionService.getSessionSummary(sessionId)
+        return if (summary != null) ResponseEntity.ok(summary) else ResponseEntity.notFound().build()
+    }
+
     @PostMapping("/{sessionId}/end")
     fun endSession(@PathVariable sessionId: Long): ResponseEntity<PracticeSessionResponse> {
         val session = practiceSessionService.endSession(sessionId)

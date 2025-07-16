@@ -12,7 +12,8 @@ import java.time.LocalDateTime
 
 @Service
 class PracticeSessionService(
-    private val sessionRepository: PracticeSessionRepository
+    private val sessionRepository: PracticeSessionRepository,
+    private val progressRepository: PracticeProgressRepository
 ) {
     @Transactional
     fun createSession(request: CreatePracticeSessionRequest): PracticeSessionResponse {
@@ -34,12 +35,13 @@ class PracticeSessionService(
         val sessions = sessionRepository.findByUserId(userId)
         val totalSessions = sessions.size
         val completedSessions = sessions.count { it.status == SessionStatus.COMPLETED }
-        val averageScore = sessions.filter { it.status == SessionStatus.COMPLETED }
-            .mapNotNull { progressRepository.findBySessionId(it.id!!).map { p -> p.score }.averageOrNull() }
-            .averageOrNull()
-        val averageProgressScore = sessions.flatMap { session ->
+        val completedScores = sessions.filter { it.status == SessionStatus.COMPLETED }
+            .flatMap { progressRepository.findBySessionId(it.id!!).mapNotNull { p -> p.score } }
+        val averageScore = completedScores.takeIf { it.isNotEmpty() }?.average()
+        val allScores = sessions.flatMap { session ->
             progressRepository.findBySessionId(session.id!!).mapNotNull { it.score }
-        }.averageOrNull()
+        }
+        val averageProgressScore = allScores.takeIf { it.isNotEmpty() }?.average()
         val lastSessionAt = sessions.maxOfOrNull { it.endedAt ?: it.startedAt }
         return UserPracticeSummaryResponse(
             userId = userId,
@@ -48,6 +50,24 @@ class PracticeSessionService(
             averageScore = averageScore,
             averageProgressScore = averageProgressScore,
             lastSessionAt = lastSessionAt
+        )
+    }
+
+    fun getSessionSummary(sessionId: Long): PracticeSessionSummary? {
+        val session = sessionRepository.findById(sessionId).orElse(null) ?: return null
+        val progresses = progressRepository.findBySessionId(sessionId)
+        val scores = progresses.mapNotNull { it.score }
+        val accuracy = if (scores.isNotEmpty()) scores.average() else 0.0
+        val score = if (scores.isNotEmpty()) scores.last() else 0
+        return PracticeSessionSummary(
+            id = session.id!!,
+            songTitle = session.goal ?: "-",
+            artist = "-",
+            difficulty = "-",
+            accuracy = accuracy,
+            score = score,
+            completed = session.status == SessionStatus.COMPLETED,
+            createdAt = session.startedAt
         )
     }
 
