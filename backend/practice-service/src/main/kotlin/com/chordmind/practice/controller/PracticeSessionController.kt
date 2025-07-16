@@ -38,4 +38,13 @@ class PracticeSessionController(
         val updated = practiceSessionService.updateSession(sessionId, request)
         return if (updated != null) ResponseEntity.ok(updated) else ResponseEntity.notFound().build()
     }
+
+    @DeleteMapping("/{sessionId}")
+    fun deleteSession(@PathVariable sessionId: Long): ResponseEntity<Void> {
+        return if (practiceSessionService.deleteSession(sessionId)) {
+            ResponseEntity.noContent().build()
+        } else {
+            ResponseEntity.notFound().build()
+        }
+    }
 } 

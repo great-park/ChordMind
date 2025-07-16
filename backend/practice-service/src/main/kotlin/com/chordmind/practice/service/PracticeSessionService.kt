@@ -51,6 +51,16 @@ class PracticeSessionService(
         return sessionRepository.save(updated).toResponse()
     }
 
+    @Transactional
+    fun deleteSession(sessionId: Long): Boolean {
+        return if (sessionRepository.existsById(sessionId)) {
+            sessionRepository.deleteById(sessionId)
+            true
+        } else {
+            false
+        }
+    }
+
     private fun PracticeSession.toResponse() = PracticeSessionResponse(
         id = id!!,
         userId = userId,
