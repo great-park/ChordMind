@@ -1,17 +1,29 @@
 package com.chordmind.practice.controller
 
-import com.chordmind.practice.dto.CreatePracticeProgressRequest
-import com.chordmind.practice.dto.PracticeProgressResponse
-import com.chordmind.practice.dto.UpdatePracticeProgressRequest
+import com.chordmind.practice.dto.*
 import com.chordmind.practice.service.PracticeProgressService
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
+import java.time.LocalDateTime
 
 @RestController
 @RequestMapping("/api/practice-progress")
 class PracticeProgressController(
     private val practiceProgressService: PracticeProgressService
 ) {
+    @GetMapping("/search")
+    fun searchProgresses(
+        @RequestParam(required = false) sessionId: Long?,
+        @RequestParam(required = false) note: String?,
+        @RequestParam(required = false) scoreMin: Int?,
+        @RequestParam(required = false) scoreMax: Int?,
+        @RequestParam(required = false) timestampFrom: LocalDateTime?,
+        @RequestParam(required = false) timestampTo: LocalDateTime?
+    ): ResponseEntity<List<PracticeProgressResponse>> {
+        val request = PracticeProgressSearchRequest(sessionId, note, scoreMin, scoreMax, timestampFrom, timestampTo)
+        return ResponseEntity.ok(practiceProgressService.searchProgresses(request))
+    }
+
     @PostMapping
     fun addProgress(@RequestBody request: CreatePracticeProgressRequest): ResponseEntity<PracticeProgressResponse> =
         ResponseEntity.ok(practiceProgressService.addProgress(request))
