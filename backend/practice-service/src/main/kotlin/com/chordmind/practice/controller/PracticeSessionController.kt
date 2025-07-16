@@ -30,17 +30,6 @@ class PracticeSessionController(
         return if (session != null) ResponseEntity.ok(session) else ResponseEntity.notFound().build()
     }
 
-    @PostMapping("/{sessionId}/progress")
-    fun addProgress(
-        @PathVariable sessionId: Long,
-        @RequestBody request: CreatePracticeProgressRequest
-    ): ResponseEntity<PracticeProgressResponse> =
-        ResponseEntity.ok(practiceSessionService.addProgress(request.copy(sessionId = sessionId)))
-
-    @GetMapping("/{sessionId}/progress")
-    fun getProgressBySession(@PathVariable sessionId: Long): ResponseEntity<List<PracticeProgressResponse>> =
-        ResponseEntity.ok(practiceSessionService.getProgressBySession(sessionId))
-
     @PatchMapping("/{sessionId}")
     fun updateSession(
         @PathVariable sessionId: Long,

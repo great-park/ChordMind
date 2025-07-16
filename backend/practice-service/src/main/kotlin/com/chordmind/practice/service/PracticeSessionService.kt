@@ -12,8 +12,7 @@ import java.time.LocalDateTime
 
 @Service
 class PracticeSessionService(
-    private val sessionRepository: PracticeSessionRepository,
-    private val progressRepository: PracticeProgressRepository
+    private val sessionRepository: PracticeSessionRepository
 ) {
     @Transactional
     fun createSession(request: CreatePracticeSessionRequest): PracticeSessionResponse {
@@ -52,21 +51,6 @@ class PracticeSessionService(
         return sessionRepository.save(updated).toResponse()
     }
 
-    @Transactional
-    fun addProgress(request: CreatePracticeProgressRequest): PracticeProgressResponse {
-        val progress = PracticeProgress(
-            sessionId = request.sessionId,
-            note = request.note,
-            score = request.score
-        )
-        val saved = progressRepository.save(progress)
-        return saved.toResponse()
-    }
-
-    fun getProgressBySession(sessionId: Long): List<PracticeProgressResponse> =
-        progressRepository.findBySessionId(sessionId).map { it.toResponse() }
-
-    // Entity -> DTO 변환 확장 함수
     private fun PracticeSession.toResponse() = PracticeSessionResponse(
         id = id!!,
         userId = userId,
@@ -74,13 +58,5 @@ class PracticeSessionService(
         endedAt = endedAt,
         status = status,
         goal = goal
-    )
-
-    private fun PracticeProgress.toResponse() = PracticeProgressResponse(
-        id = id!!,
-        sessionId = sessionId,
-        timestamp = timestamp,
-        note = note,
-        score = score
     )
 } 
