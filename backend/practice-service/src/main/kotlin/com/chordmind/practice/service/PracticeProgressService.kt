@@ -36,6 +36,16 @@ class PracticeProgressService(
         return progressRepository.save(updated).toResponse()
     }
 
+    @Transactional
+    fun deleteProgress(progressId: Long): Boolean {
+        return if (progressRepository.existsById(progressId)) {
+            progressRepository.deleteById(progressId)
+            true
+        } else {
+            false
+        }
+    }
+
     private fun PracticeProgress.toResponse() = PracticeProgressResponse(
         id = id!!,
         sessionId = sessionId,

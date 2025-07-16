@@ -28,4 +28,13 @@ class PracticeProgressController(
         val updated = practiceProgressService.updateProgress(progressId, request)
         return if (updated != null) ResponseEntity.ok(updated) else ResponseEntity.notFound().build()
     }
+
+    @DeleteMapping("/{progressId}")
+    fun deleteProgress(@PathVariable progressId: Long): ResponseEntity<Void> {
+        return if (practiceProgressService.deleteProgress(progressId)) {
+            ResponseEntity.noContent().build()
+        } else {
+            ResponseEntity.notFound().build()
+        }
+    }
 } 
