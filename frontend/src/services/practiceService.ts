@@ -36,6 +36,14 @@ export interface CommonResponse<T> {
   error?: string;
 }
 
+export interface PageResponse<T> {
+  content: T[];
+  page: number;
+  size: number;
+  totalElements: number;
+  totalPages: number;
+}
+
 // 세션 목록 조회
 export async function getSessionsByUser(userId: number) {
   const res = await axios.get<CommonResponse<PracticeSessionResponse[]>>(`${API_BASE}/user/${userId}`);
@@ -48,9 +56,9 @@ export async function createSession(userId: number, goal?: string) {
   return res.data;
 }
 
-// 세션 검색/필터
-export async function searchSessions(params: PracticeSessionSearchRequest) {
-  const res = await axios.get<CommonResponse<PracticeSessionResponse[]>>(`${API_BASE}/search`, { params });
+// 세션 검색/필터 (페이징 지원)
+export async function searchSessions(params: PracticeSessionSearchRequest & { page?: number; size?: number }) {
+  const res = await axios.get<CommonResponse<PageResponse<PracticeSessionResponse>>>(`${API_BASE}/search`, { params });
   return res.data;
 }
 

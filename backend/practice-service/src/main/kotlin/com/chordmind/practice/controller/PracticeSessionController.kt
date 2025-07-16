@@ -68,10 +68,12 @@ class PracticeSessionController(
         @RequestParam(required = false) goal: String?,
         @RequestParam(required = false) status: SessionStatus?,
         @RequestParam(required = false) startedAtFrom: LocalDateTime?,
-        @RequestParam(required = false) startedAtTo: LocalDateTime?
-    ): ResponseEntity<CommonResponse<List<PracticeSessionResponse>>> {
+        @RequestParam(required = false) startedAtTo: LocalDateTime?,
+        @RequestParam(defaultValue = "0") page: Int,
+        @RequestParam(defaultValue = "20") size: Int
+    ): ResponseEntity<CommonResponse<PageResponse<PracticeSessionResponse>>> {
         val request = PracticeSessionSearchRequest(userId, goal, status, startedAtFrom, startedAtTo)
-        val result = practiceSessionService.searchSessions(request)
+        val result = practiceSessionService.searchSessions(request, page, size)
         return ResponseEntity.ok(CommonResponse(success = true, data = result))
     }
 } 

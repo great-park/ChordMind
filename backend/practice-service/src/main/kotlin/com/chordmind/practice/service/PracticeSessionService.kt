@@ -31,15 +31,25 @@ class PracticeSessionService(
     fun getSessionsByUser(userId: Long): List<PracticeSessionResponse> =
         sessionRepository.findByUserId(userId).map { it.toResponse() }
 
-    fun searchSessions(request: PracticeSessionSearchRequest): List<PracticeSessionResponse> {
+    fun searchSessions(request: PracticeSessionSearchRequest, page: Int = 0, size: Int = 20): PageResponse<PracticeSessionResponse> {
         val all = sessionRepository.findAll()
-        return all.filter { session ->
+        val filtered = all.filter { session ->
             (request.userId == null || session.userId == request.userId) &&
             (request.goal == null || session.goal?.contains(request.goal, ignoreCase = true) == true) &&
             (request.status == null || session.status == request.status) &&
             (request.startedAtFrom == null || session.startedAt >= request.startedAtFrom) &&
             (request.startedAtTo == null || session.startedAt <= request.startedAtTo)
-        }.map { it.toResponse() }
+        }
+        val totalElements = filtered.size.toLong()
+        val totalPages = if (size == 0) 1 else ((totalElements + size - 1) / size).toInt()
+        val paged = if (size == 0) filtered else filtered.drop(page * size).take(size)
+        return PageResponse(
+            content = paged.map { it.toResponse() },
+            page = page,
+            size = size,
+            totalElements = totalElements,
+            totalPages = totalPages
+        )
     }
 
     fun getUserPracticeSummary(userId: Long): UserPracticeSummaryResponse {
