@@ -6,61 +6,38 @@ import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 
 @RestController
-@RequestMapping("/api/v1/practice-sessions")
+@RequestMapping("/api/practice-sessions")
 class PracticeSessionController(
     private val practiceSessionService: PracticeSessionService
 ) {
-    
     @PostMapping
-    fun createPracticeSession(@RequestBody request: CreatePracticeSessionRequest): ResponseEntity<PracticeSessionResponse> {
-        val response = practiceSessionService.createPracticeSession(request)
-        return ResponseEntity.ok(response)
-    }
-    
-    @PutMapping("/{sessionId}")
-    fun updatePracticeSession(
-        @PathVariable sessionId: Long,
-        @RequestBody request: UpdatePracticeSessionRequest
-    ): ResponseEntity<PracticeSessionResponse> {
-        val response = practiceSessionService.updatePracticeSession(sessionId, request)
-        return ResponseEntity.ok(response)
-    }
-    
+    fun createSession(@RequestBody request: CreatePracticeSessionRequest): ResponseEntity<PracticeSessionResponse> =
+        ResponseEntity.ok(practiceSessionService.createSession(request))
+
     @GetMapping("/{sessionId}")
-    fun getPracticeSession(@PathVariable sessionId: Long): ResponseEntity<PracticeSessionResponse> {
-        val response = practiceSessionService.getPracticeSession(sessionId)
-        return ResponseEntity.ok(response)
+    fun getSession(@PathVariable sessionId: Long): ResponseEntity<PracticeSessionResponse> {
+        val session = practiceSessionService.getSession(sessionId)
+        return if (session != null) ResponseEntity.ok(session) else ResponseEntity.notFound().build()
     }
-    
+
     @GetMapping("/user/{userId}")
-    fun getUserPracticeSessions(@PathVariable userId: Long): ResponseEntity<List<PracticeSessionSummary>> {
-        val sessions = practiceSessionService.getUserPracticeSessions(userId)
-        return ResponseEntity.ok(sessions)
+    fun getSessionsByUser(@PathVariable userId: Long): ResponseEntity<List<PracticeSessionResponse>> =
+        ResponseEntity.ok(practiceSessionService.getSessionsByUser(userId))
+
+    @PostMapping("/{sessionId}/end")
+    fun endSession(@PathVariable sessionId: Long): ResponseEntity<PracticeSessionResponse> {
+        val session = practiceSessionService.endSession(sessionId)
+        return if (session != null) ResponseEntity.ok(session) else ResponseEntity.notFound().build()
     }
-    
-    @GetMapping("/user/{userId}/completed")
-    fun getUserCompletedSessions(@PathVariable userId: Long): ResponseEntity<List<PracticeSessionSummary>> {
-        val sessions = practiceSessionService.getUserCompletedSessions(userId)
-        return ResponseEntity.ok(sessions)
-    }
-    
-    @GetMapping("/user/{userId}/song/{songId}")
-    fun getSongPracticeSessions(
-        @PathVariable userId: Long,
-        @PathVariable songId: String
-    ): ResponseEntity<List<PracticeSessionSummary>> {
-        val sessions = practiceSessionService.getSongPracticeSessions(userId, songId)
-        return ResponseEntity.ok(sessions)
-    }
-    
-    @GetMapping("/user/{userId}/stats")
-    fun getUserStats(@PathVariable userId: Long): ResponseEntity<UserPracticeStats> {
-        val stats = practiceSessionService.getUserStats(userId)
-        return ResponseEntity.ok(stats)
-    }
-    
-    @GetMapping("/health")
-    fun health(): ResponseEntity<Map<String, String>> {
-        return ResponseEntity.ok(mapOf("status" to "UP", "service" to "practice-service"))
-    }
+
+    @PostMapping("/{sessionId}/progress")
+    fun addProgress(
+        @PathVariable sessionId: Long,
+        @RequestBody request: CreatePracticeProgressRequest
+    ): ResponseEntity<PracticeProgressResponse> =
+        ResponseEntity.ok(practiceSessionService.addProgress(request.copy(sessionId = sessionId)))
+
+    @GetMapping("/{sessionId}/progress")
+    fun getProgressBySession(@PathVariable sessionId: Long): ResponseEntity<List<PracticeProgressResponse>> =
+        ResponseEntity.ok(practiceSessionService.getProgressBySession(sessionId))
 } 

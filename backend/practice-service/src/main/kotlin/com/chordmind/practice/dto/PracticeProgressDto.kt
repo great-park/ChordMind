@@ -2,19 +2,20 @@ package com.chordmind.practice.dto
 
 import java.time.LocalDateTime
 
+// 연습 진행상황 기록 요청
+data class CreatePracticeProgressRequest(
+    val sessionId: Long,
+    val note: String,
+    val score: Int? = null
+)
+
+// 연습 진행상황 응답
 data class PracticeProgressResponse(
     val id: Long,
-    val userId: Long,
-    val songId: String,
-    val totalSessions: Int,
-    val totalPracticeTime: Int,
-    val bestAccuracy: Double,
-    val bestScore: Int,
-    val averageAccuracy: Double,
-    val averageScore: Int,
-    val lastPracticedAt: LocalDateTime?,
-    val createdAt: LocalDateTime,
-    val updatedAt: LocalDateTime
+    val sessionId: Long,
+    val timestamp: LocalDateTime,
+    val note: String,
+    val score: Int?
 )
 
 data class UserPracticeStats(

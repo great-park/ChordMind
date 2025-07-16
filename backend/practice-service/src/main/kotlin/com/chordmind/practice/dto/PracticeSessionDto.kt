@@ -1,41 +1,22 @@
 package com.chordmind.practice.dto
 
+import com.chordmind.practice.domain.SessionStatus
 import java.time.LocalDateTime
 
+// 연습 세션 생성 요청
 data class CreatePracticeSessionRequest(
     val userId: Long,
-    val songId: String,
-    val songTitle: String,
-    val artist: String,
-    val difficulty: String,
-    val tempo: Int,
-    val key: String
+    val goal: String? = null
 )
 
-data class UpdatePracticeSessionRequest(
-    val duration: Int,
-    val accuracy: Double,
-    val score: Int,
-    val mistakes: Int,
-    val completed: Boolean
-)
-
+// 연습 세션 응답
 data class PracticeSessionResponse(
     val id: Long,
     val userId: Long,
-    val songId: String,
-    val songTitle: String,
-    val artist: String,
-    val difficulty: String,
-    val tempo: Int,
-    val key: String,
-    val duration: Int,
-    val accuracy: Double,
-    val score: Int,
-    val mistakes: Int,
-    val completed: Boolean,
-    val createdAt: LocalDateTime,
-    val updatedAt: LocalDateTime
+    val startedAt: LocalDateTime,
+    val endedAt: LocalDateTime?,
+    val status: SessionStatus,
+    val goal: String?
 )
 
 data class PracticeSessionSummary(

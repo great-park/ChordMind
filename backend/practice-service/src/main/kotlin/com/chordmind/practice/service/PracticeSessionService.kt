@@ -1,142 +1,75 @@
 package com.chordmind.practice.service
 
 import com.chordmind.practice.domain.PracticeSession
+import com.chordmind.practice.domain.PracticeProgress
+import com.chordmind.practice.domain.SessionStatus
 import com.chordmind.practice.dto.*
 import com.chordmind.practice.repository.PracticeSessionRepository
+import com.chordmind.practice.repository.PracticeProgressRepository
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.time.LocalDateTime
 
 @Service
-@Transactional
 class PracticeSessionService(
-    private val practiceSessionRepository: PracticeSessionRepository
+    private val sessionRepository: PracticeSessionRepository,
+    private val progressRepository: PracticeProgressRepository
 ) {
-    
-    fun createPracticeSession(request: CreatePracticeSessionRequest): PracticeSessionResponse {
-        val practiceSession = PracticeSession(
+    @Transactional
+    fun createSession(request: CreatePracticeSessionRequest): PracticeSessionResponse {
+        val session = PracticeSession(
             userId = request.userId,
-            songId = request.songId,
-            songTitle = request.songTitle,
-            artist = request.artist,
-            difficulty = request.difficulty,
-            tempo = request.tempo,
-            key = request.key,
-            duration = 0,
-            accuracy = 0.0,
-            score = 0,
-            mistakes = 0,
-            completed = false
+            goal = request.goal
         )
-        
-        val savedSession = practiceSessionRepository.save(practiceSession)
-        return mapToResponse(savedSession)
+        val saved = sessionRepository.save(session)
+        return saved.toResponse()
     }
-    
-    fun updatePracticeSession(sessionId: Long, request: UpdatePracticeSessionRequest): PracticeSessionResponse {
-        val session = practiceSessionRepository.findById(sessionId)
-            .orElseThrow { RuntimeException("Practice session not found with id: $sessionId") }
-        
-        val updatedSession = session.copy(
-            duration = request.duration,
-            accuracy = request.accuracy,
-            score = request.score,
-            mistakes = request.mistakes,
-            completed = request.completed,
-            updatedAt = LocalDateTime.now()
+
+    fun getSession(sessionId: Long): PracticeSessionResponse? =
+        sessionRepository.findById(sessionId).orElse(null)?.toResponse()
+
+    fun getSessionsByUser(userId: Long): List<PracticeSessionResponse> =
+        sessionRepository.findByUserId(userId).map { it.toResponse() }
+
+    @Transactional
+    fun endSession(sessionId: Long): PracticeSessionResponse? {
+        val session = sessionRepository.findById(sessionId).orElse(null) ?: return null
+        val ended = session.copy(
+            endedAt = LocalDateTime.now(),
+            status = SessionStatus.COMPLETED
         )
-        
-        val savedSession = practiceSessionRepository.save(updatedSession)
-        return mapToResponse(savedSession)
+        return sessionRepository.save(ended).toResponse()
     }
-    
-    fun getPracticeSession(sessionId: Long): PracticeSessionResponse {
-        val session = practiceSessionRepository.findById(sessionId)
-            .orElseThrow { RuntimeException("Practice session not found with id: $sessionId") }
-        return mapToResponse(session)
-    }
-    
-    fun getUserPracticeSessions(userId: Long): List<PracticeSessionSummary> {
-        val sessions = practiceSessionRepository.findByUserIdOrderByCreatedAtDesc(userId)
-        return sessions.map { mapToSummary(it) }
-    }
-    
-    fun getUserCompletedSessions(userId: Long): List<PracticeSessionSummary> {
-        val sessions = practiceSessionRepository.findByUserIdAndCompletedTrueOrderByCreatedAtDesc(userId)
-        return sessions.map { mapToSummary(it) }
-    }
-    
-    fun getSongPracticeSessions(userId: Long, songId: String): List<PracticeSessionSummary> {
-        val sessions = practiceSessionRepository.findByUserIdAndSongIdOrderByCreatedAtDesc(userId, songId)
-        return sessions.map { mapToSummary(it) }
-    }
-    
-    fun getUserStats(userId: Long): UserPracticeStats {
-        val completedSessions = practiceSessionRepository.findByUserIdAndCompletedTrueOrderByCreatedAtDesc(userId)
-        
-        if (completedSessions.isEmpty()) {
-            return UserPracticeStats(
-                userId = userId,
-                totalSessions = 0,
-                totalPracticeTime = 0,
-                averageAccuracy = 0.0,
-                averageScore = 0,
-                bestAccuracy = 0.0,
-                bestScore = 0,
-                lastPracticedAt = null
-            )
-        }
-        
-        val totalSessions = completedSessions.size
-        val totalPracticeTime = completedSessions.sumOf { it.duration } / 60 // Convert to minutes
-        val averageAccuracy = completedSessions.map { it.accuracy }.average()
-        val averageScore = completedSessions.map { it.score }.average().toInt()
-        val bestAccuracy = completedSessions.maxOf { it.accuracy }
-        val bestScore = completedSessions.maxOf { it.score }
-        val lastPracticedAt = completedSessions.maxOfOrNull { it.createdAt }
-        
-        return UserPracticeStats(
-            userId = userId,
-            totalSessions = totalSessions,
-            totalPracticeTime = totalPracticeTime,
-            averageAccuracy = averageAccuracy,
-            averageScore = averageScore,
-            bestAccuracy = bestAccuracy,
-            bestScore = bestScore,
-            lastPracticedAt = lastPracticedAt
+
+    @Transactional
+    fun addProgress(request: CreatePracticeProgressRequest): PracticeProgressResponse {
+        val progress = PracticeProgress(
+            sessionId = request.sessionId,
+            note = request.note,
+            score = request.score
         )
+        val saved = progressRepository.save(progress)
+        return saved.toResponse()
     }
-    
-    private fun mapToResponse(session: PracticeSession): PracticeSessionResponse {
-        return PracticeSessionResponse(
-            id = session.id!!,
-            userId = session.userId,
-            songId = session.songId,
-            songTitle = session.songTitle,
-            artist = session.artist,
-            difficulty = session.difficulty,
-            tempo = session.tempo,
-            key = session.key,
-            duration = session.duration,
-            accuracy = session.accuracy,
-            score = session.score,
-            mistakes = session.mistakes,
-            completed = session.completed,
-            createdAt = session.createdAt,
-            updatedAt = session.updatedAt
-        )
-    }
-    
-    private fun mapToSummary(session: PracticeSession): PracticeSessionSummary {
-        return PracticeSessionSummary(
-            id = session.id!!,
-            songTitle = session.songTitle,
-            artist = session.artist,
-            difficulty = session.difficulty,
-            accuracy = session.accuracy,
-            score = session.score,
-            completed = session.completed,
-            createdAt = session.createdAt
-        )
-    }
+
+    fun getProgressBySession(sessionId: Long): List<PracticeProgressResponse> =
+        progressRepository.findBySessionId(sessionId).map { it.toResponse() }
+
+    // Entity -> DTO 변환 확장 함수
+    private fun PracticeSession.toResponse() = PracticeSessionResponse(
+        id = id!!,
+        userId = userId,
+        startedAt = startedAt,
+        endedAt = endedAt,
+        status = status,
+        goal = goal
+    )
+
+    private fun PracticeProgress.toResponse() = PracticeProgressResponse(
+        id = id!!,
+        sessionId = sessionId,
+        timestamp = timestamp,
+        note = note,
+        score = score
+    )
 } 
