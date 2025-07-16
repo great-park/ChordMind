@@ -1,5 +1,6 @@
 package com.chordmind.practice.exception
 
+import com.chordmind.practice.dto.CommonResponse
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.ControllerAdvice
@@ -18,31 +19,28 @@ data class ErrorResponse(
 class GlobalExceptionHandler {
     
     @ExceptionHandler(RuntimeException::class)
-    fun handleRuntimeException(ex: RuntimeException): ResponseEntity<ErrorResponse> {
-        val errorResponse = ErrorResponse(
-            status = HttpStatus.NOT_FOUND.value(),
-            error = "Not Found",
-            message = ex.message ?: "Resource not found"
+    fun handleRuntimeException(ex: RuntimeException): ResponseEntity<CommonResponse<Nothing>> {
+        val errorResponse = CommonResponse<Nothing>(
+            success = false,
+            error = ex.message ?: "Resource not found"
         )
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse)
     }
     
     @ExceptionHandler(IllegalArgumentException::class)
-    fun handleIllegalArgumentException(ex: IllegalArgumentException): ResponseEntity<ErrorResponse> {
-        val errorResponse = ErrorResponse(
-            status = HttpStatus.BAD_REQUEST.value(),
-            error = "Bad Request",
-            message = ex.message ?: "Invalid request"
+    fun handleIllegalArgumentException(ex: IllegalArgumentException): ResponseEntity<CommonResponse<Nothing>> {
+        val errorResponse = CommonResponse<Nothing>(
+            success = false,
+            error = ex.message ?: "Invalid request"
         )
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse)
     }
     
     @ExceptionHandler(Exception::class)
-    fun handleGenericException(ex: Exception): ResponseEntity<ErrorResponse> {
-        val errorResponse = ErrorResponse(
-            status = HttpStatus.INTERNAL_SERVER_ERROR.value(),
-            error = "Internal Server Error",
-            message = "An unexpected error occurred"
+    fun handleGenericException(ex: Exception): ResponseEntity<CommonResponse<Nothing>> {
+        val errorResponse = CommonResponse<Nothing>(
+            success = false,
+            error = "An unexpected error occurred"
         )
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse)
     }

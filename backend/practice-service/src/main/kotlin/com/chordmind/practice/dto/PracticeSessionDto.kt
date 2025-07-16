@@ -64,4 +64,11 @@ data class PracticeProgressSearchRequest(
     val scoreMax: Int? = null,
     val timestampFrom: LocalDateTime? = null,
     val timestampTo: LocalDateTime? = null
+)
+
+// API 표준 응답 포맷
+data class CommonResponse<T>(
+    val success: Boolean,
+    val data: T? = null,
+    val error: String? = null
 ) 

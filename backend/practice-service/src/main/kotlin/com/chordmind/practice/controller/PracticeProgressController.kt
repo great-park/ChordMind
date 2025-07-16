@@ -19,9 +19,10 @@ class PracticeProgressController(
         @RequestParam(required = false) scoreMax: Int?,
         @RequestParam(required = false) timestampFrom: LocalDateTime?,
         @RequestParam(required = false) timestampTo: LocalDateTime?
-    ): ResponseEntity<List<PracticeProgressResponse>> {
+    ): ResponseEntity<CommonResponse<List<PracticeProgressResponse>>> {
         val request = PracticeProgressSearchRequest(sessionId, note, scoreMin, scoreMax, timestampFrom, timestampTo)
-        return ResponseEntity.ok(practiceProgressService.searchProgresses(request))
+        val result = practiceProgressService.searchProgresses(request)
+        return ResponseEntity.ok(CommonResponse(success = true, data = result))
     }
 
     @PostMapping

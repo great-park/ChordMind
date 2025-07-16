@@ -32,9 +32,10 @@ class PracticeSessionController(
         ResponseEntity.ok(practiceSessionService.getUserPracticeSummary(userId))
 
     @GetMapping("/{sessionId}/summary")
-    fun getSessionSummary(@PathVariable sessionId: Long): ResponseEntity<PracticeSessionSummary> {
+    fun getSessionSummary(@PathVariable sessionId: Long): ResponseEntity<CommonResponse<PracticeSessionSummary>> {
         val summary = practiceSessionService.getSessionSummary(sessionId)
-        return if (summary != null) ResponseEntity.ok(summary) else ResponseEntity.notFound().build()
+        return if (summary != null) ResponseEntity.ok(CommonResponse(success = true, data = summary))
+        else ResponseEntity.status(404).body(CommonResponse(success = false, error = "Session not found"))
     }
 
     @PostMapping("/{sessionId}/end")
@@ -68,8 +69,9 @@ class PracticeSessionController(
         @RequestParam(required = false) status: SessionStatus?,
         @RequestParam(required = false) startedAtFrom: LocalDateTime?,
         @RequestParam(required = false) startedAtTo: LocalDateTime?
-    ): ResponseEntity<List<PracticeSessionResponse>> {
+    ): ResponseEntity<CommonResponse<List<PracticeSessionResponse>>> {
         val request = PracticeSessionSearchRequest(userId, goal, status, startedAtFrom, startedAtTo)
-        return ResponseEntity.ok(practiceSessionService.searchSessions(request))
+        val result = practiceSessionService.searchSessions(request)
+        return ResponseEntity.ok(CommonResponse(success = true, data = result))
     }
 } 
