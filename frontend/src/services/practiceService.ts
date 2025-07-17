@@ -128,6 +128,26 @@ export interface AdminProgressSummary {
   timestamp: string;
 }
 
+export interface GoalAchievementNotification {
+  userId: number;
+  sessionId: number;
+  message: string;
+  achievedAt: string;
+}
+
+export interface PracticeRecommendationResponse {
+  userId: number;
+  recommendedGoals: string[];
+  message: string;
+}
+
+export interface PracticeFeedbackResponse {
+  userId: number;
+  sessionId: number;
+  progressId: number;
+  feedback: string;
+}
+
 // 세션 목록 조회
 export async function getSessionsByUser(userId: number) {
   const res = await axios.get<CommonResponse<PracticeSessionResponse[]>>(`${API_BASE}/user/${userId}`);
@@ -203,5 +223,23 @@ export async function getAdminSessionSummaries() {
 // 관리자 전체 진행상황 요약
 export async function getAdminProgressSummaries() {
   const res = await axios.get<CommonResponse<AdminProgressSummary[]>>(`/api/practice-sessions/admin/progress`);
+  return res.data;
+}
+
+// 목표 달성 알림
+export async function getGoalAchievementNotification(userId: number, sessionId: number) {
+  const res = await axios.get<CommonResponse<GoalAchievementNotification>>(`/api/practice-sessions/notify/goal`, { params: { userId, sessionId } });
+  return res.data;
+}
+
+// 연습 추천
+export async function getPracticeRecommendation(userId: number) {
+  const res = await axios.get<CommonResponse<PracticeRecommendationResponse>>(`/api/practice-sessions/recommendation`, { params: { userId } });
+  return res.data;
+}
+
+// 실시간 피드백
+export async function getPracticeFeedback(userId: number, sessionId: number, progressId: number) {
+  const res = await axios.get<CommonResponse<PracticeFeedbackResponse>>(`/api/practice-sessions/feedback`, { params: { userId, sessionId, progressId } });
   return res.data;
 } 

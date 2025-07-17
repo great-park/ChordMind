@@ -310,6 +310,52 @@ class PracticeSessionService(
         }
     }
 
+    fun getGoalAchievementNotification(userId: Long, sessionId: Long): GoalAchievementNotification? {
+        val session = sessionRepository.findById(sessionId).orElse(null) ?: return null
+        if (session.userId != userId || session.status != SessionStatus.COMPLETED) return null
+        val message = "축하합니다! 목표 '${session.goal ?: "(미지정)"}'를 달성하셨습니다."
+        return GoalAchievementNotification(
+            userId = userId,
+            sessionId = sessionId,
+            message = message,
+            achievedAt = session.endedAt ?: LocalDateTime.now()
+        )
+    }
+
+    fun getPracticeRecommendation(userId: Long): PracticeRecommendationResponse {
+        val sessions = sessionRepository.findByUserId(userId)
+        val recentGoals = sessions.sortedByDescending { it.startedAt }.mapNotNull { it.goal }.distinct().take(3)
+        val recommended = if (recentGoals.isNotEmpty()) {
+            listOf("${recentGoals.first()} 복습", "새로운 코드 진행", "즉흥 연주 도전")
+        } else {
+            listOf("기본 코드 연습 시작하기", "즉흥 연주 도전")
+        }
+        val message = "다음 목표를 추천합니다: ${recommended.joinToString(", ")}"
+        return PracticeRecommendationResponse(
+            userId = userId,
+            recommendedGoals = recommended,
+            message = message
+        )
+    }
+
+    fun getPracticeFeedback(userId: Long, sessionId: Long, progressId: Long): PracticeFeedbackResponse? {
+        val session = sessionRepository.findById(sessionId).orElse(null) ?: return null
+        if (session.userId != userId) return null
+        val progress = progressRepository.findBySessionId(sessionId).find { it.id == progressId } ?: return null
+        val feedback = when {
+            progress.score == null -> "점수가 입력되지 않았어요. 다음엔 점수도 기록해보세요!"
+            progress.score >= 90 -> "훌륭해요! 거의 완벽에 가까운 연습입니다."
+            progress.score >= 70 -> "좋아요! 조금만 더 연습하면 더 나아질 수 있어요."
+            else -> "계속 도전해보세요! 연습이 실력을 만듭니다."
+        }
+        return PracticeFeedbackResponse(
+            userId = userId,
+            sessionId = sessionId,
+            progressId = progressId,
+            feedback = feedback
+        )
+    }
+
     private fun PracticeSession.toResponse() = PracticeSessionResponse(
         id = id!!,
         userId = userId,

@@ -141,4 +141,31 @@ class PracticeSessionController(
         val progresses = practiceSessionService.getAdminProgressSummaries()
         return ResponseEntity.ok(CommonResponse(success = true, data = progresses))
     }
+
+    @GetMapping("/notify/goal")
+    fun getGoalAchievementNotification(
+        @RequestParam userId: Long,
+        @RequestParam sessionId: Long
+    ): ResponseEntity<CommonResponse<GoalAchievementNotification>> {
+        val notification = practiceSessionService.getGoalAchievementNotification(userId, sessionId)
+        return if (notification != null) ResponseEntity.ok(CommonResponse(success = true, data = notification))
+        else ResponseEntity.status(404).body(CommonResponse(success = false, error = "No achievement notification"))
+    }
+
+    @GetMapping("/recommendation")
+    fun getPracticeRecommendation(@RequestParam userId: Long): ResponseEntity<CommonResponse<PracticeRecommendationResponse>> {
+        val rec = practiceSessionService.getPracticeRecommendation(userId)
+        return ResponseEntity.ok(CommonResponse(success = true, data = rec))
+    }
+
+    @GetMapping("/feedback")
+    fun getPracticeFeedback(
+        @RequestParam userId: Long,
+        @RequestParam sessionId: Long,
+        @RequestParam progressId: Long
+    ): ResponseEntity<CommonResponse<PracticeFeedbackResponse>> {
+        val feedback = practiceSessionService.getPracticeFeedback(userId, sessionId, progressId)
+        return if (feedback != null) ResponseEntity.ok(CommonResponse(success = true, data = feedback))
+        else ResponseEntity.status(404).body(CommonResponse(success = false, error = "No feedback available"))
+    }
 } 

@@ -169,4 +169,26 @@ data class AdminProgressSummary(
     val note: String,
     val score: Int?,
     val timestamp: java.time.LocalDateTime
+)
+
+// 알림/피드백/추천 DTO
+
+data class GoalAchievementNotification(
+    val userId: Long,
+    val sessionId: Long,
+    val message: String,
+    val achievedAt: java.time.LocalDateTime
+)
+
+data class PracticeRecommendationResponse(
+    val userId: Long,
+    val recommendedGoals: List<String>,
+    val message: String
+)
+
+data class PracticeFeedbackResponse(
+    val userId: Long,
+    val sessionId: Long,
+    val progressId: Long,
+    val feedback: String
 ) 
