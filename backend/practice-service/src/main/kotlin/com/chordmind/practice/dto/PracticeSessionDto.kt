@@ -129,4 +129,44 @@ data class TrendPoint(
     val date: java.time.LocalDateTime,
     val sessionCount: Int,
     val averageScore: Double?
+)
+
+// 관리자/운영자용 통계/요약 DTO
+
+data class AdminPracticeSummaryResponse(
+    val totalUsers: Int,
+    val totalSessions: Int,
+    val totalProgress: Int,
+    val averageSessionPerUser: Double,
+    val averageScore: Double?,
+    val lastActivityAt: java.time.LocalDateTime?
+)
+
+data class AdminUserSummary(
+    val userId: Long,
+    val username: String? = null,
+    val totalSessions: Int,
+    val completedSessions: Int,
+    val averageScore: Double?,
+    val lastSessionAt: java.time.LocalDateTime?
+)
+
+data class AdminSessionSummary(
+    val sessionId: Long,
+    val userId: Long,
+    val goal: String?,
+    val startedAt: java.time.LocalDateTime,
+    val endedAt: java.time.LocalDateTime?,
+    val status: String,
+    val totalProgress: Int,
+    val averageScore: Double?
+)
+
+data class AdminProgressSummary(
+    val progressId: Long,
+    val sessionId: Long,
+    val userId: Long,
+    val note: String,
+    val score: Int?,
+    val timestamp: java.time.LocalDateTime
 ) 

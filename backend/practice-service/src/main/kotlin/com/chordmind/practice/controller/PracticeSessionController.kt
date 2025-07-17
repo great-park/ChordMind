@@ -117,4 +117,28 @@ class PracticeSessionController(
         return if (trend != null) ResponseEntity.ok(CommonResponse(success = true, data = trend))
         else ResponseEntity.status(404).body(CommonResponse(success = false, error = "User trend not found"))
     }
+
+    @GetMapping("/admin/summary")
+    fun getAdminPracticeSummary(): ResponseEntity<CommonResponse<AdminPracticeSummaryResponse>> {
+        val summary = practiceSessionService.getAdminPracticeSummary()
+        return ResponseEntity.ok(CommonResponse(success = true, data = summary))
+    }
+
+    @GetMapping("/admin/users")
+    fun getAdminUserSummaries(): ResponseEntity<CommonResponse<List<AdminUserSummary>>> {
+        val users = practiceSessionService.getAdminUserSummaries()
+        return ResponseEntity.ok(CommonResponse(success = true, data = users))
+    }
+
+    @GetMapping("/admin/sessions")
+    fun getAdminSessionSummaries(): ResponseEntity<CommonResponse<List<AdminSessionSummary>>> {
+        val sessions = practiceSessionService.getAdminSessionSummaries()
+        return ResponseEntity.ok(CommonResponse(success = true, data = sessions))
+    }
+
+    @GetMapping("/admin/progress")
+    fun getAdminProgressSummaries(): ResponseEntity<CommonResponse<List<AdminProgressSummary>>> {
+        val progresses = practiceSessionService.getAdminProgressSummaries()
+        return ResponseEntity.ok(CommonResponse(success = true, data = progresses))
+    }
 } 

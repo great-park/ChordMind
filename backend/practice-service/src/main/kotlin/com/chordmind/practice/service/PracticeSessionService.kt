@@ -236,6 +236,80 @@ class PracticeSessionService(
         )
     }
 
+    fun getAdminPracticeSummary(): AdminPracticeSummaryResponse {
+        val allSessions = sessionRepository.findAll()
+        val allProgress = allSessions.flatMap { progressRepository.findBySessionId(it.id!!) }
+        val userIds = allSessions.map { it.userId }.distinct()
+        val totalUsers = userIds.size
+        val totalSessions = allSessions.size
+        val totalProgress = allProgress.size
+        val averageSessionPerUser = if (totalUsers > 0) totalSessions.toDouble() / totalUsers else 0.0
+        val allScores = allProgress.mapNotNull { it.score }
+        val averageScore = allScores.takeIf { it.isNotEmpty() }?.average()
+        val lastActivityAt = allProgress.maxOfOrNull { it.timestamp }
+        return AdminPracticeSummaryResponse(
+            totalUsers = totalUsers,
+            totalSessions = totalSessions,
+            totalProgress = totalProgress,
+            averageSessionPerUser = averageSessionPerUser,
+            averageScore = averageScore,
+            lastActivityAt = lastActivityAt
+        )
+    }
+
+    fun getAdminUserSummaries(): List<AdminUserSummary> {
+        val allSessions = sessionRepository.findAll()
+        val userIds = allSessions.map { it.userId }.distinct()
+        return userIds.map { userId ->
+            val sessions = allSessions.filter { it.userId == userId }
+            val completedSessions = sessions.count { it.status == SessionStatus.COMPLETED }
+            val allScores = sessions.flatMap { session -> progressRepository.findBySessionId(session.id!!).mapNotNull { it.score } }
+            val averageScore = allScores.takeIf { it.isNotEmpty() }?.average()
+            val lastSessionAt = sessions.maxOfOrNull { it.endedAt ?: it.startedAt }
+            AdminUserSummary(
+                userId = userId,
+                totalSessions = sessions.size,
+                completedSessions = completedSessions,
+                averageScore = averageScore,
+                lastSessionAt = lastSessionAt
+            )
+        }
+    }
+
+    fun getAdminSessionSummaries(): List<AdminSessionSummary> {
+        val allSessions = sessionRepository.findAll()
+        return allSessions.map { session ->
+            val progresses = progressRepository.findBySessionId(session.id!!)
+            val averageScore = progresses.mapNotNull { it.score }.takeIf { it.isNotEmpty() }?.average()
+            AdminSessionSummary(
+                sessionId = session.id!!,
+                userId = session.userId,
+                goal = session.goal,
+                startedAt = session.startedAt,
+                endedAt = session.endedAt,
+                status = session.status.name,
+                totalProgress = progresses.size,
+                averageScore = averageScore
+            )
+        }
+    }
+
+    fun getAdminProgressSummaries(): List<AdminProgressSummary> {
+        val allSessions = sessionRepository.findAll()
+        return allSessions.flatMap { session ->
+            progressRepository.findBySessionId(session.id!!).map { progress ->
+                AdminProgressSummary(
+                    progressId = progress.id!!,
+                    sessionId = session.id!!,
+                    userId = session.userId,
+                    note = progress.note,
+                    score = progress.score,
+                    timestamp = progress.timestamp
+                )
+            }
+        }
+    }
+
     private fun PracticeSession.toResponse() = PracticeSessionResponse(
         id = id!!,
         userId = userId,

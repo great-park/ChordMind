@@ -90,6 +90,44 @@ export interface TrendPoint {
   averageScore?: number;
 }
 
+export interface AdminPracticeSummaryResponse {
+  totalUsers: number;
+  totalSessions: number;
+  totalProgress: number;
+  averageSessionPerUser: number;
+  averageScore?: number;
+  lastActivityAt?: string;
+}
+
+export interface AdminUserSummary {
+  userId: number;
+  username?: string;
+  totalSessions: number;
+  completedSessions: number;
+  averageScore?: number;
+  lastSessionAt?: string;
+}
+
+export interface AdminSessionSummary {
+  sessionId: number;
+  userId: number;
+  goal?: string;
+  startedAt: string;
+  endedAt?: string;
+  status: string;
+  totalProgress: number;
+  averageScore?: number;
+}
+
+export interface AdminProgressSummary {
+  progressId: number;
+  sessionId: number;
+  userId: number;
+  note: string;
+  score?: number;
+  timestamp: string;
+}
+
 // 세션 목록 조회
 export async function getSessionsByUser(userId: number) {
   const res = await axios.get<CommonResponse<PracticeSessionResponse[]>>(`${API_BASE}/user/${userId}`);
@@ -141,5 +179,29 @@ export async function getAnalyticsSessionSummary(sessionId: number) {
 // 사용자 성장 추이
 export async function getAnalyticsUserTrend(userId: number, period: string = 'week') {
   const res = await axios.get<CommonResponse<AnalyticsUserTrendResponse>>(`/api/practice-sessions/analytics/user/${userId}/trend`, { params: { period } });
+  return res.data;
+}
+
+// 관리자 전체 통계 요약
+export async function getAdminPracticeSummary() {
+  const res = await axios.get<CommonResponse<AdminPracticeSummaryResponse>>(`/api/practice-sessions/admin/summary`);
+  return res.data;
+}
+
+// 관리자 전체 사용자 요약
+export async function getAdminUserSummaries() {
+  const res = await axios.get<CommonResponse<AdminUserSummary[]>>(`/api/practice-sessions/admin/users`);
+  return res.data;
+}
+
+// 관리자 전체 세션 요약
+export async function getAdminSessionSummaries() {
+  const res = await axios.get<CommonResponse<AdminSessionSummary[]>>(`/api/practice-sessions/admin/sessions`);
+  return res.data;
+}
+
+// 관리자 전체 진행상황 요약
+export async function getAdminProgressSummaries() {
+  const res = await axios.get<CommonResponse<AdminProgressSummary[]>>(`/api/practice-sessions/admin/progress`);
   return res.data;
 } 
