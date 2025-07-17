@@ -123,6 +123,48 @@ class PracticeSessionService(
         }
     }
 
+    fun getUserRanking(userId: Long): UserRankingResponse? {
+        val sessions = sessionRepository.findByUserId(userId)
+        if (sessions.isEmpty()) return null
+        
+        val totalSessions = sessions.size
+        val completedSessions = sessions.count { it.status == SessionStatus.COMPLETED }
+        val allScores = sessions.flatMap { session ->
+            progressRepository.findBySessionId(session.id!!).mapNotNull { it.score }
+        }
+        val averageScore = allScores.takeIf { it.isNotEmpty() }?.average() ?: 0.0
+        val totalPracticeTime = sessions.sumOf { session ->
+            val duration = if (session.endedAt != null) {
+                java.time.Duration.between(session.startedAt, session.endedAt).toMinutes()
+            } else {
+                java.time.Duration.between(session.startedAt, LocalDateTime.now()).toMinutes()
+            }
+            duration.coerceAtLeast(0)
+        }
+        
+        // 랭킹 점수 계산 (완료 세션 비율 * 평균 점수 * 연습 시간 가중치)
+        val completionRate = if (totalSessions > 0) completedSessions.toDouble() / totalSessions else 0.0
+        val score = completionRate * averageScore * (1 + totalPracticeTime / 1000.0) // 시간 가중치
+        
+        return UserRankingResponse(
+            userId = userId,
+            totalSessions = totalSessions,
+            completedSessions = completedSessions,
+            averageScore = averageScore,
+            totalPracticeTime = totalPracticeTime,
+            rank = 0, // 전체 랭킹에서 계산
+            score = score
+        )
+    }
+
+    fun getTopUsers(limit: Int = 10): List<UserRankingResponse> {
+        val allUsers = sessionRepository.findAll().map { it.userId }.distinct()
+        val rankings = allUsers.mapNotNull { userId -> getUserRanking(userId) }
+        return rankings.sortedByDescending { it.score }.take(limit).mapIndexed { index, ranking ->
+            ranking.copy(rank = index + 1)
+        }
+    }
+
     private fun PracticeSession.toResponse() = PracticeSessionResponse(
         id = id!!,
         userId = userId,
@@ -131,6 +173,4 @@ class PracticeSessionService(
         status = status,
         goal = goal
     )
-}
-
-private fun List<Double?>.averageOrNull(): Double? = this.filterNotNull().takeIf { it.isNotEmpty() }?.average() 
+} 

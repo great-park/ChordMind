@@ -44,6 +44,17 @@ export interface PageResponse<T> {
   totalPages: number;
 }
 
+export interface UserRankingResponse {
+  userId: number;
+  username?: string;
+  totalSessions: number;
+  completedSessions: number;
+  averageScore: number;
+  totalPracticeTime: number;
+  rank: number;
+  score: number;
+}
+
 // 세션 목록 조회
 export async function getSessionsByUser(userId: number) {
   const res = await axios.get<CommonResponse<PracticeSessionResponse[]>>(`${API_BASE}/user/${userId}`);
@@ -65,5 +76,17 @@ export async function searchSessions(params: PracticeSessionSearchRequest & { pa
 // 세션별 통계
 export async function getSessionSummary(sessionId: number) {
   const res = await axios.get<CommonResponse<PracticeSessionSummary>>(`${API_BASE}/${sessionId}/summary`);
+  return res.data;
+}
+
+// 사용자 랭킹 조회
+export async function getUserRanking(userId: number) {
+  const res = await axios.get<CommonResponse<UserRankingResponse>>(`${API_BASE}/ranking/user/${userId}`);
+  return res.data;
+}
+
+// 상위 사용자 랭킹 조회
+export async function getTopUsers(limit: number = 10) {
+  const res = await axios.get<CommonResponse<UserRankingResponse[]>>(`${API_BASE}/ranking/top`, { params: { limit } });
   return res.data;
 } 

@@ -80,4 +80,16 @@ data class PageResponse<T>(
     val size: Int,
     val totalElements: Long,
     val totalPages: Int
+)
+
+// 사용자 연습 성취도 랭킹 응답
+data class UserRankingResponse(
+    val userId: Long,
+    val username: String? = null,
+    val totalSessions: Int,
+    val completedSessions: Int,
+    val averageScore: Double?,
+    val totalPracticeTime: Long, // 분 단위
+    val rank: Int,
+    val score: Double // 랭킹 점수 (가중 평균)
 ) 

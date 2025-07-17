@@ -76,4 +76,17 @@ class PracticeSessionController(
         val result = practiceSessionService.searchSessions(request, page, size)
         return ResponseEntity.ok(CommonResponse(success = true, data = result))
     }
+
+    @GetMapping("/ranking/user/{userId}")
+    fun getUserRanking(@PathVariable userId: Long): ResponseEntity<CommonResponse<UserRankingResponse>> {
+        val ranking = practiceSessionService.getUserRanking(userId)
+        return if (ranking != null) ResponseEntity.ok(CommonResponse(success = true, data = ranking))
+        else ResponseEntity.status(404).body(CommonResponse(success = false, error = "User ranking not found"))
+    }
+
+    @GetMapping("/ranking/top")
+    fun getTopUsers(@RequestParam(defaultValue = "10") limit: Int): ResponseEntity<CommonResponse<List<UserRankingResponse>>> {
+        val rankings = practiceSessionService.getTopUsers(limit)
+        return ResponseEntity.ok(CommonResponse(success = true, data = rankings))
+    }
 } 
