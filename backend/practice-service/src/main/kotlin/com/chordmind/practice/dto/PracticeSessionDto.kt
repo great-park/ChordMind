@@ -92,4 +92,41 @@ data class UserRankingResponse(
     val totalPracticeTime: Long, // 분 단위
     val rank: Int,
     val score: Double // 랭킹 점수 (가중 평균)
+)
+
+// 통합 통계/분석 응답 DTO
+
+data class AnalyticsUserSummaryResponse(
+    val userId: Long,
+    val username: String? = null,
+    val totalSessions: Int,
+    val completedSessions: Int,
+    val averageScore: Double?,
+    val totalPracticeTime: Long, // 분 단위
+    val firstSessionAt: java.time.LocalDateTime?,
+    val lastSessionAt: java.time.LocalDateTime?,
+    val recentGoals: List<String>
+)
+
+data class AnalyticsSessionSummaryResponse(
+    val sessionId: Long,
+    val userId: Long,
+    val goal: String?,
+    val startedAt: java.time.LocalDateTime,
+    val endedAt: java.time.LocalDateTime?,
+    val totalProgress: Int,
+    val averageScore: Double?,
+    val completed: Boolean
+)
+
+data class AnalyticsUserTrendResponse(
+    val userId: Long,
+    val period: String, // week, month 등
+    val points: List<TrendPoint>
+)
+
+data class TrendPoint(
+    val date: java.time.LocalDateTime,
+    val sessionCount: Int,
+    val averageScore: Double?
 ) 

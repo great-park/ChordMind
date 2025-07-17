@@ -89,4 +89,32 @@ class PracticeSessionController(
         val rankings = practiceSessionService.getTopUsers(limit)
         return ResponseEntity.ok(CommonResponse(success = true, data = rankings))
     }
+
+    @GetMapping("/analytics/user/{userId}/summary")
+    fun getAnalyticsUserSummary(
+        @PathVariable userId: Long,
+        @RequestParam(required = false) from: LocalDateTime?,
+        @RequestParam(required = false) to: LocalDateTime?
+    ): ResponseEntity<CommonResponse<AnalyticsUserSummaryResponse>> {
+        val summary = practiceSessionService.getAnalyticsUserSummary(userId, from, to)
+        return if (summary != null) ResponseEntity.ok(CommonResponse(success = true, data = summary))
+        else ResponseEntity.status(404).body(CommonResponse(success = false, error = "User analytics not found"))
+    }
+
+    @GetMapping("/analytics/session/{sessionId}/summary")
+    fun getAnalyticsSessionSummary(@PathVariable sessionId: Long): ResponseEntity<CommonResponse<AnalyticsSessionSummaryResponse>> {
+        val summary = practiceSessionService.getAnalyticsSessionSummary(sessionId)
+        return if (summary != null) ResponseEntity.ok(CommonResponse(success = true, data = summary))
+        else ResponseEntity.status(404).body(CommonResponse(success = false, error = "Session analytics not found"))
+    }
+
+    @GetMapping("/analytics/user/{userId}/trend")
+    fun getAnalyticsUserTrend(
+        @PathVariable userId: Long,
+        @RequestParam(defaultValue = "week") period: String
+    ): ResponseEntity<CommonResponse<AnalyticsUserTrendResponse>> {
+        val trend = practiceSessionService.getAnalyticsUserTrend(userId, period)
+        return if (trend != null) ResponseEntity.ok(CommonResponse(success = true, data = trend))
+        else ResponseEntity.status(404).body(CommonResponse(success = false, error = "User trend not found"))
+    }
 } 

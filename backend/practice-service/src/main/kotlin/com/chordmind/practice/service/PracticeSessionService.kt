@@ -165,6 +165,77 @@ class PracticeSessionService(
         }
     }
 
+    fun getAnalyticsUserSummary(userId: Long, from: LocalDateTime?, to: LocalDateTime?): AnalyticsUserSummaryResponse? {
+        val sessions = sessionRepository.findByUserId(userId)
+            .filter { (from == null || it.startedAt >= from) && (to == null || it.startedAt <= to) }
+        if (sessions.isEmpty()) return null
+        val totalSessions = sessions.size
+        val completedSessions = sessions.count { it.status == SessionStatus.COMPLETED }
+        val allScores = sessions.flatMap { session ->
+            progressRepository.findBySessionId(session.id!!).mapNotNull { it.score }
+        }
+        val averageScore = allScores.takeIf { it.isNotEmpty() }?.average()
+        val totalPracticeTime = sessions.sumOf { session ->
+            val duration = if (session.endedAt != null) {
+                java.time.Duration.between(session.startedAt, session.endedAt).toMinutes()
+            } else {
+                java.time.Duration.between(session.startedAt, LocalDateTime.now()).toMinutes()
+            }
+            duration.coerceAtLeast(0)
+        }
+        val firstSessionAt = sessions.minOfOrNull { it.startedAt }
+        val lastSessionAt = sessions.maxOfOrNull { it.endedAt ?: it.startedAt }
+        val recentGoals = sessions.sortedByDescending { it.startedAt }.take(5).mapNotNull { it.goal }
+        return AnalyticsUserSummaryResponse(
+            userId = userId,
+            totalSessions = totalSessions,
+            completedSessions = completedSessions,
+            averageScore = averageScore,
+            totalPracticeTime = totalPracticeTime,
+            firstSessionAt = firstSessionAt,
+            lastSessionAt = lastSessionAt,
+            recentGoals = recentGoals
+        )
+    }
+
+    fun getAnalyticsSessionSummary(sessionId: Long): AnalyticsSessionSummaryResponse? {
+        val session = sessionRepository.findById(sessionId).orElse(null) ?: return null
+        val progresses = progressRepository.findBySessionId(sessionId)
+        val averageScore = progresses.mapNotNull { it.score }.takeIf { it.isNotEmpty() }?.average()
+        return AnalyticsSessionSummaryResponse(
+            sessionId = session.id!!,
+            userId = session.userId,
+            goal = session.goal,
+            startedAt = session.startedAt,
+            endedAt = session.endedAt,
+            totalProgress = progresses.size,
+            averageScore = averageScore,
+            completed = session.status == SessionStatus.COMPLETED
+        )
+    }
+
+    fun getAnalyticsUserTrend(userId: Long, period: String = "week"): AnalyticsUserTrendResponse? {
+        val sessions = sessionRepository.findByUserId(userId)
+        if (sessions.isEmpty()) return null
+        val grouped = when (period) {
+            "month" -> sessions.groupBy { it.startedAt.withDayOfMonth(1).toLocalDate() }
+            else -> sessions.groupBy { it.startedAt.with(java.time.temporal.TemporalAdjusters.previousOrSame(java.time.DayOfWeek.MONDAY)).toLocalDate() }
+        }
+        val points = grouped.entries.sortedBy { it.key }.map { (date, group) ->
+            val allScores = group.flatMap { session -> progressRepository.findBySessionId(session.id!!).mapNotNull { it.score } }
+            TrendPoint(
+                date = date.atStartOfDay(),
+                sessionCount = group.size,
+                averageScore = allScores.takeIf { it.isNotEmpty() }?.average()
+            )
+        }
+        return AnalyticsUserTrendResponse(
+            userId = userId,
+            period = period,
+            points = points
+        )
+    }
+
     private fun PracticeSession.toResponse() = PracticeSessionResponse(
         id = id!!,
         userId = userId,

@@ -55,6 +55,41 @@ export interface UserRankingResponse {
   score: number;
 }
 
+export interface AnalyticsUserSummaryResponse {
+  userId: number;
+  username?: string;
+  totalSessions: number;
+  completedSessions: number;
+  averageScore?: number;
+  totalPracticeTime: number;
+  firstSessionAt?: string;
+  lastSessionAt?: string;
+  recentGoals: string[];
+}
+
+export interface AnalyticsSessionSummaryResponse {
+  sessionId: number;
+  userId: number;
+  goal?: string;
+  startedAt: string;
+  endedAt?: string;
+  totalProgress: number;
+  averageScore?: number;
+  completed: boolean;
+}
+
+export interface AnalyticsUserTrendResponse {
+  userId: number;
+  period: string;
+  points: TrendPoint[];
+}
+
+export interface TrendPoint {
+  date: string;
+  sessionCount: number;
+  averageScore?: number;
+}
+
 // 세션 목록 조회
 export async function getSessionsByUser(userId: number) {
   const res = await axios.get<CommonResponse<PracticeSessionResponse[]>>(`${API_BASE}/user/${userId}`);
@@ -88,5 +123,23 @@ export async function getUserRanking(userId: number) {
 // 상위 사용자 랭킹 조회
 export async function getTopUsers(limit: number = 10) {
   const res = await axios.get<CommonResponse<UserRankingResponse[]>>(`${API_BASE}/ranking/top`, { params: { limit } });
+  return res.data;
+}
+
+// 사용자별 통계 요약
+export async function getAnalyticsUserSummary(userId: number, from?: string, to?: string) {
+  const res = await axios.get<CommonResponse<AnalyticsUserSummaryResponse>>(`/api/practice-sessions/analytics/user/${userId}/summary`, { params: { from, to } });
+  return res.data;
+}
+
+// 세션별 통계 요약
+export async function getAnalyticsSessionSummary(sessionId: number) {
+  const res = await axios.get<CommonResponse<AnalyticsSessionSummaryResponse>>(`/api/practice-sessions/analytics/session/${sessionId}/summary`);
+  return res.data;
+}
+
+// 사용자 성장 추이
+export async function getAnalyticsUserTrend(userId: number, period: string = 'week') {
+  const res = await axios.get<CommonResponse<AnalyticsUserTrendResponse>>(`/api/practice-sessions/analytics/user/${userId}/trend`, { params: { period } });
   return res.data;
 } 
