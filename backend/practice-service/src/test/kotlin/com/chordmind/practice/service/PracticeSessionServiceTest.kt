@@ -299,19 +299,68 @@ class PracticeSessionServiceTest {
         whenever(sessionRepository.findAll()).thenReturn(sessions)
         val req1 = PracticeSessionSearchRequest(goal = "코드", status = null, startedAtFrom = null, startedAtTo = null)
         val result1 = service.searchSessions(req1)
-        assertEquals(2, result1.size)
+        assertEquals(2, result1.content.size)
         val req2 = PracticeSessionSearchRequest(status = SessionStatus.COMPLETED)
         val result2 = service.searchSessions(req2)
-        assertEquals(2, result2.size)
+        assertEquals(2, result2.content.size)
         val req3 = PracticeSessionSearchRequest(startedAtFrom = now.minusDays(1), startedAtTo = now)
         val result3 = service.searchSessions(req3)
-        assertEquals(2, result3.size)
+        assertEquals(2, result3.content.size)
         val req4 = PracticeSessionSearchRequest(userId = 1L)
         val result4 = service.searchSessions(req4)
-        assertEquals(2, result4.size)
+        assertEquals(2, result4.content.size)
         val req5 = PracticeSessionSearchRequest(goal = "즉흥", status = SessionStatus.COMPLETED)
         val result5 = service.searchSessions(req5)
-        assertEquals(1, result5.size)
-        assertEquals("즉흥 연주", result5[0].goal)
+        assertEquals(1, result5.content.size)
+        assertEquals("즉흥 연주", result5.content[0].goal)
     }
-}
+
+    @Test
+    fun `사용자 랭킹 계산`() {
+        val userId = 1L
+        val now = LocalDateTime.now()
+        val sessions = listOf(
+            PracticeSession(id = 1L, userId = userId, startedAt = now.minusHours(2), endedAt = now.minusHours(1), status = SessionStatus.COMPLETED, goal = "A"),
+            PracticeSession(id = 2L, userId = userId, startedAt = now.minusHours(1), endedAt = now, status = SessionStatus.IN_PROGRESS, goal = "B")
+        )
+        val progresses1 = listOf(
+            PracticeProgress(id = 1L, sessionId = 1L, note = "A", score = 80, timestamp = now.minusHours(2)),
+            PracticeProgress(id = 2L, sessionId = 1L, note = "B", score = 90, timestamp = now.minusHours(1))
+        )
+        val progresses2 = listOf(
+            PracticeProgress(id = 3L, sessionId = 2L, note = "C", score = 70, timestamp = now.minusMinutes(30))
+        )
+        whenever(sessionRepository.findByUserId(userId)).thenReturn(sessions)
+        whenever(progressRepository.findBySessionId(1L)).thenReturn(progresses1)
+        whenever(progressRepository.findBySessionId(2L)).thenReturn(progresses2)
+        val result = service.getUserRanking(userId)
+        assertNotNull(result)
+        assertEquals(userId, result!!.userId)
+        assertEquals(2, result.totalSessions)
+        assertEquals(1, result.completedSessions)
+        assertNotNull(result.averageScore)
+        assertEquals(80.0, result.averageScore!!, 0.1)
+        assertTrue(result.totalPracticeTime > 0)
+        assertTrue(result.score > 0)
+    }
+
+    @Test
+    fun `상위 사용자 랭킹 정렬`() {
+        val now = LocalDateTime.now()
+        val sessions = listOf(
+            PracticeSession(id = 1L, userId = 1L, startedAt = now.minusHours(2), endedAt = now.minusHours(1), status = SessionStatus.COMPLETED, goal = "A"),
+            PracticeSession(id = 2L, userId = 2L, startedAt = now.minusHours(2), endedAt = now.minusHours(1), status = SessionStatus.COMPLETED, goal = "B")
+        )
+        whenever(sessionRepository.findAll()).thenReturn(sessions)
+        whenever(sessionRepository.findByUserId(1L)).thenReturn(listOf(sessions[0]))
+        whenever(sessionRepository.findByUserId(2L)).thenReturn(listOf(sessions[1]))
+        whenever(progressRepository.findBySessionId(1L)).thenReturn(listOf(PracticeProgress(id = 1L, sessionId = 1L, note = "A", score = 90, timestamp = now.minusHours(2))))
+        whenever(progressRepository.findBySessionId(2L)).thenReturn(listOf(PracticeProgress(id = 2L, sessionId = 2L, note = "B", score = 80, timestamp = now.minusHours(2))))
+        val result = service.getTopUsers(2)
+        assertEquals(2, result.size)
+        assertEquals(1L, result[0].userId)
+        assertEquals(2L, result[1].userId)
+        assertEquals(1, result[0].rank)
+        assertEquals(2, result[1].rank)
+    }
+} 

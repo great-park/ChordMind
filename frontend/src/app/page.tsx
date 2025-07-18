@@ -2,12 +2,17 @@
 
 import { useState, useEffect } from 'react';
 import MainLayout from '../components/MainLayout';
+import StatisticsCard from '../components/StatisticsCard';
+import ProgressChart from '../components/ProgressChart';
+import ActivityFeed from '../components/ActivityFeed';
+import Leaderboard from '../components/Leaderboard';
 import { 
   TRENDING_KEYWORDS, 
   RECENT_KEYWORDS, 
   FEATURES, 
   REVIEWS 
 } from '../constants/data';
+import { STATISTICS_DATA } from '../constants/statistics';
 
 export default function Home() {
   const [isVisible, setIsVisible] = useState(false);
@@ -129,10 +134,56 @@ export default function Home() {
         </div>
       </section>
 
-      {/* 사용자 후기 + 성장 그래프 */}
+      {/* 통계 대시보드 */}
       <section 
         className={`mb-5 fade-in ${isVisible ? 'visible' : ''}`}
         style={{ animationDelay: '0.3s' }}
+        id="dashboard"
+        aria-labelledby="dashboard-title"
+      >
+        <h2 id="dashboard-title" className="text-center mb-5">나의 연습 통계</h2>
+        
+        {/* 개요 통계 카드 */}
+        <div className="row g-4 mb-5">
+          {STATISTICS_DATA.overview.map((stat, index) => (
+            <div key={index} className="col-lg-3 col-md-6">
+              <StatisticsCard {...stat} />
+            </div>
+          ))}
+        </div>
+
+        {/* 진행률 차트 */}
+        <div className="row g-4 mb-5">
+          {STATISTICS_DATA.progress.map((progress, index) => (
+            <div key={index} className="col-lg-4 col-md-6">
+              <ProgressChart {...progress} />
+            </div>
+          ))}
+        </div>
+
+        {/* 활동 피드와 리더보드 */}
+        <div className="row g-4">
+          <div className="col-lg-8">
+            <ActivityFeed 
+              activities={STATISTICS_DATA.activities}
+              title="최근 활동"
+              maxItems={5}
+            />
+          </div>
+          <div className="col-lg-4">
+            <Leaderboard 
+              items={STATISTICS_DATA.leaderboard}
+              title="주간 랭킹"
+              maxItems={8}
+            />
+          </div>
+        </div>
+      </section>
+
+      {/* 사용자 후기 + 성장 그래프 */}
+      <section 
+        className={`mb-5 fade-in ${isVisible ? 'visible' : ''}`}
+        style={{ animationDelay: '0.4s' }}
       >
         <div className="row g-4">
           <div className="col-lg-8">
