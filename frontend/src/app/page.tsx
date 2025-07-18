@@ -13,14 +13,44 @@ import {
   REVIEWS 
 } from '../constants/data';
 import { STATISTICS_DATA } from '../constants/statistics';
+import {
+  getAnalyticsUserSummary,
+  getAnalyticsUserTrend,
+  getTopUsers,
+  AnalyticsUserSummaryResponse,
+  AnalyticsUserTrendResponse,
+  UserRankingResponse
+} from '../services/practiceService';
 
 export default function Home() {
   const [isVisible, setIsVisible] = useState(false);
+  const [userSummary, setUserSummary] = useState<AnalyticsUserSummaryResponse | null>(null);
+  const [userTrend, setUserTrend] = useState<AnalyticsUserTrendResponse | null>(null);
+  const [topUsers, setTopUsers] = useState<UserRankingResponse[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const userId = 1; // TODO: 실제 로그인 사용자 ID로 대체
 
   useEffect(() => {
-    // 페이지 로드 후 바로 콘텐츠 표시
-    const timer = setTimeout(() => setIsVisible(true), 50);
-    return () => clearTimeout(timer);
+    setIsVisible(true);
+    setLoading(true);
+    setError(null);
+    Promise.all([
+      getAnalyticsUserSummary(userId),
+      getAnalyticsUserTrend(userId, 'month'),
+      getTopUsers(8)
+    ])
+      .then(([summaryRes, trendRes, topRes]) => {
+        if (!summaryRes.success || !trendRes.success || !topRes.success) {
+          setError('통계 데이터를 불러오지 못했습니다.');
+        } else {
+          setUserSummary(summaryRes.data!);
+          setUserTrend(trendRes.data!);
+          setTopUsers(topRes.data!);
+        }
+      })
+      .catch(() => setError('통계 데이터를 불러오지 못했습니다.'))
+      .finally(() => setLoading(false));
   }, []);
 
   const handleReviewClick = () => {
@@ -142,42 +172,99 @@ export default function Home() {
         aria-labelledby="dashboard-title"
       >
         <h2 id="dashboard-title" className="text-center mb-5">나의 연습 통계</h2>
-        
-        {/* 개요 통계 카드 */}
-        <div className="row g-4 mb-5">
-          {STATISTICS_DATA.overview.map((stat, index) => (
-            <div key={index} className="col-lg-3 col-md-6">
-              <StatisticsCard {...stat} />
+        {loading ? (
+          <div className="text-center my-5">통계 데이터를 불러오는 중...</div>
+        ) : error ? (
+          <div className="alert alert-danger text-center my-5">{error}</div>
+        ) : userSummary && userTrend ? (
+          <>
+            {/* 개요 통계 카드 */}
+            <div className="row g-4 mb-5">
+              <div className="col-lg-3 col-md-6">
+                <StatisticsCard
+                  title="총 연습 세션"
+                  value={userSummary.totalSessions}
+                  icon="bi-clock"
+                  color="primary"
+                  description={`최근 목표: ${userSummary.recentGoals[0] || '-'}`}
+                />
+              </div>
+              <div className="col-lg-3 col-md-6">
+                <StatisticsCard
+                  title="완료한 세션"
+                  value={userSummary.completedSessions}
+                  icon="bi-music-note-list"
+                  color="success"
+                  description={`첫 연습: ${userSummary.firstSessionAt?.slice(0,10) || '-'}`}
+                />
+              </div>
+              <div className="col-lg-3 col-md-6">
+                <StatisticsCard
+                  title="평균 점수"
+                  value={userSummary.averageScore?.toFixed(1) ?? '-'}
+                  icon="bi-target"
+                  color="info"
+                  description={`마지막 연습: ${userSummary.lastSessionAt?.slice(0,10) || '-'}`}
+                />
+              </div>
+              <div className="col-lg-3 col-md-6">
+                <StatisticsCard
+                  title="총 연습 시간"
+                  value={`${Math.round((userSummary.totalPracticeTime || 0) / 60)}시간`}
+                  icon="bi-calendar-check"
+                  color="warning"
+                  description="분 단위 → 시간 변환"
+                />
+              </div>
             </div>
-          ))}
-        </div>
 
-        {/* 진행률 차트 */}
-        <div className="row g-4 mb-5">
-          {STATISTICS_DATA.progress.map((progress, index) => (
-            <div key={index} className="col-lg-4 col-md-6">
-              <ProgressChart {...progress} />
+            {/* 성장 추이 차트 (간단 예시) */}
+            <div className="row g-4 mb-5">
+              <div className="col-12">
+                <div className="card border-0 shadow-sm h-100 mb-3">
+                  <div className="card-body">
+                    <h6 className="fw-bold mb-3">월별 연습 세션 추이</h6>
+                    <div style={{height: 180}}>
+                      {/* 간단한 텍스트/바 차트 예시 (차트 라이브러리로 대체 가능) */}
+                      <div className="d-flex align-items-end gap-2" style={{height: 120}}>
+                        {userTrend.points.map((pt, idx) => (
+                          <div key={idx} className="flex-grow-1 text-center">
+                            <div style={{height: `${pt.sessionCount * 10}px`, background: '#0d6efd', borderRadius: 4}}></div>
+                            <small className="text-muted">{pt.date.slice(5,7)}월</small>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
-          ))}
-        </div>
 
-        {/* 활동 피드와 리더보드 */}
-        <div className="row g-4">
-          <div className="col-lg-8">
-            <ActivityFeed 
-              activities={STATISTICS_DATA.activities}
-              title="최근 활동"
-              maxItems={5}
-            />
-          </div>
-          <div className="col-lg-4">
-            <Leaderboard 
-              items={STATISTICS_DATA.leaderboard}
-              title="주간 랭킹"
-              maxItems={8}
-            />
-          </div>
-        </div>
+            {/* 활동 피드와 리더보드 */}
+            <div className="row g-4">
+              <div className="col-lg-8">
+                <ActivityFeed 
+                  activities={[]}
+                  title="최근 활동 (API 연동 예정)"
+                  maxItems={5}
+                />
+              </div>
+              <div className="col-lg-4">
+                <Leaderboard 
+                  items={topUsers.map((u, idx) => ({
+                    id: u.userId.toString(),
+                    rank: u.rank,
+                    name: u.username || `User${u.userId}`,
+                    score: u.score,
+                    category: '전체',
+                  }))}
+                  title="주간 랭킹"
+                  maxItems={8}
+                />
+              </div>
+            </div>
+          </>
+        ) : null}
       </section>
 
       {/* 사용자 후기 + 성장 그래프 */}
