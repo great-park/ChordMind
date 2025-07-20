@@ -1,7 +1,4 @@
-version: '3.8'
-
 services:
-  # Database
   postgres:
     image: postgres:15
     environment:
@@ -13,13 +10,11 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data
 
-  # Redis (for caching)
   redis:
     image: redis:7-alpine
     ports:
       - "6379:6379"
 
-  # API Gateway
   api-gateway:
     build:
       context: ./backend/api-gateway
@@ -31,8 +26,10 @@ services:
     depends_on:
       - postgres
       - redis
+      - user-service
+      - practice-service
+      - harmony-service
 
-  # Practice Service
   practice-service:
     build:
       context: ./backend/practice-service
@@ -47,30 +44,33 @@ services:
     depends_on:
       - postgres
 
-  # AI Analysis Service
-  ai-analysis-service:
+  user-service:
     build:
-      context: ./backend/ai-analysis-service
+      context: ./backend/user-service
       dockerfile: Dockerfile
     ports:
-      - "8000:8000"
-    volumes:
-      - ./backend/ai-analysis-service:/app
+      - "8083:8083"
     environment:
-      - PYTHONPATH=/app
+      SPRING_PROFILES_ACTIVE: docker
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/chordmind
+      SPRING_DATASOURCE_USERNAME: chordmind
+      SPRING_DATASOURCE_PASSWORD: chordmind123
+    depends_on:
+      - postgres
 
-  # Frontend
-  frontend:
+  harmony-service:
     build:
-      context: ./frontend
+      context: ./backend/harmony-service
       dockerfile: Dockerfile
     ports:
-      - "3000:3000"
-    volumes:
-      - ./frontend:/app
-      - /app/node_modules
+      - "8082:8082"
     environment:
-      - NEXT_PUBLIC_API_URL=http://localhost:8080
+      SPRING_PROFILES_ACTIVE: docker
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/chordmind
+      SPRING_DATASOURCE_USERNAME: chordmind
+      SPRING_DATASOURCE_PASSWORD: chordmind123
+    depends_on:
+      - postgres
 
 volumes:
   postgres_data: 

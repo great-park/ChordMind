@@ -285,3 +285,7 @@ media/
 *.pfx
 secrets/
 secrets.json 
+
+# 모든 위치의 out 폴더 무시
+out/
+**/out/ 
