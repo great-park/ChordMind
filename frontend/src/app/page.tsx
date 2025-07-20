@@ -21,6 +21,94 @@ import {
   AnalyticsUserTrendResponse,
   UserRankingResponse
 } from '../services/practiceService';
+import { fetchQuizQuestions, submitQuizAnswer, QuizQuestion, QuizAnswerRequest, QuizAnswerResult } from '../services/quizService';
+
+function QuizWidget() {
+  const [questions, setQuestions] = useState<QuizQuestion[]>([]);
+  const [current, setCurrent] = useState(0);
+  const [selected, setSelected] = useState<string | null>(null);
+  const [result, setResult] = useState<QuizAnswerResult | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    setLoading(true);
+    fetchQuizQuestions('CHORD_NAME', 1)
+      .then(qs => {
+        setQuestions(qs);
+        setCurrent(0);
+        setSelected(null);
+        setResult(null);
+      })
+      .catch(() => setError('퀴즈를 불러오지 못했습니다.'))
+      .finally(() => setLoading(false));
+  }, []);
+
+  const handleSelect = (choice: string) => {
+    setSelected(choice);
+  };
+
+  const handleSubmit = async () => {
+    if (!questions[current] || !selected) return;
+    setLoading(true);
+    try {
+      const res = await submitQuizAnswer({
+        questionId: questions[current].id,
+        selected,
+      });
+      setResult(res);
+    } catch {
+      setError('정답 제출에 실패했습니다.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  if (loading) return <div>퀴즈 로딩 중...</div>;
+  if (error) return <div>{error}</div>;
+  if (!questions.length) return <div>퀴즈가 없습니다.</div>;
+
+  const q = questions[current];
+
+  return (
+    <div style={{ border: '1px solid #ddd', borderRadius: 8, padding: 16, marginBottom: 24 }}>
+      <h2>오늘의 퀴즈</h2>
+      <div style={{ margin: '12px 0' }}>{q.question}</div>
+      {q.imageUrl && <img src={q.imageUrl} alt="quiz" style={{ maxWidth: 200 }} />}
+      <div>
+        {q.choices.map(choice => (
+          <button
+            key={choice}
+            onClick={() => handleSelect(choice)}
+            style={{
+              margin: 4,
+              padding: '8px 16px',
+              background: selected === choice ? '#4f46e5' : '#f3f4f6',
+              color: selected === choice ? '#fff' : '#222',
+              border: '1px solid #ddd',
+              borderRadius: 4,
+              cursor: 'pointer',
+            }}
+            disabled={!!result}
+          >
+            {choice}
+          </button>
+        ))}
+      </div>
+      {!result && (
+        <button onClick={handleSubmit} disabled={!selected} style={{ marginTop: 12 }}>
+          정답 제출
+        </button>
+      )}
+      {result && (
+        <div style={{ marginTop: 16 }}>
+          {result.correct ? '정답입니다! 🎉' : '오답입니다.'}
+          {result.explanation && <div style={{ marginTop: 8, color: '#666' }}>{result.explanation}</div>}
+        </div>
+      )}
+    </div>
+  );
+}
 
 export default function Home() {
   const [isVisible, setIsVisible] = useState(false);
@@ -65,6 +153,7 @@ export default function Home() {
 
   return (
     <MainLayout>
+      <QuizWidget />
       {/* 히어로 섹션 */}
       <section 
         className={`hero-section mb-5 fade-in ${isVisible ? 'visible' : ''}`}
