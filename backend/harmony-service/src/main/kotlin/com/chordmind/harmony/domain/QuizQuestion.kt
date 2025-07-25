@@ -2,8 +2,6 @@ package com.chordmind.harmony.domain
 
 import jakarta.persistence.*
 
-@Entity
-@Table(name = "quiz_question")
 enum class QuizType { CHORD_NAME, PROGRESSION, INTERVAL, SCALE }
 
 @Entity
