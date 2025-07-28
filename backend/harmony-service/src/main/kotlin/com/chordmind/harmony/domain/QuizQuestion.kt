@@ -11,13 +11,13 @@ data class QuizQuestion(
     val id: Long = 0,
 
     @Enumerated(EnumType.STRING)
-    val type: QuizType,
+    var type: QuizType,
 
-    val question: String,
-    val imageUrl: String? = null,
-    val answer: String,
-    val explanation: String? = null,
-    val difficulty: Int = 1,
+    var question: String,
+    var imageUrl: String? = null,
+    var answer: String,
+    var explanation: String? = null,
+    var difficulty: Int = 1,
 
     @OneToMany(mappedBy = "question", cascade = [CascadeType.ALL], fetch = FetchType.EAGER, orphanRemoval = true)
     val choices: MutableList<QuizChoice> = mutableListOf()

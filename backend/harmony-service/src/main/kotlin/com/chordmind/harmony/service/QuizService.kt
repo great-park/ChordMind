@@ -10,7 +10,8 @@ import org.springframework.transaction.annotation.Transactional
 
 @Service
 class QuizService(
-    private val quizQuestionRepository: QuizQuestionRepository
+    private val quizQuestionRepository: QuizQuestionRepository,
+    private val aiExplanationService: AIExplanationService
 ) {
     @Transactional(readOnly = true)
     fun getRandomQuestions(type: QuizType, count: Int): List<QuizQuestion> {
@@ -21,11 +22,22 @@ class QuizService(
     fun checkAnswer(request: QuizAnswerRequest): QuizAnswerResult {
         val question = quizQuestionRepository.findById(request.questionId).orElse(null)
             ?: return QuizAnswerResult(request.questionId, false, null)
+        
         val correct = question.answer.equals(request.selected, ignoreCase = true)
+        
+        // AI 해설 생성
+        val aiExplanation = aiExplanationService.generateExplanation(
+            questionType = question.type,
+            question = question.question,
+            correctAnswer = question.answer,
+            userAnswer = request.selected,
+            isCorrect = correct
+        )
+        
         return QuizAnswerResult(
             questionId = question.id,
             correct = correct,
-            explanation = question.explanation
+            explanation = aiExplanation
         )
     }
 } 

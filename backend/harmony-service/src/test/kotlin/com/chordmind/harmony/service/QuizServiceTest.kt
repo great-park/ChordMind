@@ -39,7 +39,8 @@ class QuizServiceTest @Autowired constructor(
         val result = quizService.checkAnswer(QuizAnswerRequest(q.id, q.answer))
         assertTrue(result.correct)
         assertEquals(q.id, result.questionId)
-        assertEquals(q.explanation, result.explanation)
+        assertNotNull(result.explanation)
+        assertTrue(result.explanation!!.contains("정답입니다"))
     }
 
     @Test
@@ -50,7 +51,8 @@ class QuizServiceTest @Autowired constructor(
         val result = quizService.checkAnswer(QuizAnswerRequest(q.id, wrong))
         assertFalse(result.correct)
         assertEquals(q.id, result.questionId)
-        assertEquals(q.explanation, result.explanation)
+        assertNotNull(result.explanation)
+        assertTrue(result.explanation!!.contains("틀렸습니다"))
     }
 
     @Test
