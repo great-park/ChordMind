@@ -29,6 +29,7 @@ services:
       - user-service
       - practice-service
       - harmony-service
+      - ai-service
 
   practice-service:
     build:
@@ -63,12 +64,25 @@ services:
       context: ./backend/harmony-service
       dockerfile: Dockerfile
     ports:
-      - "8082:8082"
+      - "8084:8084"
     environment:
       SPRING_PROFILES_ACTIVE: docker
       SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/chordmind
       SPRING_DATASOURCE_USERNAME: chordmind
       SPRING_DATASOURCE_PASSWORD: chordmind123
+    depends_on:
+      - postgres
+
+  ai-service:
+    build:
+      context: ./backend/ai-service
+      dockerfile: Dockerfile
+    ports:
+      - "8082:8082"
+    environment:
+      AI_SERVICE_URL: http://ai-service:8082
+      HARMONY_SERVICE_URL: http://harmony-service:8084
+      USER_SERVICE_URL: http://user-service:8083
     depends_on:
       - postgres
 
