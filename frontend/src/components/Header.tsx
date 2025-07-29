@@ -14,6 +14,7 @@ const Header: React.FC = () => {
           <Nav className="me-auto">
             <Nav.Link as={Link} href="/">홈</Nav.Link>
             <Nav.Link as={Link} href="/harmony-quiz">화성 퀴즈</Nav.Link>
+            <Nav.Link as={Link} href="/ai-features">AI 기능</Nav.Link>
             <Nav.Link as={Link} href="/admin/quiz-management">퀴즈 관리</Nav.Link>
             <Nav.Link as={Link} href="/admin/analytics-dashboard">통계 대시보드</Nav.Link>
           </Nav>
