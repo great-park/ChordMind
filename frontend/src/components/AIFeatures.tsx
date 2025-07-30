@@ -1,7 +1,7 @@
 'use client'
 
 import React, { useState } from 'react'
-import { Container, Row, Col, Card, Button, Form, Alert, Spinner } from 'react-bootstrap'
+import { Container, Row, Col, Card, Form, Button, Alert, Nav, Tab, Badge } from 'react-bootstrap'
 
 interface AIFeedbackRequest {
   user_id: number
@@ -31,10 +31,11 @@ const AIFeatures: React.FC = () => {
   const [loading, setLoading] = useState(false)
   const [result, setResult] = useState<any>(null)
   const [error, setError] = useState<string | null>(null)
+  const [selectedUserId, setSelectedUserId] = useState(1)
 
   // 피드백 폼 상태
   const [feedbackForm, setFeedbackForm] = useState<AIFeedbackRequest>({
-    user_id: 1,
+    user_id: selectedUserId,
     question_type: 'CHORD_NAME',
     user_answer: '',
     correct_answer: '',
@@ -45,22 +46,32 @@ const AIFeatures: React.FC = () => {
 
   // 적응형 문제 폼 상태
   const [adaptiveForm, setAdaptiveForm] = useState<AIAdaptiveRequest>({
-    user_id: 1,
+    user_id: selectedUserId,
     question_type: 'CHORD_NAME',
     count: 3
   })
 
   // 힌트 폼 상태
   const [hintsForm, setHintsForm] = useState<AIHintsRequest>({
-    user_id: 1,
+    user_id: selectedUserId,
     question_type: 'CHORD_NAME',
     difficulty: 2,
     show_detailed: false
   })
 
   // 학습 경로 상태
-  const [learningPathUserId, setLearningPathUserId] = useState(1)
-  const [behaviorUserId, setBehaviorUserId] = useState(1)
+  const [learningPathUserId, setLearningPathUserId] = useState(selectedUserId)
+  const [behaviorUserId, setBehaviorUserId] = useState(selectedUserId)
+
+  // 사용자 ID 변경 시 폼 업데이트
+  const handleUserIdChange = (newUserId: number) => {
+    setSelectedUserId(newUserId)
+    setFeedbackForm(prev => ({ ...prev, user_id: newUserId }))
+    setAdaptiveForm(prev => ({ ...prev, user_id: newUserId }))
+    setHintsForm(prev => ({ ...prev, user_id: newUserId }))
+    setLearningPathUserId(newUserId)
+    setBehaviorUserId(newUserId)
+  }
 
   const handleFeedbackSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -145,7 +156,10 @@ const AIFeatures: React.FC = () => {
     setError(null)
 
     try {
-      const response = await fetch(`/api/ai/learning-path/${learningPathUserId}`)
+      const response = await fetch(`/api/ai/learning-path/${learningPathUserId}`, {
+        method: 'GET',
+        headers: { 'Content-Type': 'application/json' }
+      })
 
       if (response.ok) {
         const data = await response.json()
@@ -166,7 +180,10 @@ const AIFeatures: React.FC = () => {
     setError(null)
 
     try {
-      const response = await fetch(`/api/ai/behavior-analysis/${behaviorUserId}`)
+      const response = await fetch(`/api/ai/behavior-analysis/${behaviorUserId}`, {
+        method: 'GET',
+        headers: { 'Content-Type': 'application/json' }
+      })
 
       if (response.ok) {
         const data = await response.json()
@@ -182,262 +199,330 @@ const AIFeatures: React.FC = () => {
     }
   }
 
+  const renderResult = () => {
+    if (!result) return null
+
+    return (
+      <Card className="mt-3">
+        <Card.Header>
+          <h5>결과</h5>
+        </Card.Header>
+        <Card.Body>
+          <pre>{JSON.stringify(result, null, 2)}</pre>
+        </Card.Body>
+      </Card>
+    )
+  }
+
   return (
     <Container className="py-4">
-      <h1 className="text-center mb-4">AI 기능</h1>
-      
-      <Row className="mb-4">
-        <Col>
-          <div className="d-flex justify-content-center">
-            <Button
-              variant={activeTab === 'feedback' ? 'primary' : 'outline-primary'}
-              className="mx-2"
-              onClick={() => setActiveTab('feedback')}
-            >
-              개인화된 피드백
-            </Button>
-            <Button
-              variant={activeTab === 'adaptive' ? 'primary' : 'outline-primary'}
-              className="mx-2"
-              onClick={() => setActiveTab('adaptive')}
-            >
-              적응형 문제
-            </Button>
-            <Button
-              variant={activeTab === 'hints' ? 'primary' : 'outline-primary'}
-              className="mx-2"
-              onClick={() => setActiveTab('hints')}
-            >
-              스마트 힌트
-            </Button>
-            <Button
-              variant={activeTab === 'learning' ? 'primary' : 'outline-primary'}
-              className="mx-2"
-              onClick={() => setActiveTab('learning')}
-            >
-              학습 경로
-            </Button>
-            <Button
-              variant={activeTab === 'behavior' ? 'primary' : 'outline-primary'}
-              className="mx-2"
-              onClick={() => setActiveTab('behavior')}
-            >
-              행동 분석
-            </Button>
-          </div>
-        </Col>
-      </Row>
-
-      {error && (
-        <Alert variant="danger" onClose={() => setError(null)} dismissible>
-          {error}
-        </Alert>
-      )}
-
       <Row>
-        <Col md={6}>
-          <Card>
+        <Col>
+          <h2 className="mb-4">AI 기능 테스트</h2>
+          
+          {/* 사용자 선택 */}
+          <Card className="mb-4">
             <Card.Header>
-              {activeTab === 'feedback' && '개인화된 피드백 생성'}
-              {activeTab === 'adaptive' && '적응형 문제 생성'}
-              {activeTab === 'hints' && '스마트 힌트 생성'}
-              {activeTab === 'learning' && '학습 경로 생성'}
-              {activeTab === 'behavior' && '행동 분석'}
+              <h5>사용자 선택</h5>
             </Card.Header>
             <Card.Body>
-              {activeTab === 'feedback' && (
-                <Form onSubmit={handleFeedbackSubmit}>
-                  <Form.Group className="mb-3">
-                    <Form.Label>사용자 ID</Form.Label>
-                    <Form.Control
-                      type="number"
-                      value={feedbackForm.user_id}
-                      onChange={(e) => setFeedbackForm({...feedbackForm, user_id: parseInt(e.target.value)})}
-                    />
-                  </Form.Group>
-                  <Form.Group className="mb-3">
-                    <Form.Label>문제 유형</Form.Label>
-                    <Form.Select
-                      value={feedbackForm.question_type}
-                      onChange={(e) => setFeedbackForm({...feedbackForm, question_type: e.target.value})}
-                    >
-                      <option value="CHORD_NAME">화음 이름</option>
-                      <option value="PROGRESSION">화음 진행</option>
-                      <option value="INTERVAL">음정</option>
-                      <option value="SCALE">음계</option>
-                    </Form.Select>
-                  </Form.Group>
-                  <Form.Group className="mb-3">
-                    <Form.Label>사용자 답변</Form.Label>
-                    <Form.Control
-                      type="text"
-                      value={feedbackForm.user_answer}
-                      onChange={(e) => setFeedbackForm({...feedbackForm, user_answer: e.target.value})}
-                    />
-                  </Form.Group>
-                  <Form.Group className="mb-3">
-                    <Form.Label>정답</Form.Label>
-                    <Form.Control
-                      type="text"
-                      value={feedbackForm.correct_answer}
-                      onChange={(e) => setFeedbackForm({...feedbackForm, correct_answer: e.target.value})}
-                    />
-                  </Form.Group>
-                  <Form.Group className="mb-3">
-                    <Form.Check
-                      type="checkbox"
-                      label="정답 여부"
-                      checked={feedbackForm.is_correct}
-                      onChange={(e) => setFeedbackForm({...feedbackForm, is_correct: e.target.checked})}
-                    />
-                  </Form.Group>
-                  <Form.Group className="mb-3">
-                    <Form.Label>소요 시간 (초)</Form.Label>
-                    <Form.Control
-                      type="number"
-                      value={feedbackForm.time_spent}
-                      onChange={(e) => setFeedbackForm({...feedbackForm, time_spent: parseInt(e.target.value)})}
-                    />
-                  </Form.Group>
-                  <Button type="submit" disabled={loading}>
-                    {loading ? <Spinner animation="border" size="sm" /> : '피드백 생성'}
-                  </Button>
-                </Form>
-              )}
-
-              {activeTab === 'adaptive' && (
-                <Form onSubmit={handleAdaptiveSubmit}>
-                  <Form.Group className="mb-3">
-                    <Form.Label>사용자 ID</Form.Label>
-                    <Form.Control
-                      type="number"
-                      value={adaptiveForm.user_id}
-                      onChange={(e) => setAdaptiveForm({...adaptiveForm, user_id: parseInt(e.target.value)})}
-                    />
-                  </Form.Group>
-                  <Form.Group className="mb-3">
-                    <Form.Label>문제 유형</Form.Label>
-                    <Form.Select
-                      value={adaptiveForm.question_type}
-                      onChange={(e) => setAdaptiveForm({...adaptiveForm, question_type: e.target.value})}
-                    >
-                      <option value="CHORD_NAME">화음 이름</option>
-                      <option value="PROGRESSION">화음 진행</option>
-                      <option value="INTERVAL">음정</option>
-                      <option value="SCALE">음계</option>
-                    </Form.Select>
-                  </Form.Group>
-                  <Form.Group className="mb-3">
-                    <Form.Label>문제 개수</Form.Label>
-                    <Form.Control
-                      type="number"
-                      min="1"
-                      max="10"
-                      value={adaptiveForm.count}
-                      onChange={(e) => setAdaptiveForm({...adaptiveForm, count: parseInt(e.target.value)})}
-                    />
-                  </Form.Group>
-                  <Button type="submit" disabled={loading}>
-                    {loading ? <Spinner animation="border" size="sm" /> : '적응형 문제 생성'}
-                  </Button>
-                </Form>
-              )}
-
-              {activeTab === 'hints' && (
-                <Form onSubmit={handleHintsSubmit}>
-                  <Form.Group className="mb-3">
-                    <Form.Label>사용자 ID</Form.Label>
-                    <Form.Control
-                      type="number"
-                      value={hintsForm.user_id}
-                      onChange={(e) => setHintsForm({...hintsForm, user_id: parseInt(e.target.value)})}
-                    />
-                  </Form.Group>
-                  <Form.Group className="mb-3">
-                    <Form.Label>문제 유형</Form.Label>
-                    <Form.Select
-                      value={hintsForm.question_type}
-                      onChange={(e) => setHintsForm({...hintsForm, question_type: e.target.value})}
-                    >
-                      <option value="CHORD_NAME">화음 이름</option>
-                      <option value="PROGRESSION">화음 진행</option>
-                      <option value="INTERVAL">음정</option>
-                      <option value="SCALE">음계</option>
-                    </Form.Select>
-                  </Form.Group>
-                  <Form.Group className="mb-3">
-                    <Form.Label>난이도</Form.Label>
-                    <Form.Select
-                      value={hintsForm.difficulty}
-                      onChange={(e) => setHintsForm({...hintsForm, difficulty: parseInt(e.target.value)})}
-                    >
-                      <option value={1}>초급</option>
-                      <option value={2}>중급</option>
-                      <option value={3}>고급</option>
-                    </Form.Select>
-                  </Form.Group>
-                  <Form.Group className="mb-3">
-                    <Form.Check
-                      type="checkbox"
-                      label="상세 힌트 표시"
-                      checked={hintsForm.show_detailed}
-                      onChange={(e) => setHintsForm({...hintsForm, show_detailed: e.target.checked})}
-                    />
-                  </Form.Group>
-                  <Button type="submit" disabled={loading}>
-                    {loading ? <Spinner animation="border" size="sm" /> : '스마트 힌트 생성'}
-                  </Button>
-                </Form>
-              )}
-
-              {activeTab === 'learning' && (
-                <div>
-                  <Form.Group className="mb-3">
-                    <Form.Label>사용자 ID</Form.Label>
-                    <Form.Control
-                      type="number"
-                      value={learningPathUserId}
-                      onChange={(e) => setLearningPathUserId(parseInt(e.target.value))}
-                    />
-                  </Form.Group>
-                  <Button onClick={handleLearningPath} disabled={loading}>
-                    {loading ? <Spinner animation="border" size="sm" /> : '학습 경로 생성'}
-                  </Button>
-                </div>
-              )}
-
-              {activeTab === 'behavior' && (
-                <div>
-                  <Form.Group className="mb-3">
-                    <Form.Label>사용자 ID</Form.Label>
-                    <Form.Control
-                      type="number"
-                      value={behaviorUserId}
-                      onChange={(e) => setBehaviorUserId(parseInt(e.target.value))}
-                    />
-                  </Form.Group>
-                  <Button onClick={handleBehaviorAnalysis} disabled={loading}>
-                    {loading ? <Spinner animation="border" size="sm" /> : '행동 분석'}
-                  </Button>
-                </div>
-              )}
+              <Form.Group>
+                <Form.Label>사용자 ID</Form.Label>
+                <Form.Select 
+                  value={selectedUserId} 
+                  onChange={(e) => handleUserIdChange(Number(e.target.value))}
+                >
+                  <option value={1}>사용자 1</option>
+                  <option value={2}>사용자 2</option>
+                  <option value={3}>사용자 3</option>
+                  <option value={4}>사용자 4</option>
+                  <option value={5}>사용자 5</option>
+                </Form.Select>
+              </Form.Group>
             </Card.Body>
           </Card>
-        </Col>
 
-        <Col md={6}>
-          <Card>
-            <Card.Header>결과</Card.Header>
-            <Card.Body>
-              {result ? (
-                <pre className="bg-light p-3 rounded" style={{maxHeight: '400px', overflow: 'auto'}}>
-                  {JSON.stringify(result, null, 2)}
-                </pre>
-              ) : (
-                <p className="text-muted">결과가 여기에 표시됩니다.</p>
-              )}
-            </Card.Body>
-          </Card>
+          <Tab.Container activeKey={activeTab} onSelect={(k) => setActiveTab(k || 'feedback')}>
+            <Row>
+              <Col md={3}>
+                <Nav variant="pills" className="flex-column">
+                  <Nav.Item>
+                    <Nav.Link eventKey="feedback">개인화된 피드백</Nav.Link>
+                  </Nav.Item>
+                  <Nav.Item>
+                    <Nav.Link eventKey="adaptive">적응형 문제</Nav.Link>
+                  </Nav.Item>
+                  <Nav.Item>
+                    <Nav.Link eventKey="hints">스마트 힌트</Nav.Link>
+                  </Nav.Item>
+                  <Nav.Item>
+                    <Nav.Link eventKey="learning">학습 경로</Nav.Link>
+                  </Nav.Item>
+                  <Nav.Item>
+                    <Nav.Link eventKey="behavior">행동 분석</Nav.Link>
+                  </Nav.Item>
+                </Nav>
+              </Col>
+              
+              <Col md={9}>
+                <Tab.Content>
+                  {/* 개인화된 피드백 */}
+                  <Tab.Pane eventKey="feedback">
+                    <Card>
+                      <Card.Header>
+                        <h5>개인화된 피드백 생성</h5>
+                      </Card.Header>
+                      <Card.Body>
+                        <Form onSubmit={handleFeedbackSubmit}>
+                          <Row>
+                            <Col md={6}>
+                              <Form.Group className="mb-3">
+                                <Form.Label>문제 타입</Form.Label>
+                                <Form.Select
+                                  value={feedbackForm.question_type}
+                                  onChange={(e) => setFeedbackForm(prev => ({ ...prev, question_type: e.target.value }))}
+                                >
+                                  <option value="CHORD_NAME">화음 이름</option>
+                                  <option value="PROGRESSION">화음 진행</option>
+                                  <option value="INTERVAL">음정</option>
+                                  <option value="SCALE">음계</option>
+                                </Form.Select>
+                              </Form.Group>
+                            </Col>
+                            <Col md={6}>
+                              <Form.Group className="mb-3">
+                                <Form.Label>난이도</Form.Label>
+                                <Form.Select
+                                  value={feedbackForm.difficulty}
+                                  onChange={(e) => setFeedbackForm(prev => ({ ...prev, difficulty: Number(e.target.value) }))}
+                                >
+                                  <option value={1}>초급</option>
+                                  <option value={2}>중급</option>
+                                  <option value={3}>고급</option>
+                                </Form.Select>
+                              </Form.Group>
+                            </Col>
+                          </Row>
+                          
+                          <Row>
+                            <Col md={6}>
+                              <Form.Group className="mb-3">
+                                <Form.Label>사용자 답안</Form.Label>
+                                <Form.Control
+                                  type="text"
+                                  value={feedbackForm.user_answer}
+                                  onChange={(e) => setFeedbackForm(prev => ({ ...prev, user_answer: e.target.value }))}
+                                  placeholder="사용자가 입력한 답안"
+                                />
+                              </Form.Group>
+                            </Col>
+                            <Col md={6}>
+                              <Form.Group className="mb-3">
+                                <Form.Label>정답</Form.Label>
+                                <Form.Control
+                                  type="text"
+                                  value={feedbackForm.correct_answer}
+                                  onChange={(e) => setFeedbackForm(prev => ({ ...prev, correct_answer: e.target.value }))}
+                                  placeholder="정답"
+                                />
+                              </Form.Group>
+                            </Col>
+                          </Row>
+                          
+                          <Row>
+                            <Col md={6}>
+                              <Form.Group className="mb-3">
+                                <Form.Label>소요 시간 (초)</Form.Label>
+                                <Form.Control
+                                  type="number"
+                                  value={feedbackForm.time_spent}
+                                  onChange={(e) => setFeedbackForm(prev => ({ ...prev, time_spent: Number(e.target.value) }))}
+                                  placeholder="30"
+                                />
+                              </Form.Group>
+                            </Col>
+                            <Col md={6}>
+                              <Form.Group className="mb-3">
+                                <Form.Label>정답 여부</Form.Label>
+                                <Form.Check
+                                  type="switch"
+                                  checked={feedbackForm.is_correct}
+                                  onChange={(e) => setFeedbackForm(prev => ({ ...prev, is_correct: e.target.checked }))}
+                                  label="정답"
+                                />
+                              </Form.Group>
+                            </Col>
+                          </Row>
+                          
+                          <Button type="submit" disabled={loading}>
+                            {loading ? '생성 중...' : '피드백 생성'}
+                          </Button>
+                        </Form>
+                      </Card.Body>
+                    </Card>
+                  </Tab.Pane>
+
+                  {/* 적응형 문제 */}
+                  <Tab.Pane eventKey="adaptive">
+                    <Card>
+                      <Card.Header>
+                        <h5>적응형 문제 생성</h5>
+                      </Card.Header>
+                      <Card.Body>
+                        <Form onSubmit={handleAdaptiveSubmit}>
+                          <Row>
+                            <Col md={6}>
+                              <Form.Group className="mb-3">
+                                <Form.Label>문제 타입</Form.Label>
+                                <Form.Select
+                                  value={adaptiveForm.question_type}
+                                  onChange={(e) => setAdaptiveForm(prev => ({ ...prev, question_type: e.target.value }))}
+                                >
+                                  <option value="CHORD_NAME">화음 이름</option>
+                                  <option value="PROGRESSION">화음 진행</option>
+                                  <option value="INTERVAL">음정</option>
+                                  <option value="SCALE">음계</option>
+                                </Form.Select>
+                              </Form.Group>
+                            </Col>
+                            <Col md={6}>
+                              <Form.Group className="mb-3">
+                                <Form.Label>문제 개수</Form.Label>
+                                <Form.Control
+                                  type="number"
+                                  min="1"
+                                  max="10"
+                                  value={adaptiveForm.count}
+                                  onChange={(e) => setAdaptiveForm(prev => ({ ...prev, count: Number(e.target.value) }))}
+                                />
+                              </Form.Group>
+                            </Col>
+                          </Row>
+                          
+                          <Button type="submit" disabled={loading}>
+                            {loading ? '생성 중...' : '적응형 문제 생성'}
+                          </Button>
+                        </Form>
+                      </Card.Body>
+                    </Card>
+                  </Tab.Pane>
+
+                  {/* 스마트 힌트 */}
+                  <Tab.Pane eventKey="hints">
+                    <Card>
+                      <Card.Header>
+                        <h5>스마트 힌트 생성</h5>
+                      </Card.Header>
+                      <Card.Body>
+                        <Form onSubmit={handleHintsSubmit}>
+                          <Row>
+                            <Col md={4}>
+                              <Form.Group className="mb-3">
+                                <Form.Label>문제 타입</Form.Label>
+                                <Form.Select
+                                  value={hintsForm.question_type}
+                                  onChange={(e) => setHintsForm(prev => ({ ...prev, question_type: e.target.value }))}
+                                >
+                                  <option value="CHORD_NAME">화음 이름</option>
+                                  <option value="PROGRESSION">화음 진행</option>
+                                  <option value="INTERVAL">음정</option>
+                                  <option value="SCALE">음계</option>
+                                </Form.Select>
+                              </Form.Group>
+                            </Col>
+                            <Col md={4}>
+                              <Form.Group className="mb-3">
+                                <Form.Label>난이도</Form.Label>
+                                <Form.Select
+                                  value={hintsForm.difficulty}
+                                  onChange={(e) => setHintsForm(prev => ({ ...prev, difficulty: Number(e.target.value) }))}
+                                >
+                                  <option value={1}>초급</option>
+                                  <option value={2}>중급</option>
+                                  <option value={3}>고급</option>
+                                </Form.Select>
+                              </Form.Group>
+                            </Col>
+                            <Col md={4}>
+                              <Form.Group className="mb-3">
+                                <Form.Label>상세 힌트</Form.Label>
+                                <Form.Check
+                                  type="switch"
+                                  checked={hintsForm.show_detailed}
+                                  onChange={(e) => setHintsForm(prev => ({ ...prev, show_detailed: e.target.checked }))}
+                                  label="상세 힌트 표시"
+                                />
+                              </Form.Group>
+                            </Col>
+                          </Row>
+                          
+                          <Button type="submit" disabled={loading}>
+                            {loading ? '생성 중...' : '스마트 힌트 생성'}
+                          </Button>
+                        </Form>
+                      </Card.Body>
+                    </Card>
+                  </Tab.Pane>
+
+                  {/* 학습 경로 */}
+                  <Tab.Pane eventKey="learning">
+                    <Card>
+                      <Card.Header>
+                        <h5>학습 경로 생성</h5>
+                      </Card.Header>
+                      <Card.Body>
+                        <Form.Group className="mb-3">
+                          <Form.Label>사용자 ID</Form.Label>
+                          <Form.Control
+                            type="number"
+                            value={learningPathUserId}
+                            onChange={(e) => setLearningPathUserId(Number(e.target.value))}
+                            min="1"
+                          />
+                        </Form.Group>
+                        
+                        <Button onClick={handleLearningPath} disabled={loading}>
+                          {loading ? '생성 중...' : '학습 경로 생성'}
+                        </Button>
+                      </Card.Body>
+                    </Card>
+                  </Tab.Pane>
+
+                  {/* 행동 분석 */}
+                  <Tab.Pane eventKey="behavior">
+                    <Card>
+                      <Card.Header>
+                        <h5>행동 분석</h5>
+                      </Card.Header>
+                      <Card.Body>
+                        <Form.Group className="mb-3">
+                          <Form.Label>사용자 ID</Form.Label>
+                          <Form.Control
+                            type="number"
+                            value={behaviorUserId}
+                            onChange={(e) => setBehaviorUserId(Number(e.target.value))}
+                            min="1"
+                          />
+                        </Form.Group>
+                        
+                        <Button onClick={handleBehaviorAnalysis} disabled={loading}>
+                          {loading ? '분석 중...' : '행동 분석 실행'}
+                        </Button>
+                      </Card.Body>
+                    </Card>
+                  </Tab.Pane>
+                </Tab.Content>
+              </Col>
+            </Row>
+          </Tab.Container>
+
+          {error && (
+            <Alert variant="danger" className="mt-3">
+              {error}
+            </Alert>
+          )}
+
+          {renderResult()}
         </Col>
       </Row>
     </Container>
