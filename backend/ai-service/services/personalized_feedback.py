@@ -3,14 +3,17 @@ from typing import Dict, List, Any, Optional
 import logging
 from datetime import datetime
 import httpx
+import os
 
 from ai_engine import AIEngine
+from database.database import DatabaseManager
 
 class PersonalizedFeedbackService:
-    def __init__(self, ai_engine: AIEngine):
+    def __init__(self, ai_engine: AIEngine, db_manager: DatabaseManager):
         self.ai_engine = ai_engine
+        self.db_manager = db_manager
         self.logger = logging.getLogger(__name__)
-        self.harmony_service_url = "http://localhost:8081"
+        self.harmony_service_url = os.getenv("HARMONY_SERVICE_URL", "http://localhost:8081")
     
     async def generate_feedback(
         self,
@@ -24,38 +27,46 @@ class PersonalizedFeedbackService:
     ) -> Dict[str, Any]:
         """개인화된 피드백을 생성합니다."""
         try:
-            # 사용자 히스토리 가져오기
+            # 사용자 히스토리 조회
             user_history = await self._get_user_history(user_id)
             
             # AI 엔진을 통한 피드백 생성
             feedback_result = self.ai_engine.generate_personalized_feedback(
+                user_id=user_id,
                 question_type=question_type,
                 user_answer=user_answer,
                 correct_answer=correct_answer,
                 is_correct=is_correct,
                 user_history=user_history,
-                time_spent=time_spent
+                time_spent=time_spent,
+                difficulty=difficulty
             )
             
-            # 피드백 저장
+            # 피드백을 데이터베이스에 저장
             await self._save_feedback(user_id, feedback_result)
             
             return {
-                "success": True,
-                "feedback": feedback_result,
+                "feedback": feedback_result.get("feedback", ""),
+                "learning_style": feedback_result.get("learning_style", ""),
+                "performance_analysis": feedback_result.get("performance_analysis", {}),
+                "improvement_suggestions": feedback_result.get("improvement_suggestions", []),
+                "confidence_score": feedback_result.get("confidence_score", 0.0),
                 "generated_at": datetime.now().isoformat()
             }
             
         except Exception as e:
             self.logger.error(f"피드백 생성 실패: {str(e)}")
             return {
-                "success": False,
-                "error": str(e),
+                "feedback": self._generate_fallback_feedback(is_correct, correct_answer),
+                "learning_style": "기본 학습자",
+                "performance_analysis": {},
+                "improvement_suggestions": ["기본 학습을 권장합니다."],
+                "confidence_score": 0.5,
                 "fallback_feedback": self._generate_fallback_feedback(is_correct, correct_answer)
             }
     
     async def _get_user_history(self, user_id: int) -> List[Dict[str, Any]]:
-        """사용자의 학습 히스토리를 가져옵니다."""
+        """사용자의 퀴즈 히스토리를 가져옵니다."""
         try:
             async with httpx.AsyncClient() as client:
                 response = await client.get(
@@ -74,7 +85,7 @@ class PersonalizedFeedbackService:
             return []
     
     async def _save_feedback(self, user_id: int, feedback_result: Dict[str, Any]):
-        """피드백 결과를 저장합니다."""
+        """피드백 결과를 데이터베이스에 저장합니다."""
         try:
             feedback_data = {
                 "user_id": user_id,
@@ -86,8 +97,12 @@ class PersonalizedFeedbackService:
                 "generated_at": datetime.now().isoformat()
             }
             
-            # 여기서 데이터베이스에 저장하는 로직을 구현할 수 있습니다
-            self.logger.info(f"피드백 저장 완료: 사용자 {user_id}")
+            # 데이터베이스에 저장
+            success = self.db_manager.insert_feedback(feedback_data)
+            if success:
+                self.logger.info(f"피드백 저장 완료: 사용자 {user_id}")
+            else:
+                self.logger.error(f"피드백 저장 실패: 사용자 {user_id}")
             
         except Exception as e:
             self.logger.error(f"피드백 저장 실패: {str(e)}")
@@ -102,9 +117,8 @@ class PersonalizedFeedbackService:
     async def get_feedback_history(self, user_id: int, limit: int = 10) -> List[Dict[str, Any]]:
         """사용자의 피드백 히스토리를 가져옵니다."""
         try:
-            # 데이터베이스에서 피드백 히스토리를 조회하는 로직
-            # 실제 구현에서는 데이터베이스 연결이 필요합니다
-            return []
+            # 데이터베이스에서 피드백 히스토리를 조회
+            return self.db_manager.get_feedback_history(user_id, limit)
             
         except Exception as e:
             self.logger.error(f"피드백 히스토리 조회 실패: {str(e)}")

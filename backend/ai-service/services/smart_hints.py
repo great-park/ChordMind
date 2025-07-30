@@ -1,88 +1,18 @@
-import asyncio
-from typing import Dict, List, Any, Optional
+import httpx
 import logging
 from datetime import datetime
-import httpx
+from typing import Dict, List, Any, Optional
+import os
 
 from ai_engine import AIEngine
+from database.database import DatabaseManager
 
 class SmartHintsService:
-    def __init__(self, ai_engine: AIEngine):
+    def __init__(self, ai_engine: AIEngine, db_manager: DatabaseManager):
         self.ai_engine = ai_engine
+        self.db_manager = db_manager
         self.logger = logging.getLogger(__name__)
-        self.harmony_service_url = "http://localhost:8081"
-        
-        # 힌트 데이터베이스
-        self.hint_database = {
-            "CHORD_NAME": {
-                1: [
-                    "화음의 기본 구성음을 생각해보세요.",
-                    "3음과 5음의 관계를 확인해보세요.",
-                    "화음의 성격(장/단)을 먼저 판단해보세요."
-                ],
-                2: [
-                    "화음의 구성음을 순서대로 나열해보세요.",
-                    "7화음의 경우 7음이 추가됩니다.",
-                    "sus4, sus2 등의 변형 화음을 주의하세요."
-                ],
-                3: [
-                    "복합 화음의 구조를 분석해보세요.",
-                    "화음의 기능적 역할을 고려해보세요.",
-                    "고급 화음 이론을 적용해보세요."
-                ]
-            },
-            "PROGRESSION": {
-                1: [
-                    "기본 진행 패턴을 기억해보세요.",
-                    "I-IV-V 진행을 먼저 확인해보세요.",
-                    "화음의 기능을 생각해보세요."
-                ],
-                2: [
-                    "2-5-1 진행 패턴을 확인해보세요.",
-                    "대리 화음의 사용을 고려해보세요.",
-                    "화음 연결의 원리를 적용해보세요."
-                ],
-                3: [
-                    "고급 진행 패턴을 분석해보세요.",
-                    "조성 변화를 고려해보세요.",
-                    "복합적 화음 진행을 이해해보세요."
-                ]
-            },
-            "INTERVAL": {
-                1: [
-                    "음정의 기본 거리를 세어보세요.",
-                    "반음과 온음의 관계를 확인해보세요.",
-                    "음정의 성격(장/단)을 판단해보세요."
-                ],
-                2: [
-                    "복합 음정의 계산법을 적용해보세요.",
-                    "음정의 전위를 고려해보세요.",
-                    "조화적 음정의 특성을 이해해보세요."
-                ],
-                3: [
-                    "고급 음정 이론을 적용해보세요.",
-                    "음정의 기능적 역할을 분석해보세요.",
-                    "복합적 음정 관계를 이해해보세요."
-                ]
-            },
-            "SCALE": {
-                1: [
-                    "음계의 기본 패턴을 기억해보세요.",
-                    "온음과 반음의 배치를 확인해보세요.",
-                    "장음계와 단음계의 차이를 생각해보세요."
-                ],
-                2: [
-                    "모드의 특성을 이해해보세요.",
-                    "음계의 변형을 고려해보세요.",
-                    "조성의 관계를 분석해보세요."
-                ],
-                3: [
-                    "고급 음계 이론을 적용해보세요.",
-                    "복합 음계의 구조를 분석해보세요.",
-                    "음계의 기능적 역할을 이해해보세요."
-                ]
-            }
-        }
+        self.harmony_service_url = os.getenv("HARMONY_SERVICE_URL", "http://localhost:8081")
     
     async def generate_hints(
         self,
@@ -91,34 +21,36 @@ class SmartHintsService:
         difficulty: int,
         show_detailed: bool = False
     ) -> Dict[str, Any]:
-        """스마트 힌트를 생성합니다."""
+        """사용자 수준에 맞는 스마트 힌트를 생성합니다."""
         try:
-            # 사용자 성과 분석
-            user_accuracy = await self._get_user_accuracy(user_id, question_type)
+            # 사용자 히스토리 조회
+            user_history = await self._get_user_history(user_id)
             
-            # AI 엔진을 통한 스마트 힌트 생성
-            ai_hints = self.ai_engine.generate_smart_hints(
-                user_history=await self._get_user_history(user_id),
+            if not user_history:
+                self.logger.warning(f"사용자 {user_id}의 히스토리가 없어 기본 힌트를 생성합니다.")
+                return self._generate_fallback_hints(question_type, difficulty)
+            
+            # 사용자 정확도 계산
+            user_accuracy = self._calculate_user_accuracy(user_history, question_type)
+            
+            # AI 엔진을 통한 힌트 생성
+            hints_result = self.ai_engine.generate_smart_hints(
+                user_history=user_history,
                 question_type=question_type,
                 difficulty=difficulty,
-                user_accuracy=user_accuracy
+                user_accuracy=user_accuracy,
+                show_detailed=show_detailed
             )
             
-            # 기본 힌트와 AI 힌트 결합
-            base_hints = self._get_base_hints(question_type, difficulty)
-            all_hints = base_hints + ai_hints
-            
-            # 사용자 수준에 맞게 힌트 조정
-            adjusted_hints = self._adjust_hints_for_user(
-                all_hints, user_accuracy, difficulty, show_detailed
-            )
+            # 힌트를 데이터베이스에 저장
+            await self._save_hints(user_id, question_type, difficulty, hints_result, user_accuracy)
             
             return {
-                "hints": adjusted_hints,
-                "total_hints": len(adjusted_hints),
+                "hints": hints_result.get("hints", []),
                 "user_accuracy": user_accuracy,
-                "difficulty_level": difficulty,
                 "show_detailed": show_detailed,
+                "difficulty": difficulty,
+                "question_type": question_type,
                 "generated_at": datetime.now().isoformat()
             }
             
@@ -126,30 +58,8 @@ class SmartHintsService:
             self.logger.error(f"스마트 힌트 생성 실패: {str(e)}")
             return self._generate_fallback_hints(question_type, difficulty)
     
-    async def _get_user_accuracy(self, user_id: int, question_type: str) -> float:
-        """사용자의 특정 문제 유형에 대한 정확도를 가져옵니다."""
-        try:
-            user_history = await self._get_user_history(user_id)
-            
-            if not user_history:
-                return 0.0
-            
-            type_history = [h for h in user_history if h.get("question_type") == question_type]
-            
-            if not type_history:
-                return 0.0
-            
-            correct_count = sum(1 for h in type_history if h.get("is_correct", False))
-            total_count = len(type_history)
-            
-            return correct_count / total_count if total_count > 0 else 0.0
-            
-        except Exception as e:
-            self.logger.error(f"사용자 정확도 조회 실패: {str(e)}")
-            return 0.0
-    
     async def _get_user_history(self, user_id: int) -> List[Dict[str, Any]]:
-        """사용자의 학습 히스토리를 가져옵니다."""
+        """사용자의 퀴즈 히스토리를 가져옵니다."""
         try:
             async with httpx.AsyncClient() as client:
                 response = await client.get(
@@ -167,58 +77,88 @@ class SmartHintsService:
             self.logger.error(f"사용자 히스토리 조회 중 오류: {str(e)}")
             return []
     
-    def _get_base_hints(self, question_type: str, difficulty: int) -> List[str]:
-        """기본 힌트를 가져옵니다."""
-        hints = self.hint_database.get(question_type, {}).get(difficulty, [])
-        return hints.copy()
-    
-    def _adjust_hints_for_user(
-        self, 
-        hints: List[str], 
-        user_accuracy: float, 
-        difficulty: int,
-        show_detailed: bool
-    ) -> List[str]:
-        """사용자 수준에 맞게 힌트를 조정합니다."""
-        adjusted_hints = []
-        
-        # 사용자 정확도에 따른 힌트 수 조정
-        if user_accuracy >= 0.8:
-            # 높은 정확도: 힌트 수 줄임
-            max_hints = 2
-        elif user_accuracy >= 0.6:
-            # 중간 정확도: 적당한 힌트 수
-            max_hints = 3
-        else:
-            # 낮은 정확도: 더 많은 힌트
-            max_hints = 4
-        
-        # 난이도에 따른 조정
-        if difficulty == 1:
-            max_hints = min(max_hints + 1, 5)  # 초급: 더 많은 힌트
-        elif difficulty == 3:
-            max_hints = max(max_hints - 1, 1)  # 고급: 더 적은 힌트
-        
-        # 상세 모드일 때 더 많은 힌트
-        if show_detailed:
-            max_hints = min(max_hints + 2, len(hints))
-        
-        # 힌트 선택 및 조정
-        selected_hints = hints[:max_hints]
-        
-        for hint in selected_hints:
-            # 사용자 정확도에 따른 힌트 내용 조정
-            if user_accuracy < 0.5:
-                # 낮은 정확도: 더 구체적인 힌트
-                adjusted_hint = f"💡 {hint} (기본 개념을 다시 확인해보세요)"
-            elif user_accuracy < 0.7:
-                # 중간 정확도: 일반적인 힌트
-                adjusted_hint = f"💡 {hint}"
-            else:
-                # 높은 정확도: 간단한 힌트
-                adjusted_hint = f"💡 {hint}"
+    def _calculate_user_accuracy(self, user_history: List[Dict[str, Any]], question_type: str) -> float:
+        """사용자의 특정 문제 타입에 대한 정확도를 계산합니다."""
+        try:
+            type_history = [h for h in user_history if h.get("question_type") == question_type]
             
-            adjusted_hints.append(adjusted_hint)
+            if not type_history:
+                return 0.0
+            
+            correct_count = sum(1 for h in type_history if h.get("is_correct", False))
+            total_count = len(type_history)
+            
+            return correct_count / total_count if total_count > 0 else 0.0
+            
+        except Exception as e:
+            self.logger.error(f"정확도 계산 실패: {str(e)}")
+            return 0.0
+    
+    async def _save_hints(self, user_id: int, question_type: str, difficulty: int, hints_result: Dict[str, Any], user_accuracy: float):
+        """힌트를 데이터베이스에 저장합니다."""
+        try:
+            hints_data = {
+                "user_id": user_id,
+                "question_type": question_type,
+                "difficulty": difficulty,
+                "hints": hints_result.get("hints", []),
+                "user_accuracy": user_accuracy,
+                "show_detailed": hints_result.get("show_detailed", False)
+            }
+            
+            success = self.db_manager.insert_hints(hints_data)
+            if success:
+                self.logger.info(f"힌트 저장 완료: 사용자 {user_id}")
+            else:
+                self.logger.error(f"힌트 저장 실패: 사용자 {user_id}")
+                
+        except Exception as e:
+            self.logger.error(f"힌트 저장 실패: {str(e)}")
+    
+    def _get_base_hints(self, question_type: str, difficulty: int) -> List[str]:
+        """기본 힌트를 반환합니다."""
+        base_hints = {
+            "CHORD_NAME": {
+                1: ["화음의 기본 구성음을 생각해보세요.", "3음과 5음의 관계를 확인해보세요."],
+                2: ["화음의 구성음을 순서대로 나열해보세요.", "7화음의 경우 7음이 추가됩니다."],
+                3: ["복합 화음의 구조를 분석해보세요.", "화음의 기능적 역할을 고려해보세요."]
+            },
+            "PROGRESSION": {
+                1: ["기본 진행 패턴을 기억해보세요.", "I-IV-V 진행을 먼저 확인해보세요."],
+                2: ["화음 진행의 기능적 관계를 이해하세요.", "대리 화음의 개념을 적용해보세요."],
+                3: ["고급 진행 패턴을 분석해보세요.", "조성 변화의 원리를 이해하세요."]
+            },
+            "INTERVAL": {
+                1: ["음정의 기본 개념을 학습하세요.", "완전음정과 장단음정을 구분하세요."],
+                2: ["음정의 구성음을 이해하세요.", "복합음정의 계산법을 적용해보세요."],
+                3: ["고급 음정 이론을 분석해보세요.", "음정의 조화적 특성을 이해하세요."]
+            },
+            "SCALE": {
+                1: ["음계의 기본 구조를 학습하세요.", "장음계와 단음계의 차이를 이해하세요."],
+                2: ["음계의 구성음을 순서대로 기억하세요.", "조표의 의미를 이해하세요."],
+                3: ["고급 음계 이론을 분석해보세요.", "음계의 조화적 특성을 이해하세요."]
+            }
+        }
+        
+        return base_hints.get(question_type, {}).get(difficulty, ["기본 힌트를 확인해보세요."])
+    
+    def _adjust_hints_for_user(self, hints: List[str], user_accuracy: float, difficulty: int) -> List[str]:
+        """사용자 수준에 맞게 힌트를 조정합니다."""
+        adjusted_hints = hints.copy()
+        
+        if user_accuracy < 0.5:
+            # 낮은 정확도: 더 자세한 힌트 제공
+            if difficulty == 1:
+                adjusted_hints.append("기본 개념부터 차근차근 학습하세요.")
+            else:
+                adjusted_hints.append("이전 단계의 개념을 다시 확인해보세요.")
+        elif user_accuracy < 0.8:
+            # 중간 정확도: 적당한 힌트
+            if difficulty > 1:
+                adjusted_hints.append("조금 더 생각해보세요.")
+        else:
+            # 높은 정확도: 최소한의 힌트
+            adjusted_hints = hints[:1] if hints else []
         
         return adjusted_hints
     
@@ -227,11 +167,11 @@ class SmartHintsService:
         base_hints = self._get_base_hints(question_type, difficulty)
         
         return {
-            "hints": base_hints[:2],  # 기본 힌트 2개만 제공
-            "total_hints": min(len(base_hints), 2),
-            "user_accuracy": 0.0,
-            "difficulty_level": difficulty,
+            "hints": base_hints,
+            "user_accuracy": 0.5,
             "show_detailed": False,
+            "difficulty": difficulty,
+            "question_type": question_type,
             "generated_at": datetime.now().isoformat()
         }
     
