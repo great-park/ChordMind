@@ -12,7 +12,7 @@ class SmartHintsService:
         self.ai_engine = ai_engine
         self.db_manager = db_manager
         self.logger = logging.getLogger(__name__)
-        self.harmony_service_url = os.getenv("HARMONY_SERVICE_URL", "http://localhost:8081")
+        self.harmony_service_url = os.getenv("HARMONY_SERVICE_URL", "http://your_harmony_service_host:8081")
     
     async def generate_hints(
         self,

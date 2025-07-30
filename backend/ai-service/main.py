@@ -17,6 +17,31 @@ from database.database import DatabaseManager
 
 load_dotenv()
 
+def validate_environment_variables():
+    """필수 환경 변수를 검증합니다."""
+    required_vars = [
+        'DB_HOST',
+        'DB_USER', 
+        'DB_PASSWORD',
+        'HARMONY_SERVICE_URL'
+    ]
+    
+    missing_vars = []
+    for var in required_vars:
+        if not os.getenv(var):
+            missing_vars.append(var)
+    
+    if missing_vars:
+        raise ValueError(f"필수 환경 변수가 설정되지 않았습니다: {', '.join(missing_vars)}")
+
+# 환경 변수 검증
+try:
+    validate_environment_variables()
+except ValueError as e:
+    print(f"환경 변수 오류: {e}")
+    print("env.example 파일을 참고하여 .env 파일을 생성하세요.")
+    exit(1)
+
 app = FastAPI(
     title="ChordMind AI Service",
     description="AI 기반 음악 이론 학습 분석 및 추천 서비스",

@@ -10,17 +10,30 @@ class DatabaseManager:
     def __init__(self):
         self.logger = logging.getLogger(__name__)
         self.connection = None
+        self._validate_environment()
         self.connect()
+    
+    def _validate_environment(self):
+        """데이터베이스 연결에 필요한 환경 변수를 검증합니다."""
+        required_vars = ['DB_HOST', 'DB_USER', 'DB_PASSWORD']
+        missing_vars = []
+        
+        for var in required_vars:
+            if not os.getenv(var):
+                missing_vars.append(var)
+        
+        if missing_vars:
+            raise ValueError(f"데이터베이스 연결에 필요한 환경 변수가 설정되지 않았습니다: {', '.join(missing_vars)}")
     
     def connect(self):
         """데이터베이스에 연결합니다."""
         try:
             self.connection = psycopg2.connect(
-                host=os.getenv('DB_HOST', 'localhost'),
+                host=os.getenv('DB_HOST', 'your_db_host'),
                 port=os.getenv('DB_PORT', '5432'),
                 database=os.getenv('DB_NAME', 'chordmind_ai'),
-                user=os.getenv('DB_USER', 'postgres'),
-                password=os.getenv('DB_PASSWORD', 'password')
+                user=os.getenv('DB_USER', 'your_db_user'),
+                password=os.getenv('DB_PASSWORD', 'your_secure_password')
             )
             self.logger.info("데이터베이스 연결 성공")
         except Exception as e:
