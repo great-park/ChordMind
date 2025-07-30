@@ -1,245 +1,222 @@
-import axios from 'axios';
+import { apiClient, ApiResponse } from './apiClient';
 
-const API_BASE = '/api/practice-sessions';
-
-export interface PracticeSessionResponse {
+export interface PracticeSession {
   id: number;
   userId: number;
-  startedAt: string;
-  endedAt?: string;
-  status: string;
-  goal?: string;
-}
-
-export interface PracticeSessionSearchRequest {
-  userId?: number;
-  goal?: string;
-  status?: string;
-  startedAtFrom?: string;
-  startedAtTo?: string;
-}
-
-export interface PracticeSessionSummary {
-  id: number;
-  songTitle: string;
-  artist: string;
+  title: string;
+  description: string;
+  duration: number;
   difficulty: string;
+  focusAreas: string[];
   accuracy: number;
-  score: number;
-  completed: boolean;
+  rhythm: number;
+  technique: number;
+  expression: number;
+  overall: number;
   createdAt: string;
+  updatedAt: string;
 }
 
-export interface CommonResponse<T> {
-  success: boolean;
-  data?: T;
-  error?: string;
+export interface CreatePracticeSessionRequest {
+  title: string;
+  description: string;
+  difficulty: string;
+  duration: number;
+  focusAreas: string[];
 }
 
-export interface PageResponse<T> {
-  content: T[];
-  page: number;
-  size: number;
-  totalElements: number;
-  totalPages: number;
-}
-
-export interface UserRankingResponse {
-  userId: number;
-  username?: string;
+export interface AnalyticsUserSummaryResponse {
   totalSessions: number;
   completedSessions: number;
   averageScore: number;
   totalPracticeTime: number;
-  rank: number;
-  score: number;
-}
-
-export interface AnalyticsUserSummaryResponse {
-  userId: number;
-  username?: string;
-  totalSessions: number;
-  completedSessions: number;
-  averageScore?: number;
-  totalPracticeTime: number;
-  firstSessionAt?: string;
-  lastSessionAt?: string;
+  firstSessionAt: string;
+  lastSessionAt: string;
   recentGoals: string[];
 }
 
-export interface AnalyticsSessionSummaryResponse {
-  sessionId: number;
-  userId: number;
-  goal?: string;
-  startedAt: string;
-  endedAt?: string;
-  totalProgress: number;
-  averageScore?: number;
-  completed: boolean;
-}
-
 export interface AnalyticsUserTrendResponse {
+  points: Array<{
+    date: string;
+    sessionCount: number;
+    averageScore: number;
+    totalTime: number;
+  }>;
+}
+
+export interface UserRankingResponse {
   userId: number;
-  period: string;
-  points: TrendPoint[];
+  username: string;
+  rank: number;
+  score: number;
+  category: string;
 }
 
-export interface TrendPoint {
-  date: string;
-  sessionCount: number;
-  averageScore?: number;
-}
-
-export interface AdminPracticeSummaryResponse {
-  totalUsers: number;
-  totalSessions: number;
-  totalProgress: number;
-  averageSessionPerUser: number;
-  averageScore?: number;
-  lastActivityAt?: string;
-}
-
-export interface AdminUserSummary {
+export interface PracticeGoal {
+  id: number;
   userId: number;
-  username?: string;
-  totalSessions: number;
-  completedSessions: number;
-  averageScore?: number;
-  lastSessionAt?: string;
+  title: string;
+  description: string;
+  targetDate: string;
+  progress: number;
+  category: string;
+  status: 'active' | 'completed' | 'overdue';
+  createdAt: string;
+  updatedAt: string;
 }
 
-export interface AdminSessionSummary {
-  sessionId: number;
-  userId: number;
-  goal?: string;
-  startedAt: string;
-  endedAt?: string;
-  status: string;
-  totalProgress: number;
-  averageScore?: number;
+export interface CreatePracticeGoalRequest {
+  title: string;
+  description: string;
+  targetDate: string;
+  category: string;
 }
 
-export interface AdminProgressSummary {
-  progressId: number;
-  sessionId: number;
-  userId: number;
-  note: string;
-  score?: number;
-  timestamp: string;
+class PracticeService {
+  // 연습 세션 생성
+  async createPracticeSession(request: CreatePracticeSessionRequest): Promise<ApiResponse<PracticeSession>> {
+    return apiClient.post<PracticeSession>('/api/practice/sessions', request);
+  }
+
+  // 연습 세션 조회
+  async getPracticeSession(sessionId: number): Promise<ApiResponse<PracticeSession>> {
+    return apiClient.get<PracticeSession>(`/api/practice/sessions/${sessionId}`);
+  }
+
+  // 사용자별 연습 세션 목록 조회
+  async getUserPracticeSessions(
+    userId: number,
+    page: number = 0,
+    size: number = 20
+  ): Promise<ApiResponse<{ sessions: PracticeSession[]; totalElements: number }>> {
+    const params = { page, size };
+    const queryString = apiClient.buildQueryParams(params);
+    return apiClient.get<{ sessions: PracticeSession[]; totalElements: number }>(
+      `/api/practice/sessions/user/${userId}?${queryString}`
+    );
+  }
+
+  // 연습 세션 업데이트
+  async updatePracticeSession(
+    sessionId: number,
+    request: Partial<CreatePracticeSessionRequest>
+  ): Promise<ApiResponse<PracticeSession>> {
+    return apiClient.put<PracticeSession>(`/api/practice/sessions/${sessionId}`, request);
+  }
+
+  // 연습 세션 삭제
+  async deletePracticeSession(sessionId: number): Promise<ApiResponse<string>> {
+    return apiClient.delete<string>(`/api/practice/sessions/${sessionId}`);
+  }
+
+  // 사용자 분석 요약 조회
+  async getAnalyticsUserSummary(userId: number): Promise<ApiResponse<AnalyticsUserSummaryResponse>> {
+    return apiClient.get<AnalyticsUserSummaryResponse>(`/api/practice/analytics/user/${userId}/summary`);
+  }
+
+  // 사용자 분석 트렌드 조회
+  async getAnalyticsUserTrend(
+    userId: number,
+    period: string = 'month'
+  ): Promise<ApiResponse<AnalyticsUserTrendResponse>> {
+    return apiClient.get<AnalyticsUserTrendResponse>(`/api/practice/analytics/user/${userId}/trend?period=${period}`);
+  }
+
+  // 상위 사용자 조회
+  async getTopUsers(limit: number = 10): Promise<ApiResponse<UserRankingResponse[]>> {
+    return apiClient.get<UserRankingResponse[]>(`/api/practice/leaderboard/top?limit=${limit}`);
+  }
+
+  // 연습 목표 생성
+  async createPracticeGoal(request: CreatePracticeGoalRequest): Promise<ApiResponse<PracticeGoal>> {
+    return apiClient.post<PracticeGoal>('/api/practice/goals', request);
+  }
+
+  // 연습 목표 조회
+  async getPracticeGoal(goalId: number): Promise<ApiResponse<PracticeGoal>> {
+    return apiClient.get<PracticeGoal>(`/api/practice/goals/${goalId}`);
+  }
+
+  // 사용자별 연습 목표 목록 조회
+  async getUserPracticeGoals(
+    userId: number,
+    page: number = 0,
+    size: number = 20
+  ): Promise<ApiResponse<{ goals: PracticeGoal[]; totalElements: number }>> {
+    const params = { page, size };
+    const queryString = apiClient.buildQueryParams(params);
+    return apiClient.get<{ goals: PracticeGoal[]; totalElements: number }>(
+      `/api/practice/goals/user/${userId}?${queryString}`
+    );
+  }
+
+  // 연습 목표 업데이트
+  async updatePracticeGoal(
+    goalId: number,
+    request: Partial<CreatePracticeGoalRequest>
+  ): Promise<ApiResponse<PracticeGoal>> {
+    return apiClient.put<PracticeGoal>(`/api/practice/goals/${goalId}`, request);
+  }
+
+  // 연습 목표 삭제
+  async deletePracticeGoal(goalId: number): Promise<ApiResponse<string>> {
+    return apiClient.delete<string>(`/api/practice/goals/${goalId}`);
+  }
+
+  // 진행률 업데이트
+  async updateGoalProgress(
+    goalId: number,
+    progress: number
+  ): Promise<ApiResponse<PracticeGoal>> {
+    return apiClient.put<PracticeGoal>(`/api/practice/goals/${goalId}/progress`, { progress });
+  }
+
+  // 연습 통계 조회
+  async getPracticeStats(userId: number): Promise<ApiResponse<{
+    totalSessions: number;
+    totalTime: number;
+    averageScore: number;
+    completionRate: number;
+    streakDays: number;
+  }>> {
+    return apiClient.get<{
+      totalSessions: number;
+      totalTime: number;
+      averageScore: number;
+      completionRate: number;
+      streakDays: number;
+    }>(`/api/practice/stats/user/${userId}`);
+  }
+
+  // 연습 기록 검색
+  async searchPracticeSessions(params: {
+    userId?: number;
+    difficulty?: string;
+    category?: string;
+    fromDate?: string;
+    toDate?: string;
+    page?: number;
+    size?: number;
+  }): Promise<ApiResponse<{ sessions: PracticeSession[]; totalElements: number }>> {
+    const queryString = apiClient.buildQueryParams(params);
+    return apiClient.get<{ sessions: PracticeSession[]; totalElements: number }>(
+      `/api/practice/sessions/search?${queryString}`
+    );
+  }
+
+  // 연습 세션 분석 결과 업데이트
+  async updateSessionAnalysis(
+    sessionId: number,
+    analysis: {
+      accuracy: number;
+      rhythm: number;
+      technique: number;
+      expression: number;
+      overall: number;
+    }
+  ): Promise<ApiResponse<PracticeSession>> {
+    return apiClient.put<PracticeSession>(`/api/practice/sessions/${sessionId}/analysis`, analysis);
+  }
 }
 
-export interface GoalAchievementNotification {
-  userId: number;
-  sessionId: number;
-  message: string;
-  achievedAt: string;
-}
-
-export interface PracticeRecommendationResponse {
-  userId: number;
-  recommendedGoals: string[];
-  message: string;
-}
-
-export interface PracticeFeedbackResponse {
-  userId: number;
-  sessionId: number;
-  progressId: number;
-  feedback: string;
-}
-
-// 세션 목록 조회
-export async function getSessionsByUser(userId: number) {
-  const res = await axios.get<CommonResponse<PracticeSessionResponse[]>>(`${API_BASE}/user/${userId}`);
-  return res.data;
-}
-
-// 세션 생성
-export async function createSession(userId: number, goal?: string) {
-  const res = await axios.post<CommonResponse<PracticeSessionResponse>>(API_BASE, { userId, goal });
-  return res.data;
-}
-
-// 세션 검색/필터 (페이징 지원)
-export async function searchSessions(params: PracticeSessionSearchRequest & { page?: number; size?: number }) {
-  const res = await axios.get<CommonResponse<PageResponse<PracticeSessionResponse>>>(`${API_BASE}/search`, { params });
-  return res.data;
-}
-
-// 세션별 통계
-export async function getSessionSummary(sessionId: number) {
-  const res = await axios.get<CommonResponse<PracticeSessionSummary>>(`${API_BASE}/${sessionId}/summary`);
-  return res.data;
-}
-
-// 사용자 랭킹 조회
-export async function getUserRanking(userId: number) {
-  const res = await axios.get<CommonResponse<UserRankingResponse>>(`${API_BASE}/ranking/user/${userId}`);
-  return res.data;
-}
-
-// 상위 사용자 랭킹 조회
-export async function getTopUsers(limit: number = 10) {
-  const res = await axios.get<CommonResponse<UserRankingResponse[]>>(`${API_BASE}/ranking/top`, { params: { limit } });
-  return res.data;
-}
-
-// 사용자별 통계 요약
-export async function getAnalyticsUserSummary(userId: number, from?: string, to?: string) {
-  const res = await axios.get<CommonResponse<AnalyticsUserSummaryResponse>>(`/api/practice-sessions/analytics/user/${userId}/summary`, { params: { from, to } });
-  return res.data;
-}
-
-// 세션별 통계 요약
-export async function getAnalyticsSessionSummary(sessionId: number) {
-  const res = await axios.get<CommonResponse<AnalyticsSessionSummaryResponse>>(`/api/practice-sessions/analytics/session/${sessionId}/summary`);
-  return res.data;
-}
-
-// 사용자 성장 추이
-export async function getAnalyticsUserTrend(userId: number, period: string = 'week') {
-  const res = await axios.get<CommonResponse<AnalyticsUserTrendResponse>>(`/api/practice-sessions/analytics/user/${userId}/trend`, { params: { period } });
-  return res.data;
-}
-
-// 관리자 전체 통계 요약
-export async function getAdminPracticeSummary() {
-  const res = await axios.get<CommonResponse<AdminPracticeSummaryResponse>>(`/api/practice-sessions/admin/summary`);
-  return res.data;
-}
-
-// 관리자 전체 사용자 요약
-export async function getAdminUserSummaries() {
-  const res = await axios.get<CommonResponse<AdminUserSummary[]>>(`/api/practice-sessions/admin/users`);
-  return res.data;
-}
-
-// 관리자 전체 세션 요약
-export async function getAdminSessionSummaries() {
-  const res = await axios.get<CommonResponse<AdminSessionSummary[]>>(`/api/practice-sessions/admin/sessions`);
-  return res.data;
-}
-
-// 관리자 전체 진행상황 요약
-export async function getAdminProgressSummaries() {
-  const res = await axios.get<CommonResponse<AdminProgressSummary[]>>(`/api/practice-sessions/admin/progress`);
-  return res.data;
-}
-
-// 목표 달성 알림
-export async function getGoalAchievementNotification(userId: number, sessionId: number) {
-  const res = await axios.get<CommonResponse<GoalAchievementNotification>>(`/api/practice-sessions/notify/goal`, { params: { userId, sessionId } });
-  return res.data;
-}
-
-// 연습 추천
-export async function getPracticeRecommendation(userId: number) {
-  const res = await axios.get<CommonResponse<PracticeRecommendationResponse>>(`/api/practice-sessions/recommendation`, { params: { userId } });
-  return res.data;
-}
-
-// 실시간 피드백
-export async function getPracticeFeedback(userId: number, sessionId: number, progressId: number) {
-  const res = await axios.get<CommonResponse<PracticeFeedbackResponse>>(`/api/practice-sessions/feedback`, { params: { userId, sessionId, progressId } });
-  return res.data;
-} 
+export const practiceService = new PracticeService(); 
