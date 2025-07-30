@@ -168,4 +168,72 @@ class PracticeSessionController(
         return if (feedback != null) ResponseEntity.ok(CommonResponse(success = true, data = feedback))
         else ResponseEntity.status(404).body(CommonResponse(success = false, error = "No feedback available"))
     }
+    
+    // 새로운 기능들 추가
+    
+    @GetMapping("/analytics/user/{userId}/progress-trend")
+    fun getUserProgressTrend(
+        @PathVariable userId: Long,
+        @RequestParam(defaultValue = "30") days: Int
+    ): ResponseEntity<CommonResponse<ProgressTrendResponse>> {
+        val trend = practiceSessionService.getUserProgressTrend(userId, days)
+        return ResponseEntity.ok(CommonResponse(success = true, data = trend))
+    }
+    
+    @GetMapping("/analytics/user/{userId}/skill-analysis")
+    fun getUserSkillAnalysis(@PathVariable userId: Long): ResponseEntity<CommonResponse<SkillAnalysisResponse>> {
+        val analysis = practiceSessionService.getUserSkillAnalysis(userId)
+        return ResponseEntity.ok(CommonResponse(success = true, data = analysis))
+    }
+    
+    @GetMapping("/analytics/user/{userId}/practice-patterns")
+    fun getUserPracticePatterns(@PathVariable userId: Long): ResponseEntity<CommonResponse<PracticePatternsResponse>> {
+        val patterns = practiceSessionService.getUserPracticePatterns(userId)
+        return ResponseEntity.ok(CommonResponse(success = true, data = patterns))
+    }
+    
+    @GetMapping("/analytics/user/{userId}/goals")
+    fun getUserGoals(@PathVariable userId: Long): ResponseEntity<CommonResponse<List<GoalResponse>>> {
+        val goals = practiceSessionService.getUserGoals(userId)
+        return ResponseEntity.ok(CommonResponse(success = true, data = goals))
+    }
+    
+    @PostMapping("/analytics/user/{userId}/goals")
+    fun createUserGoal(
+        @PathVariable userId: Long,
+        @RequestBody request: CreateGoalRequest
+    ): ResponseEntity<CommonResponse<GoalResponse>> {
+        val goal = practiceSessionService.createUserGoal(userId, request)
+        return ResponseEntity.ok(CommonResponse(success = true, data = goal))
+    }
+    
+    @GetMapping("/analytics/user/{userId}/achievements")
+    fun getUserAchievements(@PathVariable userId: Long): ResponseEntity<CommonResponse<List<AchievementResponse>>> {
+        val achievements = practiceSessionService.getUserAchievements(userId)
+        return ResponseEntity.ok(CommonResponse(success = true, data = achievements))
+    }
+    
+    @GetMapping("/analytics/user/{userId}/comparison")
+    fun getUserComparison(
+        @PathVariable userId: Long,
+        @RequestParam(required = false) compareWith: Long?
+    ): ResponseEntity<CommonResponse<UserComparisonResponse>> {
+        val comparison = practiceSessionService.getUserComparison(userId, compareWith)
+        return ResponseEntity.ok(CommonResponse(success = true, data = comparison))
+    }
+    
+    @GetMapping("/analytics/global/leaderboard")
+    fun getGlobalLeaderboard(
+        @RequestParam(defaultValue = "10") limit: Int,
+        @RequestParam(required = false) period: String?
+    ): ResponseEntity<CommonResponse<List<LeaderboardEntryResponse>>> {
+        val leaderboard = practiceSessionService.getGlobalLeaderboard(limit, period)
+        return ResponseEntity.ok(CommonResponse(success = true, data = leaderboard))
+    }
+    
+    @GetMapping("/analytics/global/trends")
+    fun getGlobalTrends(): ResponseEntity<CommonResponse<GlobalTrendsResponse>> {
+        val trends = practiceSessionService.getGlobalTrends()
+        return ResponseEntity.ok(CommonResponse(success = true, data = trends))
+    }
 } 

@@ -1,13 +1,13 @@
 server:
-  port: 8081
+  port: ${SERVER_PORT:8081}
 
 spring:
   application:
-    name: practice-service
+    name: ${SPRING_APPLICATION_NAME:practice-service}
   datasource:
-    url: jdbc:postgresql://localhost:5432/chordmind_practice
-    username: postgres
-    password: password
+    url: jdbc:postgresql://${DB_HOST:localhost}:${DB_PORT:5432}/${DB_NAME:chordmind_practice}
+    username: ${DB_USER:postgres}
+    password: ${DB_PASSWORD:password}
     driver-class-name: org.postgresql.Driver
   jpa:
     hibernate:
@@ -24,7 +24,7 @@ spring:
 eureka:
   client:
     service-url:
-      defaultZone: http://localhost:8761/eureka/
+      defaultZone: ${EUREKA_SERVICE_URL:http://localhost:8761/eureka/}
   instance:
     prefer-ip-address: true
     instance-id: ${spring.application.name}:${server.port}
