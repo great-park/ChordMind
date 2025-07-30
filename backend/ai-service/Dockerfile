@@ -15,6 +15,10 @@ RUN pip install --no-cache-dir -r requirements.txt
 # 애플리케이션 코드 복사
 COPY . .
 
+# DB 초기화 스크립트 복사
+COPY database/schema.sql /docker-entrypoint-initdb.d/
+COPY database/init_data.sql /docker-entrypoint-initdb.d/
+
 # 포트 노출
 EXPOSE 8082
 

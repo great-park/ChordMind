@@ -13,6 +13,7 @@ from services.personalized_feedback import PersonalizedFeedbackService
 from services.adaptive_learning import AdaptiveLearningService
 from services.smart_hints import SmartHintsService
 from services.behavior_analysis import BehaviorAnalysisService
+from database.database import DatabaseManager
 
 load_dotenv()
 
@@ -31,14 +32,17 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+# 데이터베이스 매니저 초기화
+db_manager = DatabaseManager()
+
 # AI 엔진 초기화
 ai_engine = AIEngine()
 
-# 서비스 초기화
-feedback_service = PersonalizedFeedbackService(ai_engine)
-adaptive_service = AdaptiveLearningService(ai_engine)
-hints_service = SmartHintsService(ai_engine)
-behavior_service = BehaviorAnalysisService(ai_engine)
+# 서비스 초기화 (DB 매니저 전달)
+feedback_service = PersonalizedFeedbackService(ai_engine, db_manager)
+adaptive_service = AdaptiveLearningService(ai_engine, db_manager)
+hints_service = SmartHintsService(ai_engine, db_manager)
+behavior_service = BehaviorAnalysisService(ai_engine, db_manager)
 
 # Pydantic 모델들
 class FeedbackRequest(BaseModel):
@@ -77,7 +81,11 @@ async def root():
 
 @app.get("/health")
 async def health_check():
-    return {"status": "healthy", "ai_engine": ai_engine.is_ready()}
+    return {
+        "status": "healthy", 
+        "ai_engine": ai_engine.is_ready(),
+        "database": db_manager.connection is not None and not db_manager.connection.closed
+    }
 
 @app.post("/api/ai/personalized-feedback")
 async def generate_personalized_feedback(request: FeedbackRequest):
@@ -105,7 +113,7 @@ async def generate_adaptive_question(request: AdaptiveQuestionRequest):
             question_type=request.question_type,
             count=request.count
         )
-        return {"adaptive_questions": questions}
+        return {"questions": questions}
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"적응형 문제 생성 실패: {str(e)}")
 
@@ -154,7 +162,7 @@ async def generate_learning_recommendations(user_id: int):
     """학습 추천 생성"""
     try:
         recommendations = await adaptive_service.generate_recommendations(user_id)
-        return recommendations
+        return {"recommendations": recommendations}
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"학습 추천 생성 실패: {str(e)}")
 
@@ -167,11 +175,31 @@ async def analyze_learning_patterns(user_id: int):
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"학습 패턴 분석 실패: {str(e)}")
 
+@app.get("/api/ai/feedback-history/{user_id}")
+async def get_feedback_history(user_id: int, limit: int = 10):
+    """사용자 피드백 히스토리 조회"""
+    try:
+        history = await feedback_service.get_feedback_history(user_id, limit)
+        return {"feedback_history": history}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"피드백 히스토리 조회 실패: {str(e)}")
+
+@app.get("/api/ai/performance-stats/{user_id}")
+async def get_performance_stats(user_id: int):
+    """사용자 성과 통계 조회"""
+    try:
+        stats = db_manager.get_user_performance_stats(user_id)
+        return stats
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"성과 통계 조회 실패: {str(e)}")
+
 if __name__ == "__main__":
+    port = int(os.getenv("PORT", 8082))
+    host = os.getenv("HOST", "0.0.0.0")
+    
     uvicorn.run(
         "main:app",
-        host="0.0.0.0",
-        port=8082,
-        reload=True,
-        log_level="info"
+        host=host,
+        port=port,
+        reload=True
     ) 
