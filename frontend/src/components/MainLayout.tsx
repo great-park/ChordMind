@@ -1,21 +1,21 @@
 import React from 'react';
-import Sidebar from './Sidebar';
+import Navigation from './Navigation';
+import Footer from './Footer';
 
-export default function MainLayout({ children }: { children: React.ReactNode }) {
+interface MainLayoutProps {
+  children: React.ReactNode;
+}
+
+export default function MainLayout({ children }: MainLayoutProps) {
   return (
-    <div className="container-fluid p-0">
-      <div className="row g-0">
-        {/* 사이드바 */}
-        <div className="col-lg-3 col-md-4">
-          <Sidebar />
+    <div className="d-flex flex-column min-vh-100">
+      <Navigation />
+      <main className="flex-grow-1 py-4">
+        <div className="container-fluid">
+          {children}
         </div>
-        {/* 메인 콘텐츠 */}
-        <div className="col-lg-9 col-md-8">
-          <main className="p-4">
-            {children}
-          </main>
-        </div>
-      </div>
+      </main>
+      <Footer />
     </div>
   );
 } 

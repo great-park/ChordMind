@@ -21,27 +21,28 @@ import {
   AnalyticsUserTrendResponse,
   UserRankingResponse
 } from '../services/practiceService';
-import { fetchQuizQuestions, submitQuizAnswer, QuizQuestion, QuizAnswerRequest, QuizAnswerResult } from '../services/quizService';
 
 function QuizWidget() {
-  const [questions, setQuestions] = useState<QuizQuestion[]>([]);
+  const [questions, setQuestions] = useState<any[]>([]);
   const [current, setCurrent] = useState(0);
   const [selected, setSelected] = useState<string | null>(null);
-  const [result, setResult] = useState<QuizAnswerResult | null>(null);
+  const [result, setResult] = useState<any>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     setLoading(true);
-    fetchQuizQuestions('CHORD_NAME', 1)
-      .then(qs => {
-        setQuestions(qs);
-        setCurrent(0);
-        setSelected(null);
-        setResult(null);
-      })
-      .catch(() => setError('퀴즈를 불러오지 못했습니다.'))
-      .finally(() => setLoading(false));
+    // 임시 퀴즈 데이터
+    const mockQuestions = [
+      {
+        id: 1,
+        question: 'C Major Scale의 첫 번째 음은?',
+        choices: ['C', 'D', 'E', 'F'],
+        correct: 'C'
+      }
+    ];
+    setQuestions(mockQuestions);
+    setLoading(false);
   }, []);
 
   const handleSelect = (choice: string) => {
@@ -52,11 +53,9 @@ function QuizWidget() {
     if (!questions[current] || !selected) return;
     setLoading(true);
     try {
-      const res = await submitQuizAnswer({
-        questionId: questions[current].id,
-        selected,
-      });
-      setResult(res);
+      // 임시 결과
+      const isCorrect = selected === questions[current].correct;
+      setResult({ correct: isCorrect, explanation: isCorrect ? '정답입니다!' : '틀렸습니다.' });
     } catch {
       setError('정답 제출에 실패했습니다.');
     } finally {
@@ -71,41 +70,41 @@ function QuizWidget() {
   const q = questions[current];
 
   return (
-    <div style={{ border: '1px solid #ddd', borderRadius: 8, padding: 16, marginBottom: 24 }}>
-      <h2>오늘의 퀴즈</h2>
-      <div style={{ margin: '12px 0' }}>{q.question}</div>
-      {q.imageUrl && <img src={q.imageUrl} alt="quiz" style={{ maxWidth: 200 }} />}
-      <div>
-        {q.choices.map(choice => (
-          <button
-            key={choice}
-            onClick={() => handleSelect(choice)}
-            style={{
-              margin: 4,
-              padding: '8px 16px',
-              background: selected === choice ? '#4f46e5' : '#f3f4f6',
-              color: selected === choice ? '#fff' : '#222',
-              border: '1px solid #ddd',
-              borderRadius: 4,
-              cursor: 'pointer',
-            }}
-            disabled={!!result}
-          >
-            {choice}
-          </button>
-        ))}
+    <div className="card shadow mb-4">
+      <div className="card-header">
+        <h5 className="mb-0">오늘의 퀴즈</h5>
       </div>
-      {!result && (
-        <button onClick={handleSubmit} disabled={!selected} style={{ marginTop: 12 }}>
-          정답 제출
-        </button>
-      )}
-      {result && (
-        <div style={{ marginTop: 16 }}>
-          {result.correct ? '정답입니다! 🎉' : '오답입니다.'}
-          {result.explanation && <div style={{ marginTop: 8, color: '#666' }}>{result.explanation}</div>}
+      <div className="card-body">
+        <div className="mb-3">{q.question}</div>
+        <div className="mb-3">
+          {q.choices.map((choice: string) => (
+            <button
+              key={choice}
+              onClick={() => handleSelect(choice)}
+              className={`btn me-2 mb-2 ${
+                selected === choice ? 'btn-primary' : 'btn-outline-primary'
+              }`}
+              disabled={!!result}
+            >
+              {choice}
+            </button>
+          ))}
         </div>
-      )}
+        {!result && (
+          <button 
+            onClick={handleSubmit} 
+            disabled={!selected} 
+            className="btn btn-success"
+          >
+            정답 제출
+          </button>
+        )}
+        {result && (
+          <div className={`alert ${result.correct ? 'alert-success' : 'alert-danger'}`}>
+            {result.explanation}
+          </div>
+        )}
+      </div>
     </div>
   );
 }
@@ -141,19 +140,32 @@ export default function Home() {
       .finally(() => setLoading(false));
   }, []);
 
-  const handleReviewClick = () => {
-    // 후기 페이지로 이동 (임시로 alert)
-    alert('후기 페이지로 이동합니다!');
-  };
-
-  const handleGrowthClick = () => {
-    // 성장 그래프 페이지로 이동 (임시로 alert)
-    alert('성장 그래프 페이지로 이동합니다!');
-  };
-
   return (
     <MainLayout>
-      <QuizWidget />
+      <div className="row">
+        {/* 퀴즈 위젯 */}
+        <div className="col-lg-4 mb-4">
+          <QuizWidget />
+        </div>
+
+        {/* 통계 카드 */}
+        <div className="col-lg-8 mb-4">
+          <div className="row">
+            {STATISTICS_DATA.map((stat, index) => (
+              <div key={index} className="col-md-6 mb-3">
+                <StatisticsCard
+                  title={stat.title}
+                  value={stat.value}
+                  change={stat.change}
+                  icon={stat.icon}
+                  color={stat.color}
+                />
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+
       {/* 히어로 섹션 */}
       <section 
         className={`hero-section mb-5 fade-in ${isVisible ? 'visible' : ''}`}
@@ -170,18 +182,12 @@ export default function Home() {
               박자, 음정, 코드, 리듬까지 AI가 정확하게 분석해드립니다.
             </p>
             <div className="d-flex gap-3">
-              <button 
-                className="btn btn-primary btn-lg"
-                aria-label="연주 분석 시작하기"
-              >
-                연주 분석 시작하기
-              </button>
-              <button 
-                className="btn btn-outline-primary btn-lg"
-                aria-label="기능 살펴보기"
-              >
-                기능 살펴보기
-              </button>
+              <a href="/practice" className="btn btn-primary btn-lg">
+                연습 시작하기
+              </a>
+              <a href="/dashboard" className="btn btn-outline-primary btn-lg">
+                대시보드 보기
+              </a>
             </div>
           </div>
           <div className="col-lg-6 text-center">
@@ -210,7 +216,7 @@ export default function Home() {
                     {feature.icon}
                   </div>
                   <h5 className="card-title fw-bold mb-3">{feature.title}</h5>
-                  <p className="card-text text-muted">{feature.desc}</p>
+                  <p className="card-text text-muted">{feature.description}</p>
                 </div>
               </div>
             </div>
@@ -218,212 +224,39 @@ export default function Home() {
         </div>
       </section>
 
-      {/* 실시간 검색어 */}
-      <section 
-        className={`mb-5 fade-in ${isVisible ? 'visible' : ''}`}
-        style={{ animationDelay: '0.2s' }}
-      >
-        <div className="row g-4">
-          <div className="col-lg-6">
-            <h3 className="mb-4">실시간 인기 검색어</h3>
-            <div className="row g-3">
-              {TRENDING_KEYWORDS.slice(0, 6).map((keyword, index) => (
-                <div key={index} className="col-6">
-                  <div className="card border-0 bg-light">
-                    <div className="card-body text-center p-3">
-                      <small className="text-muted">#{keyword.rank || index + 1}</small>
-                      <p className="mb-0 fw-semibold">{keyword.text}</p>
-                    </div>
-                  </div>
-                </div>
-              ))}
+      {/* 진행 상황 및 활동 */}
+      <div className="row mb-5">
+        <div className="col-lg-8">
+          <div className="card shadow">
+            <div className="card-header">
+              <h5 className="mb-0">학습 진행 상황</h5>
             </div>
-          </div>
-          <div className="col-lg-6">
-            <h3 className="mb-4">최근 검색어</h3>
-            <div className="list-group">
-              {RECENT_KEYWORDS.map((keyword, index) => (
-                <div key={index} className="list-group-item d-flex align-items-center">
-                  <span className="badge bg-primary rounded-pill me-3">{index + 1}</span>
-                  <span className="fw-medium">{keyword.text}</span>
-                </div>
-              ))}
+            <div className="card-body">
+              {userTrend && <ProgressChart data={userTrend} />}
             </div>
           </div>
         </div>
-      </section>
-
-      {/* 통계 대시보드 */}
-      <section 
-        className={`mb-5 fade-in ${isVisible ? 'visible' : ''}`}
-        style={{ animationDelay: '0.3s' }}
-        id="dashboard"
-        aria-labelledby="dashboard-title"
-      >
-        <h2 id="dashboard-title" className="text-center mb-5">나의 연습 통계</h2>
-        {loading ? (
-          <div className="text-center my-5">통계 데이터를 불러오는 중...</div>
-        ) : error ? (
-          <div className="alert alert-danger text-center my-5">{error}</div>
-        ) : userSummary && userTrend ? (
-          <>
-            {/* 개요 통계 카드 */}
-            <div className="row g-4 mb-5">
-              <div className="col-lg-3 col-md-6">
-                <StatisticsCard
-                  title="총 연습 세션"
-                  value={userSummary.totalSessions}
-                  icon="bi-clock"
-                  color="primary"
-                  description={`최근 목표: ${userSummary.recentGoals[0] || '-'}`}
-                />
-              </div>
-              <div className="col-lg-3 col-md-6">
-                <StatisticsCard
-                  title="완료한 세션"
-                  value={userSummary.completedSessions}
-                  icon="bi-music-note-list"
-                  color="success"
-                  description={`첫 연습: ${userSummary.firstSessionAt?.slice(0,10) || '-'}`}
-                />
-              </div>
-              <div className="col-lg-3 col-md-6">
-                <StatisticsCard
-                  title="평균 점수"
-                  value={userSummary.averageScore?.toFixed(1) ?? '-'}
-                  icon="bi-target"
-                  color="info"
-                  description={`마지막 연습: ${userSummary.lastSessionAt?.slice(0,10) || '-'}`}
-                />
-              </div>
-              <div className="col-lg-3 col-md-6">
-                <StatisticsCard
-                  title="총 연습 시간"
-                  value={`${Math.round((userSummary.totalPracticeTime || 0) / 60)}시간`}
-                  icon="bi-calendar-check"
-                  color="warning"
-                  description="분 단위 → 시간 변환"
-                />
-              </div>
+        <div className="col-lg-4">
+          <div className="card shadow">
+            <div className="card-header">
+              <h5 className="mb-0">최근 활동</h5>
             </div>
-
-            {/* 성장 추이 차트 (간단 예시) */}
-            <div className="row g-4 mb-5">
-              <div className="col-12">
-                <div className="card border-0 shadow-sm h-100 mb-3">
-                  <div className="card-body">
-                    <h6 className="fw-bold mb-3">월별 연습 세션 추이</h6>
-                    <div style={{height: 180}}>
-                      {/* 간단한 텍스트/바 차트 예시 (차트 라이브러리로 대체 가능) */}
-                      <div className="d-flex align-items-end gap-2" style={{height: 120}}>
-                        {userTrend.points.map((pt, idx) => (
-                          <div key={idx} className="flex-grow-1 text-center">
-                            <div style={{height: `${pt.sessionCount * 10}px`, background: '#0d6efd', borderRadius: 4}}></div>
-                            <small className="text-muted">{pt.date.slice(5,7)}월</small>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* 활동 피드와 리더보드 */}
-            <div className="row g-4">
-              <div className="col-lg-8">
-                <ActivityFeed 
-                  activities={[]}
-                  title="최근 활동 (API 연동 예정)"
-                  maxItems={5}
-                />
-              </div>
-              <div className="col-lg-4">
-                <Leaderboard 
-                  items={topUsers.map((u, idx) => ({
-                    id: u.userId.toString(),
-                    rank: u.rank,
-                    name: u.username || `User${u.userId}`,
-                    score: u.score,
-                    category: '전체',
-                  }))}
-                  title="주간 랭킹"
-                  maxItems={8}
-                />
-              </div>
-            </div>
-          </>
-        ) : null}
-      </section>
-
-      {/* 사용자 후기 + 성장 그래프 */}
-      <section 
-        className={`mb-5 fade-in ${isVisible ? 'visible' : ''}`}
-        style={{ animationDelay: '0.4s' }}
-      >
-        <div className="row g-4">
-          <div className="col-lg-8">
-            <h3 className="mb-4">실제 사용자 후기</h3>
-            <div className="row g-3">
-              {REVIEWS.map((review, index) => (
-                <div key={index} className="col-md-6">
-                  <div className={`card border-${review.color} border-2 hover-shadow clickable`} onClick={handleReviewClick}>
-                    <div className="card-body">
-                      <div className="d-flex align-items-center mb-3">
-                        <div className={`rounded-circle bg-${review.color} bg-opacity-10 d-flex align-items-center justify-content-center me-3`} style={{width: '48px', height: '48px'}}>
-                          <span className={`fw-bold text-${review.color}`}>{review.user[0]}</span>
-                        </div>
-                        <div>
-                          <h6 className="mb-0 fw-bold">{review.user}</h6>
-                          <small className="text-muted">{review.role}</small>
-                        </div>
-                      </div>
-                      <p className="card-text">"{review.text}"</p>
-                      <div className="text-end">
-                        <small className="text-muted">더보기 <i className="bi bi-arrow-right"></i></small>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-          <div className="col-lg-4">
-            <h3 className="mb-4">나의 성장 그래프</h3>
-            <div className="card border-0 shadow hover-shadow clickable" onClick={handleGrowthClick}>
-              <div className="card-body p-4">
-                <div className="text-center mb-3">
-                  <i className="bi bi-graph-up-arrow text-success display-4" aria-hidden="true"></i>
-                </div>
-                <div className="progress mb-3" style={{height: '8px'}} role="progressbar" aria-valuenow={85} aria-valuemin={0} aria-valuemax={100}>
-                  <div className="progress-bar bg-success" style={{width: '85%'}}></div>
-                </div>
-                <p className="text-center mb-0">
-                  <span className="fw-bold text-success">85%</span> 성장률
-                </p>
-                <div className="text-center mt-2">
-                  <small className="text-muted">자세히 보기 <i className="bi bi-arrow-right"></i></small>
-                </div>
-              </div>
+            <div className="card-body">
+              <ActivityFeed />
             </div>
           </div>
         </div>
-      </section>
+      </div>
 
-      {/* 하단 고정 CTA */}
-      <div className="position-fixed bottom-0 start-0 w-100 bg-primary text-white p-3 shadow-lg" style={{zIndex: 1000}}>
-        <div className="container">
-          <div className="row align-items-center">
-            <div className="col-md-8">
-              <h5 className="mb-0">AI와 함께 음악 연주 실력을 키워보세요!</h5>
+      {/* 리더보드 */}
+      <div className="row">
+        <div className="col-12">
+          <div className="card shadow">
+            <div className="card-header">
+              <h5 className="mb-0">리더보드</h5>
             </div>
-            <div className="col-md-4 text-md-end">
-              <button 
-                className="btn btn-light btn-lg"
-                aria-label="지금 연주 분석 시작하기"
-              >
-                지금 연주 분석 시작하기
-              </button>
+            <div className="card-body">
+              <Leaderboard users={topUsers} />
             </div>
           </div>
         </div>
