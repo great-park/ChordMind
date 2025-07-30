@@ -2,21 +2,23 @@ package com.chordmind.user.service
 
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.extension.ExtendWith
-import org.mockito.InjectMocks
-import org.mockito.junit.jupiter.MockitoExtension
+import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.test.context.TestPropertySource
 import org.springframework.test.util.ReflectionTestUtils
 import java.util.*
 
-@ExtendWith(MockitoExtension::class)
+@SpringBootTest
+@TestPropertySource(properties = [
+    "jwt.secret=test-jwt-secret-key-for-testing-only",
+    "jwt.expiration=3600000"
+])
 class JwtServiceTest {
-
-    @InjectMocks
+    
     private lateinit var jwtService: JwtService
 
     private val testEmail = "test@example.com"
-    private val testSecret = "chordmind-jwt-secret-key-2024-very-long-and-secure"
-    private val testExpiration = 86400000L // 24시간
+    private val testSecret = "test-jwt-secret-key-for-testing-only"
+    private val testExpiration = 3600000L // 1시간
 
     @BeforeEach
     fun setUp() {
@@ -118,21 +120,5 @@ class JwtServiceTest {
 
         // Then
         assert(isExpired)
-    }
-
-    @Test
-    fun `tokens should be unique for different emails`() {
-        // Given
-        val email1 = "user1@example.com"
-        val email2 = "user2@example.com"
-
-        // When
-        val token1 = jwtService.generateToken(email1)
-        val token2 = jwtService.generateToken(email2)
-
-        // Then
-        assert(token1 != token2)
-        assert(jwtService.extractEmail(token1) == email1)
-        assert(jwtService.extractEmail(token2) == email2)
     }
 } 

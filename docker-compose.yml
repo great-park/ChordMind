@@ -53,9 +53,19 @@ services:
       - "8083:8083"
     environment:
       SPRING_PROFILES_ACTIVE: docker
-      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/chordmind
-      SPRING_DATASOURCE_USERNAME: chordmind
-      SPRING_DATASOURCE_PASSWORD: chordmind123
+      SERVER_PORT: 8083
+      SPRING_APPLICATION_NAME: user-service
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_NAME: chordmind_user
+      DB_USER: chordmind
+      DB_PASSWORD: chordmind123
+      JWT_SECRET: chordmind-jwt-secret-key-2024-very-long-and-secure
+      JWT_EXPIRATION: 86400000
+      SECURITY_USER_NAME: admin
+      SECURITY_USER_PASSWORD: admin
+      LOGGING_LEVEL_COM_CHORDMIND: DEBUG
+      LOGGING_LEVEL_ORG_SPRINGFRAMEWORK_SECURITY: DEBUG
     depends_on:
       - postgres
 
