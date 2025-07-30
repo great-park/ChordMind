@@ -83,6 +83,11 @@ services:
       AI_SERVICE_URL: http://ai-service:8082
       HARMONY_SERVICE_URL: http://harmony-service:8084
       USER_SERVICE_URL: http://user-service:8083
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_NAME: chordmind_ai
+      DB_USER: chordmind
+      DB_PASSWORD: chordmind123
     depends_on:
       - postgres
 
