@@ -4,58 +4,62 @@
 
 /* 다크모드 글로벌 스타일 */
 :root {
-  --bs-body-bg: #0f0f0f;
-  --bs-body-color: #e0e0e0;
+  --bs-body-bg: #1a1a2e;
+  --bs-body-color: #eaeaea;
   --bs-primary: #6366f1;
   --bs-secondary: #6b7280;
   --bs-success: #10b981;
   --bs-warning: #f59e0b;
   --bs-danger: #ef4444;
   --bs-info: #3b82f6;
-  --bs-dark: #1f2937;
-  --bs-light: #374151;
+  --bs-dark: #16213e;
+  --bs-light: #0e3460;
 }
 
 body {
-  background: linear-gradient(135deg, #0f0f0f 0%, #1a1a1a 100%);
-  color: #e0e0e0;
+  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0e3460 100%);
+  color: #eaeaea;
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
   min-height: 100vh;
 }
 
 /* 다크모드 카드 스타일 */
 .card {
-  background: rgba(31, 41, 55, 0.8);
-  border: 1px solid rgba(75, 85, 99, 0.3);
-  backdrop-filter: blur(10px);
+  background: linear-gradient(145deg, rgba(22, 33, 62, 0.95) 0%, rgba(14, 52, 96, 0.9) 100%);
+  border: 1px solid rgba(99, 102, 241, 0.2);
+  backdrop-filter: blur(20px);
   transition: all 0.3s ease;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
 }
 
 .card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 20px 40px rgba(99, 102, 241, 0.1);
-  border-color: rgba(99, 102, 241, 0.3);
+  transform: translateY(-8px);
+  box-shadow: 0 25px 50px rgba(99, 102, 241, 0.2), 0 0 0 1px rgba(99, 102, 241, 0.3);
+  border-color: rgba(99, 102, 241, 0.4);
+  background: linear-gradient(145deg, rgba(22, 33, 62, 0.98) 0%, rgba(14, 52, 96, 0.95) 100%);
 }
 
 /* 다크모드 네비게이션 */
 .navbar {
-  background: rgba(15, 15, 15, 0.95) !important;
+  background: rgba(26, 26, 46, 0.95) !important;
   backdrop-filter: blur(20px);
-  border-bottom: 1px solid rgba(99, 102, 241, 0.2);
+  border-bottom: 1px solid rgba(99, 102, 241, 0.3);
 }
 
 .navbar-brand {
   color: #6366f1 !important;
   font-weight: 700;
+  text-shadow: 0 0 10px rgba(99, 102, 241, 0.3);
 }
 
 .navbar-nav .nav-link {
-  color: #e0e0e0 !important;
-  transition: color 0.3s ease;
+  color: #eaeaea !important;
+  transition: all 0.3s ease;
 }
 
 .navbar-nav .nav-link:hover {
   color: #6366f1 !important;
+  text-shadow: 0 0 5px rgba(99, 102, 241, 0.4);
 }
 
 /* 다크모드 버튼 */
@@ -106,11 +110,12 @@ body {
 }
 
 .display-4 {
-  background: linear-gradient(135deg, #e0e0e0 0%, #6366f1 50%, #8b5cf6 100%);
+  background: linear-gradient(135deg, #ffffff 0%, #6366f1 50%, #8b5cf6 100%);
   -webkit-background-clip: text;
   background-clip: text;
   -webkit-text-fill-color: transparent;
   font-weight: 800;
+  text-shadow: 0 0 30px rgba(99, 102, 241, 0.3);
 }
 
 .text-primary {
@@ -118,9 +123,26 @@ body {
 }
 
 .lead {
-  color: #9ca3af !important;
+  color: #d1d5db !important;
   font-size: 1.2rem;
   line-height: 1.6;
+}
+
+/* 텍스트 색상 개선 */
+.text-white {
+  color: #ffffff !important;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  color: #ffffff !important;
+}
+
+.card-title {
+  color: #ffffff !important;
+}
+
+.card-text {
+  color: #d1d5db !important;
 }
 
 /* 그라디언트 박스 */
@@ -168,9 +190,10 @@ body {
 
 /* 프로그레스 바 다크모드 */
 .progress {
-  background-color: rgba(31, 41, 55, 0.8);
+  background-color: rgba(22, 33, 62, 0.6);
   border-radius: 10px;
   overflow: hidden;
+  border: 1px solid rgba(99, 102, 241, 0.2);
 }
 
 .progress-bar {
@@ -181,12 +204,15 @@ body {
 /* 리스트 그룹 다크모드 */
 .list-group-item {
   background-color: transparent !important;
-  border-color: rgba(75, 85, 99, 0.2) !important;
-  color: #e0e0e0 !important;
+  border-color: rgba(99, 102, 241, 0.2) !important;
+  color: #ffffff !important;
+  transition: all 0.3s ease;
 }
 
 .list-group-item:hover {
-  background-color: rgba(99, 102, 241, 0.1) !important;
+  background-color: rgba(99, 102, 241, 0.15) !important;
+  border-color: rgba(99, 102, 241, 0.4) !important;
+  transform: translateX(5px);
 }
 
 /* 배지 다크모드 */
@@ -206,13 +232,29 @@ body {
   background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%) !important;
 }
 
-/* 텍스트 색상 */
+/* 텍스트 색상 업데이트 */
 .text-muted {
-  color: #9ca3af !important;
+  color: #d1d5db !important;
 }
 
 .text-white {
-  color: #f9fafb !important;
+  color: #ffffff !important;
+}
+
+/* 소형 텍스트 */
+small, .small {
+  color: #d1d5db !important;
+}
+
+/* 리스트 아이템 텍스트 */
+.list-group-item {
+  color: #ffffff !important;
+}
+
+/* 배지 텍스트 개선 */
+.badge {
+  font-weight: 600;
+  text-shadow: none;
 }
 
 /* 스크롤바 다크모드 */
@@ -221,16 +263,18 @@ body {
 }
 
 ::-webkit-scrollbar-track {
-  background: #1f2937;
+  background: rgba(22, 33, 62, 0.8);
 }
 
 ::-webkit-scrollbar-thumb {
   background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
   border-radius: 10px;
+  box-shadow: 0 2px 10px rgba(99, 102, 241, 0.3);
 }
 
 ::-webkit-scrollbar-thumb:hover {
   background: linear-gradient(135deg, #5854ec 0%, #7c3aed 100%);
+  box-shadow: 0 4px 15px rgba(99, 102, 241, 0.5);
 }
 
 /* 반응형 디자인 */
