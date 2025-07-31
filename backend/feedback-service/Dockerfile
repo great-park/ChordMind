@@ -19,7 +19,7 @@ RUN ./gradlew build -x test
 RUN cp build/libs/*.jar app.jar
 
 # 포트 노출
-EXPOSE 8081
+EXPOSE 8085
 
 # 헬스체크를 위한 curl 설치
 RUN apt-get update && apt-get install -y curl && rm -rf /var/lib/apt/lists/*

@@ -42,7 +42,7 @@ const Leaderboard: React.FC<LeaderboardProps> = ({
       </div>
       <div className="card-body p-0">
         <div className="list-group list-group-flush">
-          {items.slice(0, maxItems).map((item) => (
+          {(items || []).slice(0, maxItems).map((item) => (
             <div key={item.id} className="list-group-item border-0 px-4 py-3">
               <div className="d-flex align-items-center">
                 <div className="me-3">

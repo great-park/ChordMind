@@ -119,12 +119,16 @@ class PracticeService {
     userId: number,
     period: string = 'month'
   ): Promise<ApiResponse<AnalyticsUserTrendResponse>> {
-    return apiClient.get<AnalyticsUserTrendResponse>(`/api/practice/analytics/user/${userId}/trend?period=${period}`);
+    const params = { period };
+    const queryString = apiClient.buildQueryParams(params);
+    return apiClient.get<AnalyticsUserTrendResponse>(`/api/practice/analytics/user/${userId}/trend?${queryString}`);
   }
 
   // 상위 사용자 조회
   async getTopUsers(limit: number = 10): Promise<ApiResponse<UserRankingResponse[]>> {
-    return apiClient.get<UserRankingResponse[]>(`/api/practice/leaderboard/top?limit=${limit}`);
+    const params = { limit };
+    const queryString = apiClient.buildQueryParams(params);
+    return apiClient.get<UserRankingResponse[]>(`/api/practice/analytics/global/leaderboard?${queryString}`);
   }
 
   // 연습 목표 생성

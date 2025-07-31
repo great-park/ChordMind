@@ -13,10 +13,8 @@ import {
   REVIEWS 
 } from '../constants/data';
 import { STATISTICS_DATA } from '../constants/statistics';
-import {
-  getAnalyticsUserSummary,
-  getAnalyticsUserTrend,
-  getTopUsers,
+import { practiceService } from '../services/practiceService';
+import type { 
   AnalyticsUserSummaryResponse,
   AnalyticsUserTrendResponse,
   UserRankingResponse
@@ -123,9 +121,9 @@ export default function Home() {
     setLoading(true);
     setError(null);
     Promise.all([
-      getAnalyticsUserSummary(userId),
-      getAnalyticsUserTrend(userId, 'month'),
-      getTopUsers(8)
+      practiceService.getAnalyticsUserSummary(userId),
+      practiceService.getAnalyticsUserTrend(userId, 'month'),
+      practiceService.getTopUsers(8)
     ])
       .then(([summaryRes, trendRes, topRes]) => {
         if (!summaryRes.success || !trendRes.success || !topRes.success) {
@@ -232,7 +230,14 @@ export default function Home() {
               <h5 className="mb-0">학습 진행 상황</h5>
             </div>
             <div className="card-body">
-              {userTrend && <ProgressChart data={userTrend} />}
+              <ProgressChart 
+                title="이번 주 연습 시간"
+                progress={userSummary?.totalPracticeTime || 0}
+                target={1000}
+                unit="분"
+                color="primary"
+                description="목표 대비 연습 진행률"
+              />
             </div>
           </div>
         </div>
@@ -242,7 +247,28 @@ export default function Home() {
               <h5 className="mb-0">최근 활동</h5>
             </div>
             <div className="card-body">
-              <ActivityFeed />
+              <ActivityFeed 
+                activities={[
+                  {
+                    id: '1',
+                    type: 'practice',
+                    title: 'C Major Scale 연습',
+                    description: '정확도 85% 달성',
+                    time: '2시간 전',
+                    icon: 'bi-music-note',
+                    color: 'primary'
+                  },
+                  {
+                    id: '2',
+                    type: 'achievement',
+                    title: '첫 번째 곡 완주',
+                    description: '새로운 업적 획득',
+                    time: '1일 전',
+                    icon: 'bi-trophy',
+                    color: 'warning'
+                  }
+                ]}
+              />
             </div>
           </div>
         </div>
@@ -256,7 +282,15 @@ export default function Home() {
               <h5 className="mb-0">리더보드</h5>
             </div>
             <div className="card-body">
-              <Leaderboard users={topUsers} />
+              <Leaderboard 
+                items={topUsers?.map((user, index) => ({
+                  id: user.userId.toString(),
+                  rank: index + 1,
+                  name: user.username || `User ${user.userId}`,
+                  score: user.score,
+                  category: '연습 시간'
+                })) || []}
+              />
             </div>
           </div>
         </div>

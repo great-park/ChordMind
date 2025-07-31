@@ -309,4 +309,42 @@ data class PracticeFeedbackResponse(
     val sessionId: Long,
     val progressId: Long,
     val feedback: String
+)
+
+// Admin DTOs
+data class AdminPracticeSummaryResponse(
+    val totalUsers: Int,
+    val activeUsers: Int,
+    val totalSessions: Int,
+    val averageSessionTime: Double,
+    val popularGoals: List<String>,
+    val trendingSkills: List<String>
+)
+
+data class AdminUserSummary(
+    val userId: Long,
+    val username: String,
+    val totalSessions: Int,
+    val totalPracticeTime: Long,
+    val averageScore: Double,
+    val lastActiveAt: LocalDateTime
+)
+
+data class AdminSessionSummary(
+    val sessionId: Long,
+    val userId: Long,
+    val username: String,
+    val startedAt: LocalDateTime,
+    val endedAt: LocalDateTime?,
+    val duration: Long,
+    val score: Double,
+    val status: String
+)
+
+data class AdminProgressSummary(
+    val totalProgress: Int,
+    val averageScore: Double,
+    val improvementRate: Double,
+    val topPerformers: List<AdminUserSummary>,
+    val recentActivity: List<AdminSessionSummary>
 ) 

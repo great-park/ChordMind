@@ -1,105 +1,225 @@
+version: '3.8'
+
 services:
+  # PostgreSQL Database
   postgres:
-    image: postgres:15
+    image: postgres:15-alpine
+    container_name: chordmind-postgres
     environment:
       POSTGRES_DB: chordmind
-      POSTGRES_USER: chordmind
-      POSTGRES_PASSWORD: chordmind123
+      POSTGRES_USER: chordmind_user
+      POSTGRES_PASSWORD: chordmind_password
     ports:
       - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
+    networks:
+      - chordmind-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U chordmind_user -d chordmind"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
 
+  # Redis for Rate Limiting
   redis:
     image: redis:7-alpine
+    container_name: chordmind-redis
     ports:
       - "6379:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - chordmind-network
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
 
+  # API Gateway
   api-gateway:
     build:
       context: ./backend/api-gateway
       dockerfile: Dockerfile
+    container_name: chordmind-api-gateway
     ports:
       - "8080:8080"
     environment:
-      SPRING_PROFILES_ACTIVE: docker
+      - SPRING_PROFILES_ACTIVE=docker
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - JWT_SECRET=chordmind-jwt-secret-key-2024-very-long-and-secure
+      - USER_SERVICE_URL=http://user-service:8081
+      - PRACTICE_SERVICE_URL=http://practice-service:8082
+      - FEEDBACK_SERVICE_URL=http://feedback-service:8085
+      - AI_SERVICE_URL=http://ai-service:8083
+      - HARMONY_SERVICE_URL=http://harmony-service:8084
     depends_on:
-      - postgres
-      - redis
-      - user-service
-      - practice-service
-      - harmony-service
-      - ai-service
+      redis:
+        condition: service_healthy
+    networks:
+      - chordmind-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
 
-  practice-service:
-    build:
-      context: ./backend/practice-service
-      dockerfile: Dockerfile
-    ports:
-      - "8081:8081"
-    environment:
-      SPRING_PROFILES_ACTIVE: docker
-      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/chordmind
-      SPRING_DATASOURCE_USERNAME: chordmind
-      SPRING_DATASOURCE_PASSWORD: chordmind123
-    depends_on:
-      - postgres
-
+  # User Service
   user-service:
     build:
       context: ./backend/user-service
       dockerfile: Dockerfile
+    container_name: chordmind-user-service
     ports:
-      - "8083:8083"
+      - "8081:8081"
     environment:
-      SPRING_PROFILES_ACTIVE: docker
-      SERVER_PORT: 8083
-      SPRING_APPLICATION_NAME: user-service
-      DB_HOST: postgres
-      DB_PORT: 5432
-      DB_NAME: chordmind_user
-      DB_USER: chordmind
-      DB_PASSWORD: chordmind123
-      JWT_SECRET: chordmind-jwt-secret-key-2024-very-long-and-secure
-      JWT_EXPIRATION: 86400000
-      SECURITY_USER_NAME: admin
-      SECURITY_USER_PASSWORD: admin
-      LOGGING_LEVEL_COM_CHORDMIND: DEBUG
-      LOGGING_LEVEL_ORG_SPRINGFRAMEWORK_SECURITY: DEBUG
+      - SPRING_PROFILES_ACTIVE=docker
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/chordmind
+      - SPRING_DATASOURCE_USERNAME=chordmind_user
+      - SPRING_DATASOURCE_PASSWORD=chordmind_password
+      - JWT_SECRET=chordmind-jwt-secret-key-2024-very-long-and-secure
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://api-gateway:8080/eureka/
     depends_on:
-      - postgres
+      postgres:
+        condition: service_healthy
+    networks:
+      - chordmind-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8081/actuator/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
 
-  harmony-service:
+  # Practice Service
+  practice-service:
     build:
-      context: ./backend/harmony-service
+      context: ./backend/practice-service
       dockerfile: Dockerfile
+    container_name: chordmind-practice-service
     ports:
-      - "8084:8084"
+      - "8082:8082"
     environment:
-      SPRING_PROFILES_ACTIVE: docker
-      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/chordmind
-      SPRING_DATASOURCE_USERNAME: chordmind
-      SPRING_DATASOURCE_PASSWORD: chordmind123
+      - SPRING_PROFILES_ACTIVE=docker
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/chordmind
+      - SPRING_DATASOURCE_USERNAME=chordmind_user
+      - SPRING_DATASOURCE_PASSWORD=chordmind_password
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://api-gateway:8080/eureka/
     depends_on:
-      - postgres
+      postgres:
+        condition: service_healthy
+    networks:
+      - chordmind-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8082/actuator/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
 
+  # Feedback Service
+  feedback-service:
+    build:
+      context: ./backend/feedback-service
+      dockerfile: Dockerfile
+    container_name: chordmind-feedback-service
+    ports:
+      - "8085:8085"
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/chordmind
+      - SPRING_DATASOURCE_USERNAME=chordmind_user
+      - SPRING_DATASOURCE_PASSWORD=chordmind_password
+      - JWT_SECRET=chordmind-jwt-secret-key-2024-very-long-and-secure
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://api-gateway:8080/eureka/
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - chordmind-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8085/actuator/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # AI Service
   ai-service:
     build:
       context: ./backend/ai-service
       dockerfile: Dockerfile
+    container_name: chordmind-ai-service
     ports:
-      - "8082:8082"
+      - "8083:8083"
     environment:
-      AI_SERVICE_URL: http://ai-service:8082
-      HARMONY_SERVICE_URL: http://harmony-service:8084
-      USER_SERVICE_URL: http://user-service:8083
-      DB_HOST: postgres
-      DB_PORT: 5432
-      DB_NAME: chordmind_ai
-      DB_USER: chordmind
-      DB_PASSWORD: chordmind123
+      - DATABASE_URL=postgresql://chordmind_user:chordmind_password@postgres:5432/chordmind
+      - HARMONY_SERVICE_URL=http://harmony-service:8084
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
     depends_on:
-      - postgres
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - chordmind-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8083/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Harmony Service
+  harmony-service:
+    build:
+      context: ./backend/harmony-service
+      dockerfile: Dockerfile
+    container_name: chordmind-harmony-service
+    ports:
+      - "8084:8084"
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://api-gateway:8080/eureka/
+    networks:
+      - chordmind-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8084/actuator/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Frontend
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: chordmind-frontend
+    ports:
+      - "3000:3000"
+    environment:
+      - NEXT_PUBLIC_API_URL=http://localhost:8080
+      - NEXT_PUBLIC_USER_SERVICE_URL=http://localhost:8081
+      - NEXT_PUBLIC_PRACTICE_SERVICE_URL=http://localhost:8082
+      - NEXT_PUBLIC_FEEDBACK_SERVICE_URL=http://localhost:8085
+      - NEXT_PUBLIC_AI_SERVICE_URL=http://localhost:8083
+      - NEXT_PUBLIC_HARMONY_SERVICE_URL=http://localhost:8084
+      - NEXT_PUBLIC_JWT_SECRET=chordmind-jwt-secret-key-2024-very-long-and-secure
+      - NEXT_PUBLIC_ENV=production
+    depends_on:
+      api-gateway:
+        condition: service_healthy
+    networks:
+      - chordmind-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
 
 volumes:
-  postgres_data: 
+  postgres_data:
+  redis_data:
+
+networks:
+  chordmind-network:
+    driver: bridge 

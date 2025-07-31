@@ -43,7 +43,7 @@ const ActivityFeed: React.FC<ActivityFeedProps> = ({
       </div>
       <div className="card-body p-0">
         <div className="list-group list-group-flush">
-          {activities.slice(0, maxItems).map((activity) => (
+          {(activities || []).slice(0, maxItems).map((activity) => (
             <div key={activity.id} className="list-group-item border-0 px-4 py-3">
               <div className="d-flex align-items-start">
                 <div className={`bg-${activity.color} bg-opacity-10 rounded-circle d-flex align-items-center justify-content-center me-3`} 

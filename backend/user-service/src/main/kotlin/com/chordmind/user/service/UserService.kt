@@ -10,6 +10,7 @@ import org.springframework.transaction.annotation.Transactional
 import java.time.LocalDateTime
 import com.fasterxml.jackson.databind.ObjectMapper
 
+@Service
 open class UserService(
     private val userRepository: UserRepository,
     private val passwordEncoder: PasswordEncoder,
