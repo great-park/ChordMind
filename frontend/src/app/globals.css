@@ -292,6 +292,33 @@ small, .small {
   color: rgba(255, 255, 255, 0.7) !important;
 }
 
+/* Alert 다크모드 */
+.alert {
+  border-radius: 10px;
+}
+
+.alert strong {
+  color: inherit !important;
+}
+
+.alert-success {
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.2) 0%, rgba(16, 185, 129, 0.1) 100%);
+  border: 1px solid rgba(16, 185, 129, 0.3);
+  color: #10b981 !important;
+}
+
+.alert-danger {
+  background: linear-gradient(135deg, rgba(239, 68, 68, 0.2) 0%, rgba(239, 68, 68, 0.1) 100%);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  color: #ef4444 !important;
+}
+
+.alert-warning {
+  background: linear-gradient(135deg, rgba(245, 158, 11, 0.2) 0%, rgba(245, 158, 11, 0.1) 100%);
+  border: 1px solid rgba(245, 158, 11, 0.3);
+  color: #f59e0b !important;
+}
+
 /* 스크롤바 다크모드 */
 ::-webkit-scrollbar {
   width: 8px;

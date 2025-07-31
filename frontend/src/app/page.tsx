@@ -61,19 +61,48 @@ function QuizWidget() {
     }
   };
 
-  if (loading) return <div>퀴즈 로딩 중...</div>;
-  if (error) return <div>{error}</div>;
-  if (!questions.length) return <div>퀴즈가 없습니다.</div>;
+  if (loading) return (
+    <div className="card shadow mb-4">
+      <div className="card-body text-center">
+        <div className="spinner-border text-primary mb-2" role="status">
+          <span className="visually-hidden">로딩 중...</span>
+        </div>
+        <p className="text-white-50 mb-0">퀴즈 로딩 중...</p>
+      </div>
+    </div>
+  );
+  
+  if (error) return (
+    <div className="card shadow mb-4">
+      <div className="card-body">
+        <div className="alert alert-danger border-0">
+          <i className="bi bi-exclamation-triangle-fill me-2"></i>
+          {error}
+        </div>
+      </div>
+    </div>
+  );
+  
+  if (!questions.length) return (
+    <div className="card shadow mb-4">
+      <div className="card-body text-center">
+        <i className="bi bi-question-circle display-4 text-muted mb-3"></i>
+        <p className="text-white-50 mb-0">퀴즈가 없습니다.</p>
+      </div>
+    </div>
+  );
 
   const q = questions[current];
 
   return (
     <div className="card shadow mb-4">
       <div className="card-header">
-        <h5 className="mb-0">오늘의 퀴즈</h5>
+        <h5 className="mb-0 text-white">🧠 오늘의 퀴즈</h5>
       </div>
       <div className="card-body">
-        <div className="mb-3">{q.question}</div>
+        <div className="mb-3">
+          <h6 className="text-white fw-bold">{q.question}</h6>
+        </div>
         <div className="mb-3">
           {q.choices.map((choice: string) => (
             <button
@@ -94,12 +123,16 @@ function QuizWidget() {
             disabled={!selected} 
             className="btn btn-success"
           >
+            <i className="bi bi-check-circle me-1"></i>
             정답 제출
           </button>
         )}
         {result && (
-          <div className={`alert ${result.correct ? 'alert-success' : 'alert-danger'}`}>
-            {result.explanation}
+          <div className={`alert ${result.correct ? 'alert-success' : 'alert-danger'} border-0`}>
+            <div className="d-flex align-items-center">
+              <i className={`bi ${result.correct ? 'bi-check-circle-fill' : 'bi-x-circle-fill'} me-2`}></i>
+              <strong>{result.explanation}</strong>
+            </div>
           </div>
         )}
       </div>
