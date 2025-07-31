@@ -8,9 +8,7 @@ import ActivityFeed from '../../components/ActivityFeed';
 import Leaderboard from '../../components/Leaderboard';
 import { STATISTICS_DATA } from '../../constants/statistics';
 import {
-  getAnalyticsUserSummary,
-  getAnalyticsUserTrend,
-  getTopUsers,
+  practiceService,
   AnalyticsUserSummaryResponse,
   AnalyticsUserTrendResponse,
   UserRankingResponse
@@ -28,9 +26,9 @@ export default function Dashboard() {
     setLoading(true);
     setError(null);
     Promise.all([
-      getAnalyticsUserSummary(userId),
-      getAnalyticsUserTrend(userId, 'month'),
-      getTopUsers(8)
+      practiceService.getAnalyticsUserSummary(userId),
+      practiceService.getAnalyticsUserTrend(userId, 'month'),
+      practiceService.getTopUsers(8)
     ])
       .then(([summaryRes, trendRes, topRes]) => {
         if (!summaryRes.success || !trendRes.success || !topRes.success) {
@@ -100,7 +98,16 @@ export default function Dashboard() {
                 <h6 className="m-0 font-weight-bold text-primary">학습 진행 상황</h6>
               </div>
               <div className="card-body">
-                {userTrend && <ProgressChart data={userTrend} />}
+                {userSummary && (
+                  <ProgressChart
+                    title="학습 진행률"
+                    progress={userSummary.completedSessions}
+                    target={userSummary.totalSessions}
+                    unit="세션"
+                    color="primary"
+                    description="완료된 연습 세션 수"
+                  />
+                )}
               </div>
             </div>
           </div>
@@ -112,7 +119,28 @@ export default function Dashboard() {
                 <h6 className="m-0 font-weight-bold text-primary">최근 활동</h6>
               </div>
               <div className="card-body">
-                <ActivityFeed />
+                <ActivityFeed 
+                  activities={[
+                    {
+                      id: '1',
+                      type: 'practice',
+                      title: '연습 세션 완료',
+                      description: '오늘 30분 연습을 완료했습니다.',
+                      time: '2시간 전',
+                      icon: 'bi-music-note',
+                      color: 'primary'
+                    },
+                    {
+                      id: '2',
+                      type: 'achievement',
+                      title: '목표 달성',
+                      description: '주간 연습 목표를 달성했습니다.',
+                      time: '1일 전',
+                      icon: 'bi-trophy',
+                      color: 'success'
+                    }
+                  ]}
+                />
               </div>
             </div>
           </div>
@@ -126,7 +154,15 @@ export default function Dashboard() {
                 <h6 className="m-0 font-weight-bold text-primary">리더보드</h6>
               </div>
               <div className="card-body">
-                <Leaderboard users={topUsers} />
+                <Leaderboard 
+                  items={topUsers.map(user => ({
+                    id: user.userId.toString(),
+                    rank: user.rank,
+                    name: user.username,
+                    score: user.score,
+                    category: user.category
+                  }))}
+                />
               </div>
             </div>
           </div>
