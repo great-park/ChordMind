@@ -22,15 +22,15 @@ const ProgressChart: React.FC<ProgressChartProps> = ({
   return (
     <div className="card border-0 shadow-sm h-100">
       <div className="card-body p-4">
-        <h6 className="fw-bold mb-3">{title}</h6>
+        <h6 className="fw-bold mb-3 text-white">{title}</h6>
         <div className="d-flex justify-content-between align-items-center mb-3">
           <div>
-            <h3 className="fw-bold mb-1">{progress.toLocaleString()}</h3>
-            <small className="text-muted">목표: {target.toLocaleString()} {unit}</small>
+            <h3 className="fw-bold mb-1 text-white">{progress.toLocaleString()}</h3>
+            <small className="text-white-50">목표: {target.toLocaleString()} {unit}</small>
           </div>
           <div className="text-end">
             <h4 className={`fw-bold text-${color} mb-1`}>{percentage.toFixed(1)}%</h4>
-            <small className="text-muted">달성률</small>
+            <small className="text-white-50">달성률</small>
           </div>
         </div>
         <div className="progress mb-3" style={{height: '8px'}} role="progressbar" 
@@ -38,7 +38,7 @@ const ProgressChart: React.FC<ProgressChartProps> = ({
           <div className={`progress-bar bg-${color}`} style={{width: `${percentage}%`}}></div>
         </div>
         {description && (
-          <p className="text-muted small mb-0">{description}</p>
+          <p className="text-white-50 small mb-0">{description}</p>
         )}
       </div>
     </div>

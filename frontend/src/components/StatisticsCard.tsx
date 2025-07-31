@@ -56,10 +56,10 @@ const StatisticsCard: React.FC<StatisticsCardProps> = ({
             </div>
           )}
         </div>
-        <h3 className="fw-bold mb-2">{value}</h3>
-        <h6 className="text-muted mb-2">{title}</h6>
+        <h3 className="fw-bold mb-2 text-white">{value}</h3>
+        <h6 className="text-white-50 mb-2">{title}</h6>
         {description && (
-          <p className="text-muted small mb-0">{description}</p>
+          <p className="text-white-50 small mb-0">{description}</p>
         )}
       </div>
     </div>

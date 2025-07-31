@@ -181,13 +181,13 @@ export default function ProfileStats() {
                 <div className="col-6 mb-3">
                   <div className="text-center">
                     <h5 className="text-primary">{stats.averageSessionTime}분</h5>
-                    <small className="text-muted">평균 세션 시간</small>
+                    <small className="text-white-50">평균 세션 시간</small>
                   </div>
                 </div>
                 <div className="col-6 mb-3">
                   <div className="text-center">
                     <h5 className="text-success">{stats.completionRate}%</h5>
-                    <small className="text-muted">완료율</small>
+                    <small className="text-white-50">완료율</small>
                   </div>
                 </div>
               </div>
