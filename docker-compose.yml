@@ -179,7 +179,13 @@ services:
       - "8084:8084"
     environment:
       - SPRING_PROFILES_ACTIVE=docker
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/chordmind
+      - SPRING_DATASOURCE_USERNAME=chordmind_user
+      - SPRING_DATASOURCE_PASSWORD=chordmind_password
       - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://api-gateway:8080/eureka/
+    depends_on:
+      postgres:
+        condition: service_healthy
     networks:
       - chordmind-network
     healthcheck:

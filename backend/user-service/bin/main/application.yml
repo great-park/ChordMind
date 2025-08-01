@@ -1,12 +1,12 @@
 server:
-  port: ${SERVER_PORT:8084}
+  port: ${SERVER_PORT:8081}
 
 spring:
   application:
-    name: ${SPRING_APPLICATION_NAME:harmony-service}
+    name: ${SPRING_APPLICATION_NAME:user-service}
   
   datasource:
-    url: jdbc:postgresql://${DB_HOST:localhost}:${DB_PORT:5432}/${DB_NAME:chordmind_harmony}
+    url: jdbc:postgresql://${DB_HOST:localhost}:${DB_PORT:5432}/${DB_NAME:chordmind_user}
     username: ${DB_USER:postgres}
     password: ${DB_PASSWORD:password}
     driver-class-name: org.postgresql.Driver
@@ -20,33 +20,15 @@ spring:
         dialect: org.hibernate.dialect.PostgreSQLDialect
         format_sql: true
   
-  cloud:
-    discovery:
-      enabled: true
+  security:
+    user:
+      name: ${SECURITY_USER_NAME:admin}
+      password: ${SECURITY_USER_PASSWORD:admin}
 
-eureka:
-  client:
-    service-url:
-      defaultZone: ${EUREKA_SERVICE_URL:http://localhost:8761/eureka/}
-  instance:
-    prefer-ip-address: true
-    instance-id: ${spring.application.name}:${server.port}
-
-management:
-  endpoints:
-    web:
-      exposure:
-        include: health,info,metrics
-  endpoint:
-    health:
-      show-details: always
-
-# JWT 설정
 jwt:
   secret: ${JWT_SECRET:chordmind-jwt-secret-key-2024-very-long-and-secure}
   expiration: ${JWT_EXPIRATION:86400000}
 
-# 로깅 설정
 logging:
   level:
     com.chordmind: ${LOGGING_LEVEL_COM_CHORDMIND:DEBUG}

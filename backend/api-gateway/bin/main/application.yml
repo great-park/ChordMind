@@ -1,0 +1,249 @@
+server:
+  port: ${SERVER_PORT:8080}
+
+spring:
+  application:
+    name: api-gateway
+  
+  # Redis 설정 (Rate Limiting용)
+  data:
+    redis:
+      host: ${REDIS_HOST:localhost}
+      port: ${REDIS_PORT:6379}
+      password: ${REDIS_PASSWORD:}
+      database: ${REDIS_DATABASE:0}
+  
+  # JWT 설정
+  security:
+    jwt:
+      secret: ${JWT_SECRET:chordmind-jwt-secret-key-2024-very-long-and-secure}
+      expiration: ${JWT_EXPIRATION:86400000}
+  
+  cloud:
+    gateway:
+      discovery:
+        locator:
+          enabled: true
+          lower-case-service-id: true
+      routes:
+        # Practice Service
+        - id: practice-service
+          uri: lb://practice-service
+          predicates:
+            - Path=/api/practice/**
+          filters:
+            - StripPrefix=1
+            - name: CircuitBreaker
+              args:
+                name: practice-service-circuit-breaker
+                fallbackUri: forward:/fallback/practice
+            - name: RequestRateLimiter
+              args:
+                redis-rate-limiter.replenishRate: 10
+                redis-rate-limiter.burstCapacity: 20
+                key-resolver: "#{@userKeyResolver}"
+
+        # AI Analysis Service
+        - id: ai-analysis-service
+          uri: lb://ai-analysis-service
+          predicates:
+            - Path=/api/analysis/**
+          filters:
+            - StripPrefix=1
+            - name: CircuitBreaker
+              args:
+                name: ai-analysis-service-circuit-breaker
+                fallbackUri: forward:/fallback/analysis
+            - name: RequestRateLimiter
+              args:
+                redis-rate-limiter.replenishRate: 10
+                redis-rate-limiter.burstCapacity: 20
+                key-resolver: "#{@userKeyResolver}"
+
+        # User Service
+        - id: user-service
+          uri: lb://user-service
+          predicates:
+            - Path=/api/users/**
+          filters:
+            - StripPrefix=1
+            - name: CircuitBreaker
+              args:
+                name: user-service-circuit-breaker
+                fallbackUri: forward:/fallback/users
+            - name: RequestRateLimiter
+              args:
+                redis-rate-limiter.replenishRate: 10
+                redis-rate-limiter.burstCapacity: 20
+                key-resolver: "#{@userKeyResolver}"
+
+        # Feedback Service
+        - id: feedback-service
+          uri: lb://feedback-service
+          predicates:
+            - Path=/api/feedback/**
+          filters:
+            - StripPrefix=1
+            - name: CircuitBreaker
+              args:
+                name: feedback-service-circuit-breaker
+                fallbackUri: forward:/fallback/feedback
+            - name: RequestRateLimiter
+              args:
+                redis-rate-limiter.replenishRate: 10
+                redis-rate-limiter.burstCapacity: 20
+                key-resolver: "#{@userKeyResolver}"
+
+        # Game Service
+        - id: game-service
+          uri: lb://game-service
+          predicates:
+            - Path=/api/games/**
+          filters:
+            - StripPrefix=1
+            - name: CircuitBreaker
+              args:
+                name: game-service-circuit-breaker
+                fallbackUri: forward:/fallback/games
+            - name: RequestRateLimiter
+              args:
+                redis-rate-limiter.replenishRate: 10
+                redis-rate-limiter.burstCapacity: 20
+                key-resolver: "#{@userKeyResolver}"
+
+        # Harmony Service
+        - id: harmony-service
+          uri: lb://harmony-service
+          predicates:
+            - Path=/api/harmony/**
+          filters:
+            - StripPrefix=1
+            - name: CircuitBreaker
+              args:
+                name: harmony-service-circuit-breaker
+                fallbackUri: forward:/fallback/harmony
+            - name: RequestRateLimiter
+              args:
+                redis-rate-limiter.replenishRate: 10
+                redis-rate-limiter.burstCapacity: 20
+                key-resolver: "#{@userKeyResolver}"
+
+      globalcors:
+        cors-configurations:
+          '[/**]':
+            allowed-origins:
+              - "http://localhost:3000"
+              - "http://localhost:3001"
+              - "https://chordmind.com"
+            allowed-methods:
+              - GET
+              - POST
+              - PUT
+              - DELETE
+              - OPTIONS
+            allowed-headers:
+              - "*"
+            allow-credentials: true
+            max-age: 3600
+
+    # Circuit Breaker Configuration
+    circuitbreaker:
+      resilience4j:
+        instances:
+          practice-service-circuit-breaker:
+            sliding-window-size: 10
+            failure-rate-threshold: 50
+            wait-duration-in-open-state: 10000
+            permitted-number-of-calls-in-half-open-state: 3
+            automatic-transition-from-open-to-half-open-enabled: true
+          ai-analysis-service-circuit-breaker:
+            sliding-window-size: 10
+            failure-rate-threshold: 50
+            wait-duration-in-open-state: 10000
+            permitted-number-of-calls-in-half-open-state: 3
+            automatic-transition-from-open-to-half-open-enabled: true
+          user-service-circuit-breaker:
+            sliding-window-size: 10
+            failure-rate-threshold: 50
+            wait-duration-in-open-state: 10000
+            permitted-number-of-calls-in-half-open-state: 3
+            automatic-transition-from-open-to-half-open-enabled: true
+          feedback-service-circuit-breaker:
+            sliding-window-size: 10
+            failure-rate-threshold: 50
+            wait-duration-in-open-state: 10000
+            permitted-number-of-calls-in-half-open-state: 3
+            automatic-transition-from-open-to-half-open-enabled: true
+          game-service-circuit-breaker:
+            sliding-window-size: 10
+            failure-rate-threshold: 50
+            wait-duration-in-open-state: 10000
+            permitted-number-of-calls-in-half-open-state: 3
+            automatic-transition-from-open-to-half-open-enabled: true
+          harmony-service-circuit-breaker:
+            sliding-window-size: 10
+            failure-rate-threshold: 50
+            wait-duration-in-open-state: 10000
+            permitted-number-of-calls-in-half-open-state: 3
+            automatic-transition-from-open-to-half-open-enabled: true
+
+# Logging Configuration
+logging:
+  level:
+    org.springframework.cloud.gateway: ${LOGGING_LEVEL_GATEWAY:INFO}
+    com.chordmind.gateway: ${LOGGING_LEVEL_CHORDMIND:DEBUG}
+    org.springframework.web.reactive.function.client: ${LOGGING_LEVEL_WEBFLUX:INFO}
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
+    file: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
+
+# Management Endpoints
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,gateway,metrics,circuitbreakers
+  endpoint:
+    health:
+      show-details: always
+      show-components: always
+  metrics:
+    distribution:
+      percentiles-histogram:
+        http.server.requests: true
+      percentiles:
+        http.server.requests: 0.5, 0.95, 0.99
+  prometheus:
+    metrics:
+      export:
+        enabled: true
+
+# Security Configuration
+security:
+  basic:
+    enabled: false
+  oauth2:
+    enabled: false
+
+# Rate Limiting Configuration
+rate-limit:
+  default:
+    requests-per-second: 10
+    burst-capacity: 20
+  user-service:
+    requests-per-second: 20
+    burst-capacity: 40
+  practice-service:
+    requests-per-second: 15
+    burst-capacity: 30
+
+# Monitoring Configuration
+monitoring:
+  enabled: true
+  metrics:
+    enabled: true
+  tracing:
+    enabled: false
+  health-check:
+    interval: 30000
+    timeout: 5000 
