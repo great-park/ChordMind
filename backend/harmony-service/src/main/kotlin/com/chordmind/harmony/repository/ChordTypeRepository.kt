@@ -1,6 +1,7 @@
 package com.chordmind.harmony.repository
 
 import com.chordmind.harmony.domain.ChordType
+import com.chordmind.harmony.domain.DifficultyLevel
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.data.jpa.repository.Query
 import org.springframework.data.repository.query.Param
@@ -14,14 +15,19 @@ import org.springframework.stereotype.Repository
 interface ChordTypeRepository : JpaRepository<ChordType, Long> {
     
     /**
-     * 난이도별 코드 타입 조회
+     * 난이도별 코드 타입 조회 (Enum 기반)
      */
-    fun findByDifficultyLevel(difficultyLevel: Int): List<ChordType>
+    fun findByDifficultyLevel(difficultyLevel: DifficultyLevel): List<ChordType>
     
     /**
-     * 난이도 범위별 코드 타입 조회
+     * 난이도 범위별 코드 타입 조회 (하위 호환성)
      */
     fun findByDifficultyLevelBetween(minLevel: Int, maxLevel: Int): List<ChordType>
+    
+    /**
+     * 특정 난이도들로 코드 타입 조회
+     */
+    fun findByDifficultyLevelIn(difficultyLevels: List<DifficultyLevel>): List<ChordType>
     
     /**
      * 심볼로 코드 타입 조회

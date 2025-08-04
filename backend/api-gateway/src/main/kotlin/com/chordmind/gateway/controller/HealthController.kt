@@ -1,5 +1,6 @@
 package com.chordmind.gateway.controller
 
+import com.chordmind.gateway.domain.*
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RequestMapping
@@ -15,13 +16,13 @@ class HealthController(
     private val webClient: WebClient
 ) {
 
-    private val serviceStatus = ConcurrentHashMap<String, ServiceHealth>()
+    private val serviceStatus = ConcurrentHashMap<MicroService, ServiceHealth>()
 
     @GetMapping
     fun gatewayHealth(): ResponseEntity<Map<String, Any>> {
         return ResponseEntity.ok(
             mapOf(
-                "status" to "UP",
+                "status" to HealthStatus.UP,
                 "service" to "api-gateway",
                 "timestamp" to LocalDateTime.now(),
                 "version" to "1.0.0"
@@ -31,20 +32,28 @@ class HealthController(
 
     @GetMapping("/services")
     fun servicesHealth(): ResponseEntity<Map<String, Any>> {
-        val healthChecks = listOf(
-            checkServiceHealth("practice-service", "http://practice-service:8081/actuator/health"),
-            checkServiceHealth("user-service", "http://user-service:8082/actuator/health"),
-            checkServiceHealth("harmony-service", "http://harmony-service:8083/actuator/health"),
-            checkServiceHealth("ai-analysis-service", "http://ai-analysis-service:8084/actuator/health"),
-            checkServiceHealth("feedback-service", "http://feedback-service:8085/actuator/health"),
-            checkServiceHealth("game-service", "http://game-service:8086/actuator/health")
+        // Enum을 활용한 서비스 헬스체크
+        val healthChecks = MicroService.values().map { service ->
+            checkServiceHealth(service)
+        }
+
+        val statusMap = serviceStatus.mapKeys { it.key.serviceName }
+        val overallStatus = GatewayOverallStatus.calculateOverallStatus(
+            serviceStatus.mapValues { it.value.healthStatus }
         )
 
         return ResponseEntity.ok(
             mapOf(
                 "timestamp" to LocalDateTime.now(),
-                "services" to serviceStatus,
-                "overall" to if (serviceStatus.values.all { it.status == "UP" }) "UP" else "DOWN"
+                "services" to statusMap,
+                "overall" to overallStatus,
+                "criticalServices" to MicroService.getCriticalServices().map { service ->
+                    mapOf(
+                        "name" to service.serviceName,
+                        "status" to serviceStatus[service]?.healthStatus ?: HealthStatus.UNKNOWN,
+                        "priority" to service.priority
+                    )
+                }
             )
         )
     }
@@ -94,7 +103,30 @@ class HealthController(
 
 data class ServiceHealth(
     val service: String,
-    val status: String,
+    val healthStatus: HealthStatus,
     val timestamp: LocalDateTime,
-    val details: Map<String, Any>
-) 
+    val details: Map<String, Any>,
+    val priority: ServicePriority,
+    val category: ServiceCategory,
+    val responseTimeMs: Long? = null,
+    val lastSuccessfulCheck: LocalDateTime? = null,
+    val consecutiveFailures: Int = 0
+) {
+    /**
+     * 하위 호환성을 위한 문자열 상태
+     */
+    val status: String
+        get() = healthStatus.name
+        
+    /**
+     * 서비스가 정상인지 확인
+     */
+    val isHealthy: Boolean
+        get() = healthStatus in HealthStatus.getHealthyStates()
+        
+    /**
+     * 알림이 필요한지 확인
+     */
+    val requiresAlert: Boolean
+        get() = healthStatus.severity.requiresAlert || consecutiveFailures >= 3
+} 

@@ -36,6 +36,10 @@ data class User(
     @Column(name = "last_login_at")
     val lastLoginAt: LocalDateTime? = null,
     
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    val status: UserStatus = UserStatus.ACTIVE,
+    
     @Column(nullable = false)
     val enabled: Boolean = true,
     
@@ -59,14 +63,52 @@ data class User(
     @Column(name = "notification_settings", columnDefinition = "JSONB")
     val notificationSettings: String? = null, // JSON 형태로 저장
     
-    @Column(name = "privacy_settings", columnDefinition = "JSONB")
-    val privacySettings: String? = null, // JSON 형태로 저장
+    // 프라이버시 설정을 Enum으로 개선
+    @Enumerated(EnumType.STRING)
+    @Column(name = "profile_visibility")
+    val profileVisibility: ProfileVisibility = ProfileVisibility.getDefault(),
     
-    @Column(name = "learning_settings", columnDefinition = "JSONB")
-    val learningSettings: String? = null, // JSON 형태로 저장
+    @Enumerated(EnumType.STRING)
+    @Column(name = "activity_visibility")
+    val activityVisibility: ActivityVisibility = ActivityVisibility.getDefault(),
     
-    @Column(name = "theme_settings", columnDefinition = "JSONB")
-    val themeSettings: String? = null, // JSON 형태로 저장
+    @Enumerated(EnumType.STRING)
+    @Column(name = "contact_visibility")
+    val contactVisibility: ContactVisibility = ContactVisibility.getDefault(),
+    
+    @Enumerated(EnumType.STRING)
+    @Column(name = "security_level")
+    val securityLevel: SecurityLevel = SecurityLevel.getDefault(),
+    
+    // 학습 설정을 Enum으로 개선
+    @Enumerated(EnumType.STRING)
+    @Column(name = "learning_style")
+    val learningStyle: LearningStyle? = null, // AI가 분석 후 설정
+    
+    @Enumerated(EnumType.STRING)
+    @Column(name = "difficulty_preference")
+    val difficultyPreference: DifficultyPreference = DifficultyPreference.getDefault(),
+    
+    @Enumerated(EnumType.STRING)
+    @Column(name = "session_length")
+    val sessionLength: SessionLength = SessionLength.getDefault(),
+    
+    // 테마 설정을 Enum으로 개선
+    @Enumerated(EnumType.STRING)
+    @Column(name = "theme_mode")
+    val themeMode: ThemeMode = ThemeMode.getDefault(),
+    
+    @Enumerated(EnumType.STRING)
+    @Column(name = "color_scheme")
+    val colorScheme: ColorScheme = ColorScheme.getDefault(),
+    
+    @Enumerated(EnumType.STRING)
+    @Column(name = "font_size")
+    val fontSize: FontSize = FontSize.getDefault(),
+    
+    @Enumerated(EnumType.STRING)
+    @Column(name = "language")
+    val language: Language = Language.getDefault(),
     
     @Column(name = "total_practice_time")
     val totalPracticeTime: Long = 0, // 분 단위

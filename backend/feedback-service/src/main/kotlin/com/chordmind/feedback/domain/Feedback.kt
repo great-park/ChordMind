@@ -20,8 +20,9 @@ data class Feedback(
     @Column(name = "feedback_type", nullable = false)
     val feedbackType: FeedbackType,
     
+    @Enumerated(EnumType.STRING)
     @Column(name = "category", nullable = false)
-    val category: String,
+    val category: FeedbackCategory,
     
     @Column(name = "title", nullable = false)
     val title: String,
@@ -40,8 +41,20 @@ data class Feedback(
     @Column(name = "status", nullable = false)
     val status: FeedbackStatus = FeedbackStatus.PENDING,
     
+    @Enumerated(EnumType.STRING)
+    @Column(name = "severity")
+    val severity: FeedbackSeverity = FeedbackSeverity.getDefault(),
+    
+    @Enumerated(EnumType.STRING)
+    @Column(name = "source")
+    val source: FeedbackSource = FeedbackSource.getDefault(),
+    
+    @Enumerated(EnumType.STRING)
+    @Column(name = "assignment_status")
+    val assignmentStatus: AssignmentStatus = AssignmentStatus.UNASSIGNED,
+    
     @Column(name = "tags")
-    val tags: String? = null, // JSON 형태로 저장
+    val tags: String? = null, // JSON 형태로 저장 (FeedbackTag enum 리스트)
     
     @Column(name = "metadata", columnDefinition = "JSONB")
     val metadata: String? = null, // JSON 형태로 저장
@@ -59,7 +72,17 @@ data class Feedback(
     val resolvedBy: Long? = null,
     
     @Column(name = "resolution_notes", columnDefinition = "TEXT")
-    val resolutionNotes: String? = null
+    val resolutionNotes: String? = null,
+    
+    @Enumerated(EnumType.STRING)
+    @Column(name = "user_satisfaction")
+    val userSatisfaction: FeedbackSatisfaction? = null, // 해결 후 사용자 만족도
+    
+    @Column(name = "estimated_effort_hours")
+    val estimatedEffortHours: Double? = null, // 예상 작업 시간
+    
+    @Column(name = "actual_effort_hours")
+    val actualEffortHours: Double? = null // 실제 작업 시간
 )
 
 enum class FeedbackType {

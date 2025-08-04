@@ -23,15 +23,29 @@ data class ProgressionPattern(
     @Column(columnDefinition = "TEXT")
     val description: String? = null,
     
+    @Enumerated(EnumType.STRING)
     @Column(length = 50)
-    val genre: String? = null,
+    val genre: MusicGenre? = null,
     
+    @Enumerated(EnumType.STRING)
     @Column(name = "difficulty_level")
-    val difficultyLevel: Int = 1,
+    val difficultyLevel: DifficultyLevel = DifficultyLevel.BEGINNER,
     
     @Column(name = "popularity_score")
     val popularityScore: Int = 50,
     
     @Column(name = "created_at")
     val createdAt: LocalDateTime = LocalDateTime.now()
-)
+) {
+    /**
+     * 장르 문자열 값을 반환 (하위 호환성)
+     */
+    val genreString: String
+        get() = genre?.name ?: "ALL"
+    
+    /**
+     * 난이도 숫자 값을 반환 (하위 호환성)
+     */
+    val difficultyLevelInt: Int
+        get() = difficultyLevel.level
+}

@@ -41,7 +41,7 @@ class QuizGeneratorService(
                 question = "다음 코드의 이름은 무엇인가요? 🎵",
                 answer = chord,
                 explanation = "${chord}는 ${chordType.description}입니다.",
-                difficulty = chordType.difficultyLevel
+                difficulty = chordType.difficultyLevelInt
             )
             
             // 선택지 생성 (DB 기반)
@@ -81,7 +81,7 @@ class QuizGeneratorService(
                 question = "다음 화성 진행의 이름은 무엇인가요? 🎼",
                 answer = progressionPattern.pattern,
                 explanation = "${progressionPattern.pattern}는 ${progressionPattern.description}입니다.",
-                difficulty = progressionPattern.difficultyLevel
+                difficulty = progressionPattern.difficultyLevelInt
             )
             
             // 선택지 생성 (DB 기반)

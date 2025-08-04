@@ -23,12 +23,19 @@ data class ChordType(
     @Column(columnDefinition = "TEXT")
     val description: String? = null,
     
+    @Enumerated(EnumType.STRING)
     @Column(name = "difficulty_level")
-    val difficultyLevel: Int = 1,
+    val difficultyLevel: DifficultyLevel = DifficultyLevel.BEGINNER,
     
     @Column(length = 100)
     val intervals: String? = null,
     
     @Column(name = "created_at")
     val createdAt: LocalDateTime = LocalDateTime.now()
-)
+) {
+    /**
+     * 난이도 숫자 값을 반환 (하위 호환성)
+     */
+    val difficultyLevelInt: Int
+        get() = difficultyLevel.level
+}
