@@ -1,7 +1,6 @@
 package com.chordmind.user.dto
 
-import com.chordmind.user.domain.User
-import com.chordmind.user.domain.UserRole
+import com.chordmind.user.domain.*
 import java.time.LocalDateTime
 
 // 회원가입 요청
@@ -95,18 +94,36 @@ data class UserSettingsResponse(
     val id: Long,
     val email: String,
     val notificationSettings: NotificationSettings,
-    val privacySettings: PrivacySettings,
-    val learningSettings: LearningSettings,
-    val themeSettings: ThemeSettings,
+    // 새로운 Enum 기반 설정들
+    val themeMode: ThemeMode,
+    val colorScheme: ColorScheme,
+    val fontSize: FontSize,
+    val language: Language,
+    val learningStyle: LearningStyle?,
+    val difficultyPreference: DifficultyPreference,
+    val sessionLength: SessionLength,
+    val profileVisibility: ProfileVisibility,
+    val activityVisibility: ActivityVisibility,
+    val contactVisibility: ContactVisibility,
+    val securityLevel: SecurityLevel,
     val updatedAt: LocalDateTime
 )
 
 // 사용자 설정 수정 요청
 data class UpdateUserSettingsRequest(
     val notificationSettings: NotificationSettings? = null,
-    val privacySettings: PrivacySettings? = null,
-    val learningSettings: LearningSettings? = null,
-    val themeSettings: ThemeSettings? = null
+    // 새로운 Enum 기반 설정들
+    val themeMode: ThemeMode? = null,
+    val colorScheme: ColorScheme? = null,
+    val fontSize: FontSize? = null,
+    val language: Language? = null,
+    val learningStyle: LearningStyle? = null,
+    val difficultyPreference: DifficultyPreference? = null,
+    val sessionLength: SessionLength? = null,
+    val profileVisibility: ProfileVisibility? = null,
+    val activityVisibility: ActivityVisibility? = null,
+    val contactVisibility: ContactVisibility? = null,
+    val securityLevel: SecurityLevel? = null
 )
 
 // 알림 설정

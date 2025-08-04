@@ -141,10 +141,20 @@ open class UserService(
             .orElse(null) ?: return ApiResponse.error("사용자를 찾을 수 없습니다.")
         
         val updatedUser = user.copy(
+            // 기존 JSON 설정은 유지하되, 새로운 Enum 필드들로 대체
             notificationSettings = request.notificationSettings?.let { objectMapper.writeValueAsString(it) } ?: user.notificationSettings,
-            privacySettings = request.privacySettings?.let { objectMapper.writeValueAsString(it) } ?: user.privacySettings,
-            learningSettings = request.learningSettings?.let { objectMapper.writeValueAsString(it) } ?: user.learningSettings,
-            themeSettings = request.themeSettings?.let { objectMapper.writeValueAsString(it) } ?: user.themeSettings,
+            // 새로운 Enum 기반 설정들
+            themeMode = request.themeMode ?: user.themeMode,
+            colorScheme = request.colorScheme ?: user.colorScheme,
+            fontSize = request.fontSize ?: user.fontSize,
+            language = request.language ?: user.language,
+            learningStyle = request.learningStyle ?: user.learningStyle,
+            difficultyPreference = request.difficultyPreference ?: user.difficultyPreference,
+            sessionLength = request.sessionLength ?: user.sessionLength,
+            profileVisibility = request.profileVisibility ?: user.profileVisibility,
+            activityVisibility = request.activityVisibility ?: user.activityVisibility,
+            contactVisibility = request.contactVisibility ?: user.contactVisibility,
+            securityLevel = request.securityLevel ?: user.securityLevel,
             updatedAt = LocalDateTime.now()
         )
         
@@ -244,9 +254,18 @@ open class UserService(
         id = id!!,
         email = email,
         notificationSettings = notificationSettings?.let { objectMapper.readValue(it, NotificationSettings::class.java) } ?: NotificationSettings(),
-        privacySettings = privacySettings?.let { objectMapper.readValue(it, PrivacySettings::class.java) } ?: PrivacySettings(),
-        learningSettings = learningSettings?.let { objectMapper.readValue(it, LearningSettings::class.java) } ?: LearningSettings(),
-        themeSettings = themeSettings?.let { objectMapper.readValue(it, ThemeSettings::class.java) } ?: ThemeSettings(),
+        // 새로운 Enum 기반 설정들
+        themeMode = themeMode,
+        colorScheme = colorScheme,
+        fontSize = fontSize,
+        language = language,
+        learningStyle = learningStyle,
+        difficultyPreference = difficultyPreference,
+        sessionLength = sessionLength,
+        profileVisibility = profileVisibility,
+        activityVisibility = activityVisibility,
+        contactVisibility = contactVisibility,
+        securityLevel = securityLevel,
         updatedAt = updatedAt
     )
     

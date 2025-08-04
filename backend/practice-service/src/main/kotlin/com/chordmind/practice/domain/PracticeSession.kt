@@ -14,7 +14,10 @@ data class PracticeSession(
     val endedAt: LocalDateTime? = null,
     
     @Enumerated(EnumType.STRING)
-    val status: PracticeSessionStatus = PracticeSessionStatus.NOT_STARTED,
+    val status: SessionStatus = SessionStatus.IN_PROGRESS, // 기존 호환성 유지
+    
+    @Enumerated(EnumType.STRING)
+    val extendedStatus: PracticeSessionStatus = PracticeSessionStatus.NOT_STARTED, // 새로운 확장 상태
     
     @Enumerated(EnumType.STRING)
     val sessionType: SessionType = SessionType.getDefault(),
@@ -45,13 +48,13 @@ data class PracticeSession(
      * 세션이 활성 상태인지 확인
      */
     val isActive: Boolean
-        get() = status.isActive
+        get() = extendedStatus.isActive
     
     /**
      * 세션이 완료 상태인지 확인
      */
     val isCompleted: Boolean
-        get() = status.isCompleted
+        get() = extendedStatus.isCompleted
     
     /**
      * 목표 시간 대비 실제 시간 비율
