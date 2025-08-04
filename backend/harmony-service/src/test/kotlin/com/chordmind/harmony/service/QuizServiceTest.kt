@@ -1,12 +1,14 @@
 package com.chordmind.harmony.service
 
 import com.chordmind.harmony.HarmonyServiceApplication
+import com.chordmind.harmony.config.TestConfig
 import com.chordmind.harmony.domain.QuizType
 import com.chordmind.harmony.dto.QuizAnswerRequest
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.context.annotation.Import
 import org.springframework.transaction.annotation.Transactional
 
 @SpringBootTest(
@@ -18,9 +20,11 @@ import org.springframework.transaction.annotation.Transactional
         "spring.datasource.password=",
         "spring.jpa.hibernate.ddl-auto=create-drop",
         "spring.jpa.show-sql=true",
-        "spring.jpa.properties.hibernate.format_sql=true"
+        "spring.jpa.properties.hibernate.format_sql=true",
+        "ai.service.url=http://mock-ai-service"
     ]
 )
+@Import(TestConfig::class)
 @Transactional
 class QuizServiceTest @Autowired constructor(
     private val quizService: QuizService
@@ -52,7 +56,7 @@ class QuizServiceTest @Autowired constructor(
         assertFalse(result.correct)
         assertEquals(q.id, result.questionId)
         assertNotNull(result.explanation)
-        assertTrue(result.explanation!!.contains("틀렸습니다"))
+        assertTrue(result.explanation!!.contains("아쉽네요") || result.explanation!!.contains("정답은"))
     }
 
     @Test

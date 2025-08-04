@@ -31,9 +31,17 @@ dependencies {
     implementation("org.postgresql:postgresql")
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
     implementation("org.jetbrains.kotlin:kotlin-reflect")
+    
+    // HTTP 클라이언트 의존성 (AI 서비스와의 통신을 위해)
+    implementation("org.apache.httpcomponents.client5:httpclient5:5.2.1")
+    
+    // 테스트 의존성
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testImplementation("org.mockito:mockito-core:5.2.0")
     testImplementation("org.mockito.kotlin:mockito-kotlin:5.2.1")
+    testImplementation("com.h2database:h2")
+    
+    // API 문서화
     implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.2.0")
 }
 
