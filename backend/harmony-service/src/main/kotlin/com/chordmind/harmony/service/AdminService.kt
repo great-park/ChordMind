@@ -1,11 +1,13 @@
 package com.chordmind.harmony.service
 
-import com.chordmind.harmony.domain.QuizChoice
 import com.chordmind.harmony.domain.QuizQuestion
 import com.chordmind.harmony.domain.QuizType
 import com.chordmind.harmony.dto.QuizQuestionRequest
-import com.chordmind.harmony.exception.QuizNotFoundException
-import com.chordmind.harmony.repository.QuizQuestionRepository
+import com.chordmind.harmony.service.admin.manager.ChoiceManager
+import com.chordmind.harmony.service.admin.manager.QuizQuestionManager
+import com.chordmind.harmony.service.admin.validator.QuizQuestionValidator
+import com.chordmind.harmony.service.admin.dto.QuestionPageResponse
+import com.chordmind.harmony.service.admin.dto.ValidationResponse
 import org.springframework.data.domain.PageRequest
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -13,94 +15,79 @@ import org.springframework.transaction.annotation.Transactional
 @Service
 @Transactional
 class AdminService(
-    private val quizQuestionRepository: QuizQuestionRepository
+    private val questionManager: QuizQuestionManager,
+    private val choiceManager: ChoiceManager,
+    private val validator: QuizQuestionValidator
 ) {
     
     fun createQuestion(request: QuizQuestionRequest): QuizQuestion {
-        val question = QuizQuestion(
-            type = request.type,
-            question = request.question,
-            imageUrl = request.imageUrl,
-            answer = request.answer,
-            explanation = request.explanation,
-            difficulty = request.difficulty
-        )
-        
-        // 선택지 추가
-        request.choices.forEach { choiceText ->
-            val choice = QuizChoice(text = choiceText)
-            question.addChoice(choice)
+        val validationResult = validator.validate(request)
+        if (!validationResult.isValid) {
+            throw IllegalArgumentException("검증 실패: ${validationResult.errors.joinToString(", ")}")
         }
         
-        return quizQuestionRepository.save(question)
+        return questionManager.createQuestion(request)
     }
     
     @Transactional(readOnly = true)
-    fun getAllQuestions(type: QuizType?, page: Int, size: Int): Map<String, Any> {
+    fun getAllQuestions(type: QuizType?, page: Int, size: Int): QuestionPageResponse {
         val pageRequest = PageRequest.of(page, size)
-        val pageResult = if (type != null) {
-            quizQuestionRepository.findByType(type, pageRequest)
-        } else {
-            quizQuestionRepository.findAll(pageRequest)
-        }
+        val pageResult = questionManager.findAll(type, pageRequest)
         
-        return mapOf(
-            "content" to pageResult.content,
-            "totalElements" to pageResult.totalElements,
-            "totalPages" to pageResult.totalPages,
-            "currentPage" to pageResult.number,
-            "size" to pageResult.size
+        return QuestionPageResponse(
+            content = pageResult.content,
+            totalElements = pageResult.totalElements,
+            totalPages = pageResult.totalPages,
+            currentPage = pageResult.number,
+            size = pageResult.size
         )
     }
     
     @Transactional(readOnly = true)
     fun getQuestion(id: Long): QuizQuestion {
-        return quizQuestionRepository.findById(id)
-            .orElseThrow { QuizNotFoundException("퀴즈 문제를 찾을 수 없습니다: $id") }
+        return questionManager.findById(id)
     }
     
     fun updateQuestion(id: Long, request: QuizQuestionRequest): QuizQuestion {
-        val existingQuestion = getQuestion(id)
-        
-        existingQuestion.apply {
-            type = request.type
-            question = request.question
-            imageUrl = request.imageUrl
-            answer = request.answer
-            explanation = request.explanation
-            difficulty = request.difficulty
+        val validationResult = validator.validate(request)
+        if (!validationResult.isValid) {
+            throw IllegalArgumentException("검증 실패: ${validationResult.errors.joinToString(", ")}")
         }
         
-        // 기존 선택지 제거
-        existingQuestion.choices.clear()
-        
-        // 새로운 선택지 추가
-        request.choices.forEach { choiceText ->
-            val choice = QuizChoice(text = choiceText)
-            existingQuestion.addChoice(choice)
-        }
-        
-        return quizQuestionRepository.save(existingQuestion)
+        questionManager.updateQuestion(id, request)
+        return choiceManager.updateChoices(id, request.choices)
     }
     
     fun deleteQuestion(id: Long) {
-        val question = getQuestion(id)
-        quizQuestionRepository.delete(question)
+        questionManager.deleteQuestion(id)
     }
     
     fun addChoice(questionId: Long, choiceText: String): QuizQuestion {
-        val question = getQuestion(questionId)
-        val choice = QuizChoice(text = choiceText)
-        question.addChoice(choice)
-        return quizQuestionRepository.save(question)
+        if (choiceText.isBlank()) {
+            throw IllegalArgumentException("선택지 내용은 필수입니다")
+        }
+        return choiceManager.addChoice(questionId, choiceText)
     }
     
     fun deleteChoice(questionId: Long, choiceId: Long): QuizQuestion {
-        val question = getQuestion(questionId)
-        val choiceToRemove = question.choices.find { it.id == choiceId }
-            ?: throw IllegalArgumentException("선택지를 찾을 수 없습니다: $choiceId")
-        
-        question.choices.remove(choiceToRemove)
-        return quizQuestionRepository.save(question)
+        return choiceManager.removeChoice(questionId, choiceId)
+    }
+    
+    /**
+     * 새로운 기능: 문제 검증
+     */
+    fun validateQuestion(request: QuizQuestionRequest): ValidationResponse {
+        val validationResult = validator.validate(request)
+        return ValidationResponse(
+            isValid = validationResult.isValid,
+            errors = validationResult.errors
+        )
+    }
+    
+    /**
+     * 새로운 기능: 문제 존재 여부 확인
+     */
+    fun questionExists(id: Long): Boolean {
+        return questionManager.existsById(id)
     }
 } 
