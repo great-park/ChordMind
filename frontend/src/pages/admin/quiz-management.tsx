@@ -3,6 +3,8 @@
 import React, { useState, useEffect } from 'react'
 import { Container, Row, Col, Card, Button, Form, Table, Modal, Alert } from 'react-bootstrap'
 import { QuizType } from '@/types/quiz'
+import { useAuth } from '@/contexts/AuthContext'
+import { apiClient } from '@/services/apiClient'
 
 interface QuizQuestion {
   id: number
@@ -24,6 +26,7 @@ interface QuizQuestionRequest {
 }
 
 const QuizManagementPage: React.FC = () => {
+  const { user, isAuthenticated } = useAuth()
   const [questions, setQuestions] = useState<QuizQuestion[]>([])
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -44,16 +47,17 @@ const QuizManagementPage: React.FC = () => {
 
   const loadQuestions = async () => {
     setLoading(true)
+    setError(null)
     try {
-      const response = await fetch('/api/admin/quiz?size=50')
-      if (response.ok) {
-        const data = await response.json()
-        setQuestions(data.content || [])
+      const response = await apiClient.get<{content: QuizQuestion[]}>('/api/admin/quiz?size=50')
+      
+      if (response.success && response.data) {
+        setQuestions(response.data.content || [])
       } else {
-        setError('퀴즈 문제를 불러오지 못했습니다.')
+        setError(response.message || '퀴즈 문제를 불러오지 못했습니다.')
       }
     } catch (err) {
-      setError('퀴즈 문제를 불러오지 못했습니다.')
+      setError('퀴즈 문제를 불러오는 중 오류가 발생했습니다.')
     } finally {
       setLoading(false)
     }
@@ -62,29 +66,27 @@ const QuizManagementPage: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setLoading(true)
+    setError(null)
+    
     try {
-      const url = editingQuestion 
-        ? `/api/admin/quiz/${editingQuestion.id}`
-        : '/api/admin/quiz'
+      let response
       
-      const method = editingQuestion ? 'PUT' : 'POST'
-      
-      const response = await fetch(url, {
-        method,
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData)
-      })
+      if (editingQuestion) {
+        response = await apiClient.put<QuizQuestion>(`/api/admin/quiz/${editingQuestion.id}`, formData)
+      } else {
+        response = await apiClient.post<QuizQuestion>('/api/admin/quiz', formData)
+      }
 
-      if (response.ok) {
+      if (response.success) {
         setShowModal(false)
         setEditingQuestion(null)
         resetForm()
         loadQuestions()
       } else {
-        setError('퀴즈 문제 저장에 실패했습니다.')
+        setError(response.message || '퀴즈 문제 저장에 실패했습니다.')
       }
     } catch (err) {
-      setError('퀴즈 문제 저장에 실패했습니다.')
+      setError('퀴즈 문제 저장 중 오류가 발생했습니다.')
     } finally {
       setLoading(false)
     }
@@ -161,11 +163,38 @@ const QuizManagementPage: React.FC = () => {
     return ['초급', '중급', '고급'][difficulty - 1] || '초급'
   }
 
+  // 관리자 권한 체크
+  if (!isAuthenticated) {
+    return (
+      <Container className="py-4">
+        <Alert variant="warning">
+          <Alert.Heading>로그인이 필요합니다</Alert.Heading>
+          <p>관리자 페이지에 접근하려면 먼저 로그인해주세요.</p>
+        </Alert>
+      </Container>
+    )
+  }
+
+  // TODO: 실제 관리자 권한 체크 로직 추가
+  // if (!user?.isAdmin) {
+  //   return (
+  //     <Container className="py-4">
+  //       <Alert variant="danger">
+  //         <Alert.Heading>접근 권한이 없습니다</Alert.Heading>
+  //         <p>관리자만 이 페이지에 접근할 수 있습니다.</p>
+  //       </Alert>
+  //     </Container>
+  //   )
+  // }
+
   return (
     <Container fluid className="py-4">
       <Row>
         <Col>
           <h2 className="mb-4">퀴즈 문제 관리</h2>
+          <p className="text-muted mb-4">
+            현재 관리자: <strong>{user?.name || 'Unknown'}</strong>
+          </p>
           
           {error && <Alert variant="danger" onClose={() => setError(null)} dismissible>{error}</Alert>}
           

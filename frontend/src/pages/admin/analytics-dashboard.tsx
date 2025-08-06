@@ -4,6 +4,8 @@ import React, { useState, useEffect } from 'react'
 import { Container, Row, Col, Card, Button, Form, Alert, ProgressBar } from 'react-bootstrap'
 import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend, LineElement, PointElement } from 'chart.js'
 import { Bar, Line } from 'react-chartjs-2'
+import { useAuth } from '@/contexts/AuthContext'
+import { apiClient } from '@/services/apiClient'
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend, LineElement, PointElement)
 
@@ -49,6 +51,7 @@ interface GlobalStats {
 }
 
 const AnalyticsDashboard: React.FC = () => {
+  const { user, isAuthenticated } = useAuth()
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [selectedUserId, setSelectedUserId] = useState<number>(1)
@@ -66,13 +69,16 @@ const AnalyticsDashboard: React.FC = () => {
 
   const loadGlobalStats = async () => {
     try {
-      const response = await fetch('/api/analytics/global')
-      if (response.ok) {
-        const data = await response.json()
-        setGlobalStats(data)
+      setError(null)
+      const response = await apiClient.get<GlobalStats>('/api/analytics/global')
+      
+      if (response.success && response.data) {
+        setGlobalStats(response.data)
+      } else {
+        setError(response.message || '전체 통계를 불러오지 못했습니다.')
       }
     } catch (err) {
-      setError('전체 통계를 불러오지 못했습니다.')
+      setError('전체 통계를 불러오는 중 오류가 발생했습니다.')
     }
   }
 
@@ -149,11 +155,26 @@ const AnalyticsDashboard: React.FC = () => {
     ]
   }
 
+  // 관리자 권한 체크
+  if (!isAuthenticated) {
+    return (
+      <Container className="py-4">
+        <Alert variant="warning">
+          <Alert.Heading>로그인이 필요합니다</Alert.Heading>
+          <p>관리자 페이지에 접근하려면 먼저 로그인해주세요.</p>
+        </Alert>
+      </Container>
+    )
+  }
+
   return (
     <Container fluid className="py-4">
       <Row>
         <Col>
           <h2 className="mb-4">통계 분석 대시보드</h2>
+          <p className="text-muted mb-4">
+            현재 관리자: <strong>{user?.name || 'Unknown'}</strong>
+          </p>
           
           {error && <Alert variant="danger" onClose={() => setError(null)} dismissible>{error}</Alert>}
           
