@@ -1,6 +1,8 @@
 'use client'
 
 import { useState } from 'react';
+import { useAuth } from '../contexts/AuthContext';
+import { feedbackService } from '../services/feedbackService';
 
 interface FeedbackFormData {
   feedbackType: string;
@@ -13,6 +15,7 @@ interface FeedbackFormData {
 }
 
 export default function FeedbackForm() {
+  const { user, isAuthenticated } = useAuth();
   const [formData, setFormData] = useState<FeedbackFormData>({
     feedbackType: '',
     category: '',
@@ -25,6 +28,7 @@ export default function FeedbackForm() {
 
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const feedbackTypes = [
     { value: 'BUG_REPORT', label: '버그 신고' },
@@ -49,23 +53,52 @@ export default function FeedbackForm() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    if (!isAuthenticated || !user?.id) {
+      setError('로그인이 필요합니다.');
+      return;
+    }
+
+    if (!formData.feedbackType || !formData.title || !formData.content) {
+      setError('필수 항목을 모두 입력해주세요.');
+      return;
+    }
+    
     setLoading(true);
+    setError(null);
     
     try {
-      // TODO: API 호출
-      await new Promise(resolve => setTimeout(resolve, 1000)); // 임시 지연
-      setSuccess(true);
-      setFormData({
-        feedbackType: '',
-        category: '',
-        title: '',
-        content: '',
-        rating: null,
-        priority: 'MEDIUM',
-        tags: []
-      });
+      const createRequest = {
+        feedbackType: formData.feedbackType,
+        category: formData.category,
+        title: formData.title,
+        content: formData.content,
+        rating: formData.rating,
+        priority: formData.priority,
+        tags: formData.tags
+      };
+
+      const response = await feedbackService.createFeedback(createRequest);
+      
+      if (response.success) {
+        setSuccess(true);
+        setFormData({
+          feedbackType: '',
+          category: '',
+          title: '',
+          content: '',
+          rating: null,
+          priority: 'MEDIUM',
+          tags: []
+        });
+        
+        // 3초 후 성공 메시지 숨기기
+        setTimeout(() => setSuccess(false), 3000);
+      } else {
+        setError(response.message || '피드백 제출에 실패했습니다.');
+      }
     } catch (error) {
-      console.error('피드백 제출 실패:', error);
+      setError('피드백 제출 중 오류가 발생했습니다.');
     } finally {
       setLoading(false);
     }
@@ -95,8 +128,28 @@ export default function FeedbackForm() {
     );
   }
 
+  if (!isAuthenticated) {
+    return (
+      <div className="alert alert-warning" role="alert">
+        피드백을 작성하려면 로그인이 필요합니다.
+      </div>
+    );
+  }
+
   return (
     <form onSubmit={handleSubmit}>
+      {error && (
+        <div className="alert alert-danger" role="alert">
+          {error}
+        </div>
+      )}
+      
+      {success && (
+        <div className="alert alert-success" role="alert">
+          피드백이 성공적으로 제출되었습니다!
+        </div>
+      )}
+      
       <div className="row">
         <div className="col-md-6 mb-3">
           <label htmlFor="feedbackType" className="form-label">

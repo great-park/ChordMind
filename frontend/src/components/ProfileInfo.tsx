@@ -1,6 +1,8 @@
 'use client'
 
 import { useState, useEffect } from 'react';
+import { useAuth } from '../contexts/AuthContext';
+import { userService } from '../services/userService';
 
 interface UserProfile {
   id: number;
@@ -21,44 +23,75 @@ interface UserProfile {
 }
 
 export default function ProfileInfo() {
+  const { user, isAuthenticated } = useAuth();
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [isEditing, setIsEditing] = useState(false);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    // 임시 데이터 로드
-    const mockProfile: UserProfile = {
-      id: 1,
-      name: '김음악',
-      email: 'music@example.com',
-      nickname: '음악사랑',
-      bio: '피아노와 기타를 즐기는 음악 애호가입니다. AI와 함께하는 음악 학습을 통해 실력을 향상시키고 있습니다.',
-      location: '서울시 강남구',
-      website: 'https://musicblog.example.com',
-      socialLinks: {
-        twitter: '@musiclover',
-        instagram: '@music_enthusiast',
-        youtube: 'MusicChannel'
-      },
-      joinDate: '2024-01-01',
-      lastActive: '2024-01-15T10:30:00Z'
+    const fetchProfile = async () => {
+      if (!user?.id) {
+        setLoading(false);
+        return;
+      }
+
+      try {
+        setLoading(true);
+        setError(null);
+        
+        const response = await userService.getUserProfile(user.id);
+        
+        if (response.success && response.data) {
+          setProfile({
+            ...response.data,
+            bio: response.data.bio || '',
+            location: response.data.location || '',
+            website: response.data.website || '',
+            socialLinks: response.data.socialLinks || {},
+            profileImage: response.data.profileImage
+          });
+        } else {
+          setError(response.message || '프로필을 불러오지 못했습니다.');
+        }
+      } catch (error) {
+        setError('프로필을 불러오는 중 오류가 발생했습니다.');
+      } finally {
+        setLoading(false);
+      }
     };
 
-    setTimeout(() => {
-      setProfile(mockProfile);
-      setLoading(false);
-    }, 1000);
-  }, []);
+    fetchProfile();
+  }, [user]);
 
   const handleSave = async () => {
+    if (!profile || !user?.id) return;
+    
     setSaving(true);
+    setError(null);
+    
     try {
-      // TODO: API 호출
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      setIsEditing(false);
+      const updateRequest = {
+        name: profile.name,
+        nickname: profile.nickname,
+        bio: profile.bio,
+        location: profile.location,
+        website: profile.website,
+        socialLinks: profile.socialLinks,
+        profileImage: profile.profileImage
+      };
+      
+      const response = await userService.updateUserProfile(user.id, updateRequest);
+      
+      if (response.success && response.data) {
+        setProfile(response.data);
+        setIsEditing(false);
+      } else {
+        setError(response.message || '프로필 저장에 실패했습니다.');
+      }
     } catch (error) {
-      console.error('프로필 저장 실패:', error);
+      setError('프로필 저장 중 오류가 발생했습니다.');
     } finally {
       setSaving(false);
     }
@@ -88,6 +121,22 @@ export default function ProfileInfo() {
         <div className="spinner-border text-primary" role="status">
           <span className="visually-hidden">로딩 중...</span>
         </div>
+      </div>
+    );
+  }
+
+  if (!isAuthenticated) {
+    return (
+      <div className="alert alert-warning" role="alert">
+        로그인이 필요합니다.
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="alert alert-danger" role="alert">
+        {error}
       </div>
     );
   }

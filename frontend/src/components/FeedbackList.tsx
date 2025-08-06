@@ -1,6 +1,8 @@
 'use client'
 
 import { useState, useEffect } from 'react';
+import { useAuth } from '../contexts/AuthContext';
+import { feedbackService } from '../services/feedbackService';
 
 interface Feedback {
   id: number;
@@ -16,57 +18,40 @@ interface Feedback {
 }
 
 export default function FeedbackList() {
+  const { user, isAuthenticated } = useAuth();
   const [feedbacks, setFeedbacks] = useState<Feedback[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [filter, setFilter] = useState('all');
   const [searchTerm, setSearchTerm] = useState('');
 
   useEffect(() => {
-    // 임시 데이터 로드
-    const mockFeedbacks: Feedback[] = [
-      {
-        id: 1,
-        title: '연습 세션 중 오류 발생',
-        content: '연습 중에 갑자기 화면이 멈추는 현상이 발생합니다.',
-        feedbackType: 'BUG_REPORT',
-        category: '연습 기능',
-        status: 'PENDING',
-        priority: 'HIGH',
-        rating: 2,
-        createdAt: '2024-01-15T10:30:00Z',
-        updatedAt: '2024-01-15T10:30:00Z'
-      },
-      {
-        id: 2,
-        title: 'AI 분석 정확도 개선 제안',
-        content: 'AI 분석의 정확도를 더욱 높일 수 있는 방법을 제안합니다.',
-        feedbackType: 'IMPROVEMENT',
-        category: 'AI 분석',
-        status: 'IN_PROGRESS',
-        priority: 'MEDIUM',
-        rating: 4,
-        createdAt: '2024-01-14T15:20:00Z',
-        updatedAt: '2024-01-14T15:20:00Z'
-      },
-      {
-        id: 3,
-        title: '새로운 연습 모드 추가 요청',
-        content: '듀엣 연습 모드를 추가해주세요.',
-        feedbackType: 'FEATURE_REQUEST',
-        category: '연습 기능',
-        status: 'RESOLVED',
-        priority: 'MEDIUM',
-        rating: 5,
-        createdAt: '2024-01-13T09:15:00Z',
-        updatedAt: '2024-01-13T09:15:00Z'
+    const fetchFeedbacks = async () => {
+      if (!user?.id) {
+        setLoading(false);
+        return;
       }
-    ];
 
-    setTimeout(() => {
-      setFeedbacks(mockFeedbacks);
-      setLoading(false);
-    }, 1000);
-  }, []);
+      try {
+        setLoading(true);
+        setError(null);
+        
+        const response = await feedbackService.getUserFeedbacks(user.id);
+        
+        if (response.success && response.data) {
+          setFeedbacks(response.data.feedbacks);
+        } else {
+          setError(response.message || '피드백 목록을 불러오지 못했습니다.');
+        }
+      } catch (error) {
+        setError('피드백 목록을 불러오는 중 오류가 발생했습니다.');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchFeedbacks();
+  }, [user]);
 
   const getStatusBadge = (status: string) => {
     const statusConfig = {
@@ -120,6 +105,22 @@ export default function FeedbackList() {
         <div className="spinner-border text-primary" role="status">
           <span className="visually-hidden">로딩 중...</span>
         </div>
+      </div>
+    );
+  }
+
+  if (!isAuthenticated) {
+    return (
+      <div className="alert alert-warning" role="alert">
+        로그인이 필요합니다.
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="alert alert-danger" role="alert">
+        {error}
       </div>
     );
   }

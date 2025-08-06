@@ -1,8 +1,11 @@
 'use client'
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useAuth } from '../contexts/AuthContext';
+import { userService } from '../services/userService';
 
 export default function ProfileSettings() {
+  const { user, isAuthenticated } = useAuth();
   const [settings, setSettings] = useState({
     notifications: {
       email: true,
@@ -30,21 +33,84 @@ export default function ProfileSettings() {
   });
 
   const [saving, setSaving] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchSettings = async () => {
+      if (!user?.id) {
+        setLoading(false);
+        return;
+      }
+
+      try {
+        setLoading(true);
+        setError(null);
+        
+        const response = await userService.getUserSettings(user.id);
+        
+        if (response.success && response.data) {
+          setSettings(response.data);
+        } else {
+          setError(response.message || '설정을 불러오지 못했습니다.');
+        }
+      } catch (error) {
+        setError('설정을 불러오는 중 오류가 발생했습니다.');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchSettings();
+  }, [user]);
 
   const handleSave = async () => {
+    if (!user?.id) return;
+    
     setSaving(true);
+    setError(null);
+    
     try {
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      // TODO: API 호출
+      const response = await userService.updateUserSettings(user.id, settings);
+      
+      if (response.success && response.data) {
+        setSettings(response.data);
+      } else {
+        setError(response.message || '설정 저장에 실패했습니다.');
+      }
     } catch (error) {
-      console.error('설정 저장 실패:', error);
+      setError('설정 저장 중 오류가 발생했습니다.');
     } finally {
       setSaving(false);
     }
   };
 
+  if (loading) {
+    return (
+      <div className="d-flex justify-content-center">
+        <div className="spinner-border text-primary" role="status">
+          <span className="visually-hidden">로딩 중...</span>
+        </div>
+      </div>
+    );
+  }
+
+  if (!isAuthenticated) {
+    return (
+      <div className="alert alert-warning" role="alert">
+        로그인이 필요합니다.
+      </div>
+    );
+  }
+
   return (
     <div>
+      {error && (
+        <div className="alert alert-danger" role="alert">
+          {error}
+        </div>
+      )}
+      
       <div className="d-flex justify-content-between align-items-center mb-4">
         <h5 className="mb-0">설정</h5>
         <button
