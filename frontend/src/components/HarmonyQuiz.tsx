@@ -1,25 +1,16 @@
 import React, { useEffect, useState } from 'react';
-import axios from 'axios';
 import {
-  saveQuizResult,
-  getQuizRankings,
+  quizService,
+  QuizQuestion,
   QuizResultRequest,
   QuizResultResponse,
-  QuizRankingDto
+  QuizRankingDto,
+  QuizAnswerRequest,
+  QuizType
 } from '../services/quizService';
+import { authService } from '../services/authService';
 
-interface QuizQuestion {
-  id: number;
-  type: string;
-  question: string;
-  imageUrl?: string | null;
-  choices: { id: number; text: string }[];
-  answer: string;
-  explanation?: string;
-  difficulty: number;
-}
-
-const USER_ID = 1; // TODO: 실제 로그인 사용자로 대체
+// QuizQuestion 인터페이스는 quizService에서 import
 
 const HarmonyQuiz: React.FC = () => {
   const [quiz, setQuiz] = useState<QuizQuestion | null>(null);
@@ -40,11 +31,17 @@ const HarmonyQuiz: React.FC = () => {
     setResult(null);
     setSelected(null);
     setShowRanking(false);
+    
     try {
-      const res = await axios.get<QuizQuestion[]>('/api/harmony-quiz/random?type=CHORD_NAME&count=1');
-      setQuiz(res.data[0]);
+      const response = await quizService.fetchQuizQuestions('CHORD_NAME', 1);
+      
+      if (response.success && response.data && response.data.length > 0) {
+        setQuiz(response.data[0]);
+      } else {
+        setError(response.message || '문제를 불러오지 못했습니다.');
+      }
     } catch (e) {
-      setError('문제를 불러오지 못했습니다.');
+      setError('문제를 불러오는 중 오류가 발생했습니다.');
     } finally {
       setLoading(false);
     }
@@ -53,16 +50,43 @@ const HarmonyQuiz: React.FC = () => {
   const handleSelect = async (choice: string) => {
     if (!quiz) return;
     setSelected(choice);
+    
     try {
-      const req: QuizResultRequest = {
-        userId: USER_ID,
+      // 먼저 답안 제출 및 채점
+      const answerRequest: QuizAnswerRequest = {
         questionId: quiz.id,
         selected: choice
       };
-      const res = await saveQuizResult(req);
-      setResult(res);
+      
+      const answerResponse = await quizService.submitQuizAnswer(answerRequest);
+      
+      if (answerResponse.success && answerResponse.data) {
+        // 현재 로그인한 사용자 ID 가져오기
+        const currentUserId = authService.getCurrentUserId();
+        if (!currentUserId) {
+          setError('로그인이 필요합니다.');
+          return;
+        }
+        
+        // 퀴즈 결과 저장
+        const resultRequest: QuizResultRequest = {
+          userId: currentUserId,
+          questionId: quiz.id,
+          selected: choice
+        };
+        
+        const resultResponse = await quizService.saveQuizResult(resultRequest);
+        
+        if (resultResponse.success && resultResponse.data) {
+          setResult(resultResponse.data);
+        } else {
+          setError(resultResponse.message || '결과 저장에 실패했습니다.');
+        }
+      } else {
+        setError(answerResponse.message || '답안 채점에 실패했습니다.');
+      }
     } catch (e) {
-      setError('결과 저장에 실패했습니다.');
+      setError('답안 제출 중 오류가 발생했습니다.');
     }
   };
 
@@ -71,11 +95,17 @@ const HarmonyQuiz: React.FC = () => {
     const now = new Date();
     const from = new Date(now.getFullYear(), now.getMonth(), now.getDate() - 7).toISOString();
     const to = now.toISOString();
+    
     try {
-      const res = await getQuizRankings(from, to);
-      setRankings(res);
+      const response = await quizService.getQuizRankings(from, to);
+      
+      if (response.success && response.data) {
+        setRankings(response.data);
+      } else {
+        setError(response.message || '랭킹을 불러오지 못했습니다.');
+      }
     } catch (e) {
-      setError('랭킹을 불러오지 못했습니다.');
+      setError('랭킹을 불러오는 중 오류가 발생했습니다.');
     }
   };
 
@@ -86,17 +116,17 @@ const HarmonyQuiz: React.FC = () => {
       {error && <div className="text-red-500 mb-2">{error}</div>}
       {quiz && !result && (
         <div>
-          <div className="mb-3 font-medium">{quiz.question}</div>
+          <div className="mb-3 font-medium">{quiz.questionText}</div>
           {quiz.imageUrl && <img src={quiz.imageUrl} alt="문제 이미지" className="mb-3" />}
           <div className="grid grid-cols-2 gap-2 mb-4">
-            {quiz.choices.map((c) => (
+            {quiz.choices.map((choice) => (
               <button
-                key={c.id}
-                className={`btn btn-outline-primary w-full ${selected === c.text ? 'active' : ''}`}
-                onClick={() => handleSelect(c.text)}
+                key={choice.id}
+                className={`btn btn-outline-primary w-full ${selected === choice.choiceText ? 'active' : ''}`}
+                onClick={() => handleSelect(choice.choiceText)}
                 disabled={!!selected}
               >
-                {c.text}
+                {choice.choiceText}
               </button>
             ))}
           </div>

@@ -1,7 +1,8 @@
 'use client'
 
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { Container, Row, Col, Card, Form, Button, Alert, Nav, Tab, Badge } from 'react-bootstrap'
+import { useAuth } from '../contexts/AuthContext'
 
 interface AIFeedbackRequest {
   user_id: number
@@ -27,11 +28,12 @@ interface AIHintsRequest {
 }
 
 const AIFeatures: React.FC = () => {
+  const { user, isAuthenticated } = useAuth()
   const [activeTab, setActiveTab] = useState('feedback')
   const [loading, setLoading] = useState(false)
   const [result, setResult] = useState<any>(null)
   const [error, setError] = useState<string | null>(null)
-  const [selectedUserId, setSelectedUserId] = useState(1)
+  const [selectedUserId, setSelectedUserId] = useState(user?.id || 1)
 
   // 피드백 폼 상태
   const [feedbackForm, setFeedbackForm] = useState<AIFeedbackRequest>({
@@ -63,7 +65,20 @@ const AIFeatures: React.FC = () => {
   const [learningPathUserId, setLearningPathUserId] = useState(selectedUserId)
   const [behaviorUserId, setBehaviorUserId] = useState(selectedUserId)
 
-  // 사용자 ID 변경 시 폼 업데이트
+  // 사용자가 로그인했을 때 폼 업데이트
+  useEffect(() => {
+    if (user?.id) {
+      const userId = user.id
+      setSelectedUserId(userId)
+      setFeedbackForm(prev => ({ ...prev, user_id: userId }))
+      setAdaptiveForm(prev => ({ ...prev, user_id: userId }))
+      setHintsForm(prev => ({ ...prev, user_id: userId }))
+      setLearningPathUserId(userId)
+      setBehaviorUserId(userId)
+    }
+  }, [user])
+
+  // 사용자 ID 변경 시 폼 업데이트 (관리자용)
   const handleUserIdChange = (newUserId: number) => {
     setSelectedUserId(newUserId)
     setFeedbackForm(prev => ({ ...prev, user_id: newUserId }))
@@ -214,15 +229,34 @@ const AIFeatures: React.FC = () => {
     )
   }
 
+  if (!isAuthenticated) {
+    return (
+      <Container className="py-4">
+        <Row>
+          <Col>
+            <Alert variant="warning">
+              <Alert.Heading>로그인이 필요합니다</Alert.Heading>
+              <p>AI 기능을 사용하려면 먼저 로그인해주세요.</p>
+            </Alert>
+          </Col>
+        </Row>
+      </Container>
+    )
+  }
+
   return (
     <Container className="py-4">
       <Row>
         <Col>
-          <h2 className="mb-4">AI 기능 테스트</h2>
+          <h2 className="mb-4">AI 기능</h2>
+          <p className="text-muted mb-4">
+            현재 사용자: <Badge bg="primary">{user?.name || 'Unknown'}</Badge>
+          </p>
           
-          {/* 사용자 선택 */}
-          <Card className="mb-4">
-            <Card.Header>
+          {/* 관리자용 사용자 선택 (개발 시에만 표시) */}
+          {process.env.NODE_ENV === 'development' && (
+            <Card className="mb-4">
+              <Card.Header>
               <h5>사용자 선택</h5>
             </Card.Header>
             <Card.Body>
@@ -241,6 +275,7 @@ const AIFeatures: React.FC = () => {
               </Form.Group>
             </Card.Body>
           </Card>
+          )}
 
           <Tab.Container activeKey={activeTab} onSelect={(k) => setActiveTab(k || 'feedback')}>
             <Row>
