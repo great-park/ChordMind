@@ -25,10 +25,7 @@ interface ProgressionPatternRepository : JpaRepository<ProgressionPattern, Long>
      */
     fun findByGenre(genre: MusicGenre): List<ProgressionPattern>
     
-    /**
-     * 난이도 범위별 화성 진행 조회 (하위 호환성)
-     */
-    fun findByDifficultyLevelBetween(minLevel: Int, maxLevel: Int): List<ProgressionPattern>
+
     
     /**
      * 특정 난이도들로 화성 진행 조회
@@ -51,10 +48,7 @@ interface ProgressionPatternRepository : JpaRepository<ProgressionPattern, Long>
      */
     fun findByGenreAndDifficultyLevel(genre: MusicGenre, difficultyLevel: DifficultyLevel): List<ProgressionPattern>
     
-    /**
-     * 장르와 난이도를 모두 고려한 조회 (하위 호환성)
-     */
-    fun findByGenreAndDifficultyLevelLessThanEqual(genre: String, maxLevel: Int): List<ProgressionPattern>
+
     
     /**
      * 패턴으로 화성 진행 조회

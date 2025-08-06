@@ -19,10 +19,7 @@ interface ChordTypeRepository : JpaRepository<ChordType, Long> {
      */
     fun findByDifficultyLevel(difficultyLevel: DifficultyLevel): List<ChordType>
     
-    /**
-     * 난이도 범위별 코드 타입 조회 (하위 호환성)
-     */
-    fun findByDifficultyLevelBetween(minLevel: Int, maxLevel: Int): List<ChordType>
+
     
     /**
      * 특정 난이도들로 코드 타입 조회

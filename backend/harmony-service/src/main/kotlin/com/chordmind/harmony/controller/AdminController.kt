@@ -5,6 +5,8 @@ import com.chordmind.harmony.domain.QuizType
 import com.chordmind.harmony.dto.QuizQuestionRequest
 import com.chordmind.harmony.service.AdminService
 import com.chordmind.harmony.service.QuizGeneratorService
+import com.chordmind.harmony.service.admin.dto.QuestionPageResponse
+import com.chordmind.harmony.service.admin.dto.ValidationResponse
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.tags.Tag
 import org.springframework.http.ResponseEntity
@@ -31,7 +33,7 @@ class AdminController(
         @RequestParam(required = false) type: QuizType?,
         @RequestParam(defaultValue = "0") page: Int,
         @RequestParam(defaultValue = "20") size: Int
-    ): ResponseEntity<Map<String, Any>> {
+    ): ResponseEntity<QuestionPageResponse> {
         val result = adminService.getAllQuestions(type, page, size)
         return ResponseEntity.ok(result)
     }
@@ -103,5 +105,12 @@ class AdminController(
         }
         
         return ResponseEntity.ok(result)
+    }
+    
+    @PostMapping("/validate")
+    @Operation(summary = "퀴즈 문제 검증", description = "퀴즈 문제 생성 전 유효성을 검증합니다.")
+    fun validateQuestion(@RequestBody request: QuizQuestionRequest): ResponseEntity<ValidationResponse> {
+        val validation = adminService.validateQuestion(request)
+        return ResponseEntity.ok(validation)
     }
 } 
