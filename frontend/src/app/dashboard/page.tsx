@@ -6,18 +6,19 @@ import StatisticsCard from '../../components/StatisticsCard';
 import ProgressChart from '../../components/ProgressChart';
 import ActivityFeed from '../../components/ActivityFeed';
 import Leaderboard from '../../components/Leaderboard';
-import { STATISTICS_DATA } from '../../constants/statistics';
 import {
   practiceService,
   AnalyticsUserSummaryResponse,
   AnalyticsUserTrendResponse,
-  UserRankingResponse
+  UserRankingResponse,
+  PracticeSession
 } from '../../services/practiceService';
 
 export default function Dashboard() {
   const [userSummary, setUserSummary] = useState<AnalyticsUserSummaryResponse | null>(null);
   const [userTrend, setUserTrend] = useState<AnalyticsUserTrendResponse | null>(null);
   const [topUsers, setTopUsers] = useState<UserRankingResponse[]>([]);
+  const [recentSessions, setRecentSessions] = useState<PracticeSession[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const userId = 1; // TODO: 실제 로그인 사용자 ID로 대체
@@ -28,15 +29,17 @@ export default function Dashboard() {
     Promise.all([
       practiceService.getAnalyticsUserSummary(userId),
       practiceService.getAnalyticsUserTrend(userId, 'month'),
-      practiceService.getTopUsers(8)
+      practiceService.getTopUsers(8),
+      practiceService.getUserPracticeSessions(userId, 5)
     ])
-      .then(([summaryRes, trendRes, topRes]) => {
-        if (!summaryRes.success || !trendRes.success || !topRes.success) {
+      .then(([summaryRes, trendRes, topRes, sessionsRes]) => {
+        if (!summaryRes.success || !trendRes.success || !topRes.success || !sessionsRes.success) {
           setError('대시보드 데이터를 불러오지 못했습니다.');
         } else {
           setUserSummary(summaryRes.data!);
           setUserTrend(trendRes.data!);
           setTopUsers(topRes.data!);
+          setRecentSessions(sessionsRes.data!);
         }
       })
       .catch(() => setError('대시보드 데이터를 불러오지 못했습니다.'))
@@ -77,17 +80,46 @@ export default function Dashboard() {
 
         {/* 통계 카드 */}
         <div className="row mb-4">
-          {STATISTICS_DATA.map((stat, index) => (
-            <div key={index} className="col-xl-3 col-md-6 mb-4">
-              <StatisticsCard
-                title={stat.title}
-                value={stat.value}
-                change={stat.change}
-                icon={stat.icon}
-                color={stat.color}
-              />
-            </div>
-          ))}
+          {userSummary && (
+            <>
+              <div className="col-xl-3 col-md-6 mb-4">
+                <StatisticsCard
+                  title="총 연습 시간"
+                  value={`${Math.floor(userSummary.totalPracticeTime / 60)}시간 ${userSummary.totalPracticeTime % 60}분`}
+                  change={`+${Math.floor(userSummary.totalPracticeTime * 0.1 / 60)}시간`}
+                  icon="bi-clock"
+                  color="primary"
+                />
+              </div>
+              <div className="col-xl-3 col-md-6 mb-4">
+                <StatisticsCard
+                  title="완료된 세션"
+                  value={`${userSummary.completedSessions}개`}
+                  change={`전체 ${userSummary.totalSessions}개 중`}
+                  icon="bi-calendar-check"
+                  color="success"
+                />
+              </div>
+              <div className="col-xl-3 col-md-6 mb-4">
+                <StatisticsCard
+                  title="평균 점수"
+                  value={`${userSummary.averageScore.toFixed(1)}%`}
+                  change={userSummary.averageScore > 80 ? "+좋음" : "향상 필요"}
+                  icon="bi-target"
+                  color="info"
+                />
+              </div>
+              <div className="col-xl-3 col-md-6 mb-4">
+                <StatisticsCard
+                  title="최근 목표"
+                  value={`${userSummary.recentGoals.length}개`}
+                  change={userSummary.recentGoals.length > 0 ? userSummary.recentGoals[0] : "목표 없음"}
+                  icon="bi-fire"
+                  color="warning"
+                />
+              </div>
+            </>
+          )}
         </div>
 
         <div className="row">
@@ -120,26 +152,20 @@ export default function Dashboard() {
               </div>
               <div className="card-body">
                 <ActivityFeed 
-                  activities={[
-                    {
-                      id: '1',
-                      type: 'practice',
-                      title: '연습 세션 완료',
-                      description: '오늘 30분 연습을 완료했습니다.',
-                      time: '2시간 전',
-                      icon: 'bi-music-note',
-                      color: 'primary'
-                    },
-                    {
-                      id: '2',
-                      type: 'achievement',
-                      title: '목표 달성',
-                      description: '주간 연습 목표를 달성했습니다.',
-                      time: '1일 전',
-                      icon: 'bi-trophy',
-                      color: 'success'
-                    }
-                  ]}
+                  activities={recentSessions.map((session, index) => ({
+                    id: session.id.toString(),
+                    type: 'practice',
+                    title: '연습 세션 완료',
+                    description: `${session.title} - ${session.duration}분 연습`,
+                    time: new Date(session.updatedAt).toLocaleDateString('ko-KR', {
+                      month: 'short',
+                      day: 'numeric',
+                      hour: '2-digit',
+                      minute: '2-digit'
+                    }),
+                    icon: 'bi-music-note',
+                    color: session.overall >= 80 ? 'success' : session.overall >= 60 ? 'primary' : 'warning'
+                  }))}
                 />
               </div>
             </div>

@@ -1,69 +1,36 @@
 'use client'
 
 import { useState, useEffect } from 'react';
-
-interface PracticeSession {
-  id: number;
-  title: string;
-  duration: number;
-  accuracy: number;
-  rhythm: number;
-  technique: number;
-  expression: number;
-  overall: number;
-  date: string;
-  focusAreas: string[];
-}
+import { practiceService, PracticeSession } from '../services/practiceService';
 
 export default function PracticeHistory() {
   const [sessions, setSessions] = useState<PracticeSession[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const userId = 1; // TODO: 실제 로그인 사용자 ID로 대체
 
   useEffect(() => {
-    const mockSessions: PracticeSession[] = [
-      {
-        id: 1,
-        title: 'C Major Scale 연습',
-        duration: 25,
-        accuracy: 85,
-        rhythm: 78,
-        technique: 92,
-        expression: 88,
-        overall: 86,
-        date: '2024-01-15T10:30:00Z',
-        focusAreas: ['박자 정확도', '음정 정확도']
-      },
-      {
-        id: 2,
-        title: 'Jazz Improvisation',
-        duration: 45,
-        accuracy: 78,
-        rhythm: 85,
-        technique: 80,
-        expression: 92,
-        overall: 84,
-        date: '2024-01-14T15:20:00Z',
-        focusAreas: ['표현력', '리듬 패턴']
-      },
-      {
-        id: 3,
-        title: 'Classical Piece 연습',
-        duration: 60,
-        accuracy: 90,
-        rhythm: 88,
-        technique: 85,
-        expression: 82,
-        overall: 86,
-        date: '2024-01-13T09:15:00Z',
-        focusAreas: ['테크닉', '음량 조절']
+    const fetchPracticeHistory = async () => {
+      try {
+        setLoading(true);
+        setError(null);
+        
+        const response = await practiceService.getUserPracticeSessions(userId, 20);
+        
+        if (response.success && response.data) {
+          setSessions(response.data);
+        } else {
+          setError(response.message || '연습 기록을 불러오지 못했습니다.');
+        }
+      } catch (error) {
+        setError('연습 기록을 불러오는 중 오류가 발생했습니다.');
+      } finally {
+        setLoading(false);
       }
-    ];
+    };
 
-    setTimeout(() => {
-      setSessions(mockSessions);
-      setLoading(false);
-    }, 1000);
-  }, []);
+    fetchPracticeHistory();
+  }, [userId]);
 
   if (loading) {
     return (
@@ -71,6 +38,14 @@ export default function PracticeHistory() {
         <div className="spinner-border text-primary" role="status">
           <span className="visually-hidden">로딩 중...</span>
         </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="alert alert-danger" role="alert">
+        {error}
       </div>
     );
   }
@@ -94,7 +69,7 @@ export default function PracticeHistory() {
                     <div>
                       <h6 className="card-title mb-1">{session.title}</h6>
                       <small className="text-muted">
-                        {new Date(session.date).toLocaleDateString('ko-KR')} • 
+                        {new Date(session.updatedAt).toLocaleDateString('ko-KR')} • 
                         {session.duration}분 연습
                       </small>
                     </div>

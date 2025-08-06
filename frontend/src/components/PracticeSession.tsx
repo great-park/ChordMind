@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react';
+import { practiceService, CreatePracticeSessionRequest, PracticeSession } from '../services/practiceService';
 
 interface PracticeSessionData {
   title: string;
@@ -22,6 +23,10 @@ export default function PracticeSession() {
   const [isRecording, setIsRecording] = useState(false);
   const [recordingTime, setRecordingTime] = useState(0);
   const [analysis, setAnalysis] = useState<any>(null);
+  const [createdSession, setCreatedSession] = useState<PracticeSession | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const userId = 1; // TODO: 실제 로그인 사용자 ID로 대체
 
   const difficulties = [
     { value: 'BEGINNER', label: '초급' },
@@ -40,47 +45,90 @@ export default function PracticeSession() {
     '음량 조절'
   ];
 
-  const handleStartSession = () => {
-    setIsRecording(true);
-    setRecordingTime(0);
-    // 타이머 시작
-    const timer = setInterval(() => {
-      setRecordingTime(prev => prev + 1);
-    }, 1000);
-    
-    // 30초 후 자동 분석 (임시)
-    setTimeout(() => {
-      setIsRecording(false);
-      setAnalysis({
-        accuracy: 85,
-        rhythm: 78,
-        technique: 92,
-        expression: 88,
-        overall: 86,
-        suggestions: [
-          '박자 정확도를 높이기 위해 메트로놈과 함께 연습하세요',
-          '음정 정확도가 좋습니다. 계속 유지하세요',
-          '표현력을 더욱 향상시킬 수 있습니다'
-        ]
-      });
-    }, 30000);
+  const handleStartSession = async () => {
+    if (!sessionData.title.trim()) {
+      setError('세션 제목을 입력해주세요.');
+      return;
+    }
+
+    setLoading(true);
+    setError(null);
+
+    try {
+      // 먼저 세션을 생성
+      const sessionRequest: CreatePracticeSessionRequest = {
+        title: sessionData.title,
+        description: sessionData.description,
+        difficulty: sessionData.difficulty,
+        duration: sessionData.duration,
+        focusAreas: sessionData.focusAreas
+      };
+
+      const response = await practiceService.createPracticeSession(sessionRequest);
+      
+      if (response.success && response.data) {
+        setCreatedSession(response.data);
+        setIsRecording(true);
+        setRecordingTime(0);
+        
+        // 타이머 시작
+        const timer = setInterval(() => {
+          setRecordingTime(prev => prev + 1);
+        }, 1000);
+        
+        // 지정된 시간 후 자동 종료
+        setTimeout(() => {
+          setIsRecording(false);
+          handleStopSession();
+        }, sessionData.duration * 60 * 1000);
+      } else {
+        setError(response.message || '세션 생성에 실패했습니다.');
+      }
+    } catch (error) {
+      setError('세션 생성 중 오류가 발생했습니다.');
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const handleStopSession = () => {
+  const handleStopSession = async () => {
     setIsRecording(false);
-    // 분석 결과 표시
-    setAnalysis({
-      accuracy: 85,
-      rhythm: 78,
-      technique: 92,
-      expression: 88,
-      overall: 86,
-      suggestions: [
-        '박자 정확도를 높이기 위해 메트로놈과 함께 연습하세요',
-        '음정 정확도가 좋습니다. 계속 유지하세요',
-        '표현력을 더욱 향상시킬 수 있습니다'
-      ]
-    });
+    
+    if (createdSession) {
+      try {
+        // 세션 종료 API 호출
+        await practiceService.endPracticeSession(createdSession.id);
+        
+        // 분석 결과 표시 (실제로는 AI 분석 API에서 가져와야 함)
+        setAnalysis({
+          accuracy: Math.floor(Math.random() * 20) + 80, // 80-100 사이 랜덤
+          rhythm: Math.floor(Math.random() * 20) + 70,   // 70-90 사이 랜덤
+          technique: Math.floor(Math.random() * 20) + 75, // 75-95 사이 랜덤
+          expression: Math.floor(Math.random() * 20) + 80, // 80-100 사이 랜덤
+          overall: Math.floor(Math.random() * 20) + 80,    // 80-100 사이 랜덤
+          suggestions: [
+            '박자 정확도를 높이기 위해 메트로놈과 함께 연습하세요',
+            '음정 정확도가 좋습니다. 계속 유지하세요',
+            '표현력을 더욱 향상시킬 수 있습니다'
+          ]
+        });
+      } catch (error) {
+        console.error('세션 종료 중 오류:', error);
+        // 오류가 있어도 분석 결과는 표시
+        setAnalysis({
+          accuracy: 85,
+          rhythm: 78,
+          technique: 92,
+          expression: 88,
+          overall: 86,
+          suggestions: [
+            '박자 정확도를 높이기 위해 메트로놈과 함께 연습하세요',
+            '음정 정확도가 좋습니다. 계속 유지하세요',
+            '표현력을 더욱 향상시킬 수 있습니다'
+          ]
+        });
+      }
+    }
   };
 
   const formatTime = (seconds: number) => {
@@ -104,6 +152,12 @@ export default function PracticeSession() {
         // 세션 설정
         <div>
           <h5 className="mb-4">새로운 연습 세션 설정</h5>
+          
+          {error && (
+            <div className="alert alert-danger" role="alert">
+              {error}
+            </div>
+          )}
           
           <div className="mb-3">
             <label htmlFor="sessionTitle" className="form-label">
@@ -193,10 +247,19 @@ export default function PracticeSession() {
             <button
               className="btn btn-primary btn-lg"
               onClick={handleStartSession}
-              disabled={!sessionData.title}
+              disabled={!sessionData.title || loading}
             >
-              <i className="bi bi-play-circle me-2"></i>
-              연습 시작
+              {loading ? (
+                <>
+                  <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                  세션 생성 중...
+                </>
+              ) : (
+                <>
+                  <i className="bi bi-play-circle me-2"></i>
+                  연습 시작
+                </>
+              )}
             </button>
           </div>
         </div>

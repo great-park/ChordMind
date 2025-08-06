@@ -131,6 +131,13 @@ class PracticeService {
     return apiClient.get<UserRankingResponse[]>(`/api/practice/analytics/global/leaderboard?${queryString}`);
   }
 
+  // 사용자별 연습 세션 목록 조회 (최근 활동용)
+  async getUserPracticeSessions(userId: number, limit: number = 5): Promise<ApiResponse<PracticeSession[]>> {
+    const params = { limit };
+    const queryString = apiClient.buildQueryParams(params);
+    return apiClient.get<PracticeSession[]>(`/api/practice-sessions/user/${userId}?${queryString}`);
+  }
+
   // 연습 목표 생성
   async createPracticeGoal(request: CreatePracticeGoalRequest): Promise<ApiResponse<PracticeGoal>> {
     return apiClient.post<PracticeGoal>('/api/practice/goals', request);

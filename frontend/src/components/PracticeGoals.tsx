@@ -1,47 +1,15 @@
 'use client'
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { practiceService, PracticeGoal, CreatePracticeGoalRequest } from '../services/practiceService';
 
-interface Goal {
-  id: number;
-  title: string;
-  description: string;
-  targetDate: string;
-  progress: number;
-  category: string;
-  status: 'active' | 'completed' | 'overdue';
-}
+// API 응답과 호환되도록 PracticeGoal 타입 사용
 
 export default function PracticeGoals() {
-  const [goals, setGoals] = useState<Goal[]>([
-    {
-      id: 1,
-      title: 'C Major Scale 마스터',
-      description: 'C Major Scale을 정확하고 빠르게 연주할 수 있도록 연습',
-      targetDate: '2024-02-01',
-      progress: 75,
-      category: '스케일',
-      status: 'active'
-    },
-    {
-      id: 2,
-      title: 'Jazz Improvisation 기초',
-      description: '기본적인 재즈 즉흥연주를 할 수 있도록 연습',
-      targetDate: '2024-03-01',
-      progress: 30,
-      category: '재즈',
-      status: 'active'
-    },
-    {
-      id: 3,
-      title: 'Classical Piece 완성',
-      description: 'Mozart Sonata K.545 1악장을 완벽하게 연주',
-      targetDate: '2024-01-20',
-      progress: 100,
-      category: '클래식',
-      status: 'completed'
-    }
-  ]);
+  const [goals, setGoals] = useState<PracticeGoal[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const userId = 1; // TODO: 실제 로그인 사용자 ID로 대체
 
   const [showAddForm, setShowAddForm] = useState(false);
   const [newGoal, setNewGoal] = useState({
@@ -51,19 +19,62 @@ export default function PracticeGoals() {
     category: ''
   });
 
-  const handleAddGoal = () => {
-    const goal: Goal = {
-      id: Date.now(),
-      title: newGoal.title,
-      description: newGoal.description,
-      targetDate: newGoal.targetDate,
-      progress: 0,
-      category: newGoal.category,
-      status: 'active'
+  useEffect(() => {
+    const fetchGoals = async () => {
+      try {
+        setLoading(true);
+        setError(null);
+        
+        const response = await practiceService.getUserPracticeGoals(userId);
+        
+        if (response.success && response.data) {
+          setGoals(response.data.goals);
+        } else {
+          setError(response.message || '목표를 불러오지 못했습니다.');
+        }
+      } catch (error) {
+        setError('목표를 불러오는 중 오류가 발생했습니다.');
+      } finally {
+        setLoading(false);
+      }
     };
-    setGoals([...goals, goal]);
-    setNewGoal({ title: '', description: '', targetDate: '', category: '' });
-    setShowAddForm(false);
+
+    fetchGoals();
+  }, [userId]);
+
+  const [submitting, setSubmitting] = useState(false);
+
+  const handleAddGoal = async () => {
+    if (!newGoal.title || !newGoal.targetDate) {
+      setError('제목과 목표 날짜를 입력해주세요.');
+      return;
+    }
+
+    try {
+      setSubmitting(true);
+      setError(null);
+
+      const goalRequest: CreatePracticeGoalRequest = {
+        title: newGoal.title,
+        description: newGoal.description,
+        targetDate: newGoal.targetDate,
+        category: newGoal.category
+      };
+
+      const response = await practiceService.createPracticeGoal(goalRequest);
+      
+      if (response.success && response.data) {
+        setGoals([...goals, response.data]);
+        setNewGoal({ title: '', description: '', targetDate: '', category: '' });
+        setShowAddForm(false);
+      } else {
+        setError(response.message || '목표 생성에 실패했습니다.');
+      }
+    } catch (error) {
+      setError('목표 생성 중 오류가 발생했습니다.');
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   const getStatusBadge = (status: string) => {
@@ -77,6 +88,16 @@ export default function PracticeGoals() {
     return <span className={config.class}>{config.text}</span>;
   };
 
+  if (loading) {
+    return (
+      <div className="d-flex justify-content-center">
+        <div className="spinner-border text-primary" role="status">
+          <span className="visually-hidden">로딩 중...</span>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div>
       <div className="d-flex justify-content-between align-items-center mb-4">
@@ -84,11 +105,18 @@ export default function PracticeGoals() {
         <button
           className="btn btn-primary"
           onClick={() => setShowAddForm(true)}
+          disabled={submitting}
         >
           <i className="bi bi-plus-circle me-2"></i>
           목표 추가
         </button>
       </div>
+
+      {error && (
+        <div className="alert alert-danger" role="alert">
+          {error}
+        </div>
+      )}
 
       {showAddForm && (
         <div className="card mb-4">
@@ -150,9 +178,16 @@ export default function PracticeGoals() {
               <button
                 className="btn btn-primary"
                 onClick={handleAddGoal}
-                disabled={!newGoal.title || !newGoal.category || !newGoal.targetDate}
+                disabled={!newGoal.title || !newGoal.category || !newGoal.targetDate || submitting}
               >
-                목표 추가
+                {submitting ? (
+                  <>
+                    <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                    추가 중...
+                  </>
+                ) : (
+                  '목표 추가'
+                )}
               </button>
             </div>
           </div>
