@@ -7,27 +7,19 @@ import { useAuth } from '../../contexts/AuthContext';
 export default function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
-  const { login } = useAuth();
+  const { login, isLoading } = useAuth();
   const router = useRouter();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setIsLoading(true);
     setError('');
 
-    try {
-      const success = await login(email, password);
-      if (success) {
-        router.push('/dashboard');
-      } else {
-        setError('로그인에 실패했습니다. 이메일과 비밀번호를 확인해주세요.');
-      }
-    } catch (err) {
-      setError('로그인 중 오류가 발생했습니다.');
-    } finally {
-      setIsLoading(false);
+    const result = await login(email, password);
+    if (result.success) {
+      router.push('/dashboard');
+    } else {
+      setError(result.message || '로그인에 실패했습니다. 이메일과 비밀번호를 확인해주세요.');
     }
   };
 

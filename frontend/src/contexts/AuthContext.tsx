@@ -7,10 +7,13 @@ interface AuthContextType {
   user: UserProfile | null;
   isAuthenticated: boolean;
   isLoading: boolean;
-  login: (email: string, password: string) => Promise<boolean>;
-  register: (name: string, email: string, password: string, nickname?: string) => Promise<boolean>;
+  error: string | null;
+  login: (email: string, password: string) => Promise<{ success: boolean; message?: string }>;
+  register: (name: string, email: string, password: string, nickname?: string) => Promise<{ success: boolean; message?: string }>;
   logout: () => void;
-  refreshUser: () => void;
+  refreshUser: () => Promise<void>;
+  updateUser: (updatedUser: Partial<UserProfile>) => void;
+  clearError: () => void;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -18,6 +21,7 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<UserProfile | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   const isAuthenticated = !!user;
 
@@ -29,52 +33,105 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setIsLoading(false);
   }, []);
 
-  const login = async (email: string, password: string): Promise<boolean> => {
+  const login = async (email: string, password: string): Promise<{ success: boolean; message?: string }> => {
     try {
+      setError(null);
+      setIsLoading(true);
+      
       const response = await authService.login({ email, password });
       if (response.success && response.data) {
         setUser(response.data.user);
-        return true;
+        return { success: true };
       }
-      return false;
+      
+      const errorMessage = response.message || '로그인에 실패했습니다.';
+      setError(errorMessage);
+      return { success: false, message: errorMessage };
     } catch (error) {
-      console.error('로그인 실패:', error);
-      return false;
+      const errorMessage = '로그인 중 오류가 발생했습니다.';
+      setError(errorMessage);
+      return { success: false, message: errorMessage };
+    } finally {
+      setIsLoading(false);
     }
   };
 
-  const register = async (name: string, email: string, password: string, nickname?: string): Promise<boolean> => {
+  const register = async (name: string, email: string, password: string, nickname?: string): Promise<{ success: boolean; message?: string }> => {
     try {
+      setError(null);
+      setIsLoading(true);
+      
       const response = await authService.register({ name, email, password, nickname });
       if (response.success && response.data) {
         setUser(response.data.user);
-        return true;
+        return { success: true };
       }
-      return false;
+      
+      const errorMessage = response.message || '회원가입에 실패했습니다.';
+      setError(errorMessage);
+      return { success: false, message: errorMessage };
     } catch (error) {
-      console.error('회원가입 실패:', error);
-      return false;
+      const errorMessage = '회원가입 중 오류가 발생했습니다.';
+      setError(errorMessage);
+      return { success: false, message: errorMessage };
+    } finally {
+      setIsLoading(false);
     }
   };
 
   const logout = () => {
     authService.logout();
     setUser(null);
+    setError(null);
   };
 
-  const refreshUser = () => {
-    const currentUser = authService.getCurrentUser();
-    setUser(currentUser);
+  const refreshUser = async (): Promise<void> => {
+    try {
+      setError(null);
+      const currentUser = authService.getCurrentUser();
+      
+      if (currentUser && currentUser.id) {
+        // 서버에서 최신 사용자 정보 가져오기
+        const response = await authService.getUserById(currentUser.id);
+        if (response.success && response.data) {
+          authService.setUser(response.data);
+          setUser(response.data);
+        } else {
+          setUser(currentUser); // 실패 시 로컬 정보 사용
+        }
+      } else {
+        setUser(null);
+      }
+    } catch (error) {
+      // 에러 발생 시 로컬 정보 사용
+      const currentUser = authService.getCurrentUser();
+      setUser(currentUser);
+    }
+  };
+
+  const updateUser = (updatedUser: Partial<UserProfile>) => {
+    if (user) {
+      const newUser = { ...user, ...updatedUser };
+      setUser(newUser);
+      authService.setUser(newUser);
+    }
+  };
+
+  const clearError = () => {
+    setError(null);
   };
 
   const value: AuthContextType = {
     user,
     isAuthenticated,
     isLoading,
+    error,
     login,
     register,
     logout,
     refreshUser,
+    updateUser,
+    clearError,
   };
 
   return (

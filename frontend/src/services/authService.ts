@@ -12,18 +12,12 @@ export interface RegisterRequest {
   nickname?: string;
 }
 
-export interface AuthResponse {
+export interface SignInResponse {
   token: string;
-  user: {
-    id: number;
-    name: string;
-    email: string;
-    nickname: string;
-    role: string;
-  };
+  user: UserResponse;
 }
 
-export interface UserProfile {
+export interface UserResponse {
   id: number;
   name: string;
   email: string;
@@ -33,13 +27,16 @@ export interface UserProfile {
   lastActive: string;
 }
 
+// UserProfile은 UserResponse와 동일한 구조로 통일
+export type UserProfile = UserResponse;
+
 class AuthService {
   private tokenKey = 'chordmind_token';
   private userKey = 'chordmind_user';
 
   // 로그인
-  async login(request: LoginRequest): Promise<ApiResponse<AuthResponse>> {
-    const response = await apiClient.post<AuthResponse>('/api/users/signin', request);
+  async login(request: LoginRequest): Promise<ApiResponse<SignInResponse>> {
+    const response = await apiClient.post<SignInResponse>('/api/users/signin', request);
     
     if (response.success && response.data) {
       this.setToken(response.data.token);
@@ -50,15 +47,23 @@ class AuthService {
   }
 
   // 회원가입
-  async register(request: RegisterRequest): Promise<ApiResponse<AuthResponse>> {
-    const response = await apiClient.post<AuthResponse>('/api/users/signup', request);
+  async register(request: RegisterRequest): Promise<ApiResponse<SignInResponse>> {
+    const response = await apiClient.post<UserResponse>('/api/users/signup', request);
     
     if (response.success && response.data) {
-      this.setToken(response.data.token);
-      this.setUser(response.data.user);
+      // 회원가입 후 자동 로그인을 위해 로그인 API 호출
+      const loginResponse = await this.login({ email: request.email, password: request.password });
+      return {
+        success: loginResponse.success,
+        message: loginResponse.success ? '회원가입이 완료되었습니다.' : loginResponse.message,
+        data: loginResponse.data
+      };
     }
     
-    return response;
+    return {
+      success: false,
+      message: response.message || '회원가입에 실패했습니다.',
+    };
   }
 
   // 로그아웃
@@ -96,7 +101,7 @@ class AuthService {
   }
 
   // 사용자 정보 설정
-  private setUser(user: UserProfile): void {
+  private setUser(user: UserResponse): void {
     localStorage.setItem(this.userKey, JSON.stringify(user));
     apiClient.setUserId(user.id.toString());
   }
@@ -209,6 +214,12 @@ class AuthService {
       apiClient.setAuthToken(token);
       apiClient.setUserId(user.id.toString());
     }
+  }
+
+  // 현재 로그인한 사용자 ID 조회
+  getCurrentUserId(): number | null {
+    const user = this.getCurrentUser();
+    return user ? user.id : null;
   }
 }
 

@@ -12,9 +12,8 @@ export default function Register() {
     confirmPassword: '',
     nickname: '',
   });
-  const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
-  const { register } = useAuth();
+  const { register, isLoading } = useAuth();
   const router = useRouter();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -27,32 +26,24 @@ export default function Register() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setIsLoading(true);
     setError('');
 
     if (formData.password !== formData.confirmPassword) {
       setError('비밀번호가 일치하지 않습니다.');
-      setIsLoading(false);
       return;
     }
 
-    try {
-      const success = await register(
-        formData.name,
-        formData.email,
-        formData.password,
-        formData.nickname || undefined
-      );
-      
-      if (success) {
-        router.push('/dashboard');
-      } else {
-        setError('회원가입에 실패했습니다.');
-      }
-    } catch (err) {
-      setError('회원가입 중 오류가 발생했습니다.');
-    } finally {
-      setIsLoading(false);
+    const result = await register(
+      formData.name,
+      formData.email,
+      formData.password,
+      formData.nickname || undefined
+    );
+    
+    if (result.success) {
+      router.push('/dashboard');
+    } else {
+      setError(result.message || '회원가입에 실패했습니다.');
     }
   };
 
