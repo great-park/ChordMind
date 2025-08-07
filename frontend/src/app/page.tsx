@@ -232,13 +232,13 @@ export default function Home() {
               <span className="text-primary">박자·음정·화성·표현력</span>까지 완벽하게!
             </p>
             <div className="d-flex flex-wrap gap-3 mb-4">
-              <a href="/practice" className="btn btn-primary btn-lg px-4">
-                <i className="bi bi-play-circle me-2"></i>
-                지금 시작하기
+              <a href="/register" className="btn btn-primary btn-lg px-4">
+                <i className="bi bi-person-plus me-2"></i>
+                무료로 시작하기
               </a>
-              <a href="/dashboard" className="btn btn-outline-primary btn-lg px-4">
-                <i className="bi bi-graph-up me-2"></i>
-                성과 확인하기
+              <a href="/login" className="btn btn-outline-primary btn-lg px-4">
+                <i className="bi bi-box-arrow-in-right me-2"></i>
+                로그인
               </a>
             </div>
             <div className="d-flex align-items-center gap-4 text-muted">

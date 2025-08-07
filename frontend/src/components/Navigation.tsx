@@ -108,12 +108,20 @@ export default function Navigation() {
                 </ul>
               </li>
             ) : (
-              <li className="nav-item">
-                <Link className="nav-link" href="/login">
-                  <i className="bi bi-box-arrow-in-right me-1"></i>
-                  로그인
-                </Link>
-              </li>
+              <>
+                <li className="nav-item">
+                  <Link className="nav-link" href="/login">
+                    <i className="bi bi-box-arrow-in-right me-1"></i>
+                    로그인
+                  </Link>
+                </li>
+                <li className="nav-item">
+                  <Link className="nav-link" href="/register">
+                    <i className="bi bi-person-plus me-1"></i>
+                    회원가입
+                  </Link>
+                </li>
+              </>
             )}
           </ul>
         </div>

@@ -48,15 +48,29 @@ export default function Register() {
   };
 
   return (
-    <div className="container-fluid">
-      <div className="row justify-content-center">
-        <div className="col-md-6 col-lg-4">
-          <div className="card shadow-lg mt-5">
+    <div className="container-fluid" style={{ background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', minHeight: '100vh' }}>
+      <div className="row justify-content-center align-items-center" style={{ minHeight: '100vh' }}>
+        <div className="col-md-6 col-lg-5">
+          <div className="card shadow-lg border-0" style={{ background: 'rgba(255, 255, 255, 0.95)', backdropFilter: 'blur(20px)' }}>
             <div className="card-body p-5">
               <div className="text-center mb-4">
-                <i className="bi bi-music-note-beamed display-4 text-primary"></i>
-                <h2 className="mt-3">ChordMind</h2>
-                <p className="text-muted">회원가입</p>
+                <div className="bg-primary bg-opacity-10 rounded-circle d-inline-flex align-items-center justify-content-center mb-3" 
+                     style={{width: '80px', height: '80px'}}>
+                  <i className="bi bi-music-note-beamed display-4 text-primary"></i>
+                </div>
+                <h2 className="fw-bold">ChordMind</h2>
+                <p className="text-muted">AI와 함께하는 음악 여정을 시작하세요!</p>
+                <div className="d-flex justify-content-center gap-3 mb-3">
+                  <div className="badge bg-primary bg-opacity-10 text-primary px-2 py-1">
+                    <i className="bi bi-cpu me-1"></i>AI 분석
+                  </div>
+                  <div className="badge bg-success bg-opacity-10 text-success px-2 py-1">
+                    <i className="bi bi-graph-up me-1"></i>실시간 피드백
+                  </div>
+                  <div className="badge bg-info bg-opacity-10 text-info px-2 py-1">
+                    <i className="bi bi-people me-1"></i>커뮤니티
+                  </div>
+                </div>
               </div>
 
               <form onSubmit={handleSubmit}>
@@ -139,8 +153,9 @@ export default function Register() {
 
                 <button
                   type="submit"
-                  className="btn btn-primary w-100 mb-3"
+                  className="btn btn-primary w-100 mb-3 py-3"
                   disabled={isLoading}
+                  style={{ background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', border: 'none' }}
                 >
                   {isLoading ? (
                     <>
@@ -148,12 +163,19 @@ export default function Register() {
                       가입 중...
                     </>
                   ) : (
-                    '회원가입'
+                    <>
+                      <i className="bi bi-rocket-takeoff me-2"></i>
+                      무료로 시작하기
+                    </>
                   )}
                 </button>
 
                 <div className="text-center">
+                  <p className="text-muted small mb-2">
+                    가입하시면 <a href="#" className="text-decoration-none">이용약관</a> 및 <a href="#" className="text-decoration-none">개인정보처리방침</a>에 동의하는 것으로 간주됩니다.
+                  </p>
                   <a href="/login" className="text-decoration-none">
+                    <i className="bi bi-box-arrow-in-right me-1"></i>
                     이미 계정이 있으신가요? 로그인
                   </a>
                 </div>

@@ -24,15 +24,18 @@ export default function Login() {
   };
 
   return (
-    <div className="container-fluid">
-      <div className="row justify-content-center">
-        <div className="col-md-6 col-lg-4">
-          <div className="card shadow-lg mt-5">
+    <div className="container-fluid" style={{ background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', minHeight: '100vh' }}>
+      <div className="row justify-content-center align-items-center" style={{ minHeight: '100vh' }}>
+        <div className="col-md-6 col-lg-5">
+          <div className="card shadow-lg border-0" style={{ background: 'rgba(255, 255, 255, 0.95)', backdropFilter: 'blur(20px)' }}>
             <div className="card-body p-5">
               <div className="text-center mb-4">
-                <i className="bi bi-music-note-beamed display-4 text-primary"></i>
-                <h2 className="mt-3">ChordMind</h2>
-                <p className="text-muted">AI와 함께하는 음악 연주 분석</p>
+                <div className="bg-primary bg-opacity-10 rounded-circle d-inline-flex align-items-center justify-content-center mb-3" 
+                     style={{width: '80px', height: '80px'}}>
+                  <i className="bi bi-music-note-beamed display-4 text-primary"></i>
+                </div>
+                <h2 className="fw-bold">ChordMind</h2>
+                <p className="text-muted">다시 만나서 반가워요! 🎵</p>
               </div>
 
               <form onSubmit={handleSubmit}>
@@ -74,8 +77,9 @@ export default function Login() {
 
                 <button
                   type="submit"
-                  className="btn btn-primary w-100 mb-3"
+                  className="btn btn-primary w-100 mb-3 py-3"
                   disabled={isLoading}
+                  style={{ background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', border: 'none' }}
                 >
                   {isLoading ? (
                     <>
@@ -83,13 +87,17 @@ export default function Login() {
                       로그인 중...
                     </>
                   ) : (
-                    '로그인'
+                    <>
+                      <i className="bi bi-box-arrow-in-right me-2"></i>
+                      로그인
+                    </>
                   )}
                 </button>
 
                 <div className="text-center">
-                  <a href="/register" className="text-decoration-none">
-                    계정이 없으신가요? 회원가입
+                  <a href="/register" className="text-decoration-none btn btn-outline-primary w-100 py-2">
+                    <i className="bi bi-person-plus me-2"></i>
+                    계정이 없으신가요? 무료로 시작하기
                   </a>
                 </div>
               </form>
