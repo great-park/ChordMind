@@ -22,5 +22,10 @@ data class QuizResultResponse(
 // 랭킹 응답
 data class QuizRankingDto(
     val userId: Long,
-    val score: Long
+    val userName: String,
+    val score: Int,
+    val accuracy: Double,
+    val totalQuestions: Int,
+    val correctAnswers: Int,
+    val rank: Int
 ) 

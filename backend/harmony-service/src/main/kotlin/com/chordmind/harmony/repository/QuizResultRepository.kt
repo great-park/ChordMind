@@ -1,33 +1,39 @@
 package com.chordmind.harmony.repository
 
 import com.chordmind.harmony.domain.QuizResult
-import com.chordmind.harmony.domain.QuizType
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.data.jpa.repository.Query
 import org.springframework.data.repository.query.Param
+import org.springframework.stereotype.Repository
 import java.time.LocalDateTime
 
+@Repository
 interface QuizResultRepository : JpaRepository<QuizResult, Long> {
+    
     fun findByUserId(userId: Long): List<QuizResult>
     
-    fun countByUserId(userId: Long): Long
+    fun findByUserIdAndAnsweredAtBetween(
+        userId: Long, 
+        startDate: LocalDateTime, 
+        endDate: LocalDateTime
+    ): List<QuizResult>
     
-    fun countByUserIdAndCorrectTrue(userId: Long): Long
-    
-    fun countByUserIdAndQuestionType(userId: Long, type: QuizType): Long
-    
-    fun countByUserIdAndQuestionTypeAndCorrectTrue(userId: Long, type: QuizType): Long
-    
-    fun findByUserIdAndAnsweredAtAfterOrderByAnsweredAt(userId: Long, fromDate: LocalDateTime): List<QuizResult>
-    
-    fun countByCorrectTrue(): Long
-
     @Query("""
-        SELECT r.userId, COUNT(r.id) as score
-        FROM QuizResult r
-        WHERE r.answeredAt >= :from AND r.answeredAt < :to AND r.correct = true
+        SELECT r.userId, COUNT(r.id) as totalQuestions, SUM(CASE WHEN r.correct = true THEN 1 ELSE 0 END) as correctAnswers
+        FROM QuizResult r 
+        WHERE r.answeredAt BETWEEN :startDate AND :endDate
         GROUP BY r.userId
-        ORDER BY score DESC
+        ORDER BY correctAnswers DESC, totalQuestions DESC
     """)
-    fun findRankings(from: LocalDateTime, to: LocalDateTime): List<Array<Any>>
-} 
+    fun findRankingData(
+        @Param("startDate") startDate: LocalDateTime,
+        @Param("endDate") endDate: LocalDateTime
+    ): List<Array<Any>>
+    
+    fun countByUserId(userId: Long): Long
+    fun countByUserIdAndCorrectTrue(userId: Long): Long
+    fun countByCorrectTrue(): Long
+    fun countByUserIdAndQuestionType(userId: Long, questionType: String): Long
+    fun countByUserIdAndQuestionTypeAndCorrectTrue(userId: Long, questionType: String): Long
+    fun findByUserIdAndAnsweredAtAfterOrderByAnsweredAt(userId: Long, answeredAt: LocalDateTime): List<QuizResult>
+}

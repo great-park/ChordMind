@@ -78,8 +78,8 @@ class StatisticsCalculator(
     }
     
     private fun calculateTypeStats(userId: Long, type: QuizType): TypeStats {
-        val attempts = quizResultRepository.countByUserIdAndQuestionType(userId, type)
-        val correct = quizResultRepository.countByUserIdAndQuestionTypeAndCorrectTrue(userId, type)
+        val attempts = quizResultRepository.countByUserIdAndQuestionType(userId, type.name)
+        val correct = quizResultRepository.countByUserIdAndQuestionTypeAndCorrectTrue(userId, type.name)
         val accuracy = calculateAccuracy(correct, attempts)
         
         return TypeStats(
