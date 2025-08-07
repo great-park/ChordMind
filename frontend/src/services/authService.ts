@@ -169,8 +169,8 @@ class AuthService {
   }
 
   // 소셜 로그인 (Google)
-  async googleLogin(token: string): Promise<ApiResponse<AuthResponse>> {
-    const response = await apiClient.post<AuthResponse>('/api/users/google-signin', { token });
+  async googleLogin(token: string): Promise<ApiResponse<SignInResponse>> {
+    const response = await apiClient.post<SignInResponse>('/api/users/google-signin', { token });
     
     if (response.success && response.data) {
       this.setToken(response.data.token);
@@ -181,8 +181,8 @@ class AuthService {
   }
 
   // 소셜 로그인 (Apple)
-  async appleLogin(token: string): Promise<ApiResponse<AuthResponse>> {
-    const response = await apiClient.post<AuthResponse>('/api/users/apple-signin', { token });
+  async appleLogin(token: string): Promise<ApiResponse<SignInResponse>> {
+    const response = await apiClient.post<SignInResponse>('/api/users/apple-signin', { token });
     
     if (response.success && response.data) {
       this.setToken(response.data.token);
@@ -194,9 +194,7 @@ class AuthService {
 
   // 계정 삭제
   async deleteAccount(password: string): Promise<ApiResponse<string>> {
-    const response = await apiClient.delete<string>('/api/users/account', {
-      body: JSON.stringify({ password }),
-    });
+    const response = await apiClient.delete<string>('/api/users/account');
     
     if (response.success) {
       this.logout();

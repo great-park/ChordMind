@@ -73,7 +73,7 @@ export default function FeedbackForm() {
         category: formData.category,
         title: formData.title,
         content: formData.content,
-        rating: formData.rating,
+        rating: formData.rating || undefined,
         priority: formData.priority,
         tags: formData.tags
       };

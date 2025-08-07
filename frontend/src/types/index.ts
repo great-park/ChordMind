@@ -32,4 +32,12 @@ export interface GrowthData {
 }
 
 // 부트스트랩 색상 타입
-export type BootstrapColor = 'primary' | 'secondary' | 'success' | 'danger' | 'warning' | 'info' | 'light' | 'dark'; 
+export type BootstrapColor = 'primary' | 'secondary' | 'success' | 'danger' | 'warning' | 'info' | 'light' | 'dark';
+
+// 퀴즈 관련 타입
+export enum QuizType {
+  CHORD_NAME = 'CHORD_NAME',
+  PROGRESSION = 'PROGRESSION', 
+  INTERVAL = 'INTERVAL',
+  SCALE = 'SCALE'
+} 

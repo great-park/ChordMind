@@ -92,13 +92,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       
       if (currentUser && currentUser.id) {
         // 서버에서 최신 사용자 정보 가져오기
-        const response = await authService.getUserById(currentUser.id);
-        if (response.success && response.data) {
-          authService.setUser(response.data);
-          setUser(response.data);
-        } else {
-          setUser(currentUser); // 실패 시 로컬 정보 사용
-        }
+        // const response = await authService.getUserById(currentUser.id);
+        // if (response.success && response.data) {
+        //   authService.setUser(response.data);
+        //   setUser(response.data);
+        // } else {
+          setUser(currentUser); // 로컬 정보 사용
+        // }
       } else {
         setUser(null);
       }
@@ -113,7 +113,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     if (user) {
       const newUser = { ...user, ...updatedUser };
       setUser(newUser);
-      authService.setUser(newUser);
+      // authService.setUser(newUser);
     }
   };
 

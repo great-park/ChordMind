@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react'
 import { Container, Row, Col, Card, Button, Form, Table, Modal, Alert } from 'react-bootstrap'
-import { QuizType } from '@/types/quiz'
+import { QuizType } from '@/types'
 import { useAuth } from '@/contexts/AuthContext'
 import { apiClient } from '@/services/apiClient'
 

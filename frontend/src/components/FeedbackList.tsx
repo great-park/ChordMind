@@ -39,7 +39,10 @@ export default function FeedbackList() {
         const response = await feedbackService.getUserFeedbacks(user.id);
         
         if (response.success && response.data) {
-          setFeedbacks(response.data.feedbacks);
+          setFeedbacks(response.data.feedbacks.map(feedback => ({
+            ...feedback,
+            rating: feedback.rating || null
+          })));
         } else {
           setError(response.message || '피드백 목록을 불러오지 못했습니다.');
         }

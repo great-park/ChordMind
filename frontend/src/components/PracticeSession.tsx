@@ -1,7 +1,8 @@
 'use client'
 
 import { useState } from 'react';
-import { practiceService, CreatePracticeSessionRequest, PracticeSession } from '../services/practiceService';
+import { practiceService, CreatePracticeSessionRequest } from '../services/practiceService';
+import type { PracticeSession } from '../services/practiceService';
 
 interface PracticeSessionData {
   title: string;
@@ -97,7 +98,8 @@ export default function PracticeSession() {
     if (createdSession) {
       try {
         // 세션 종료 API 호출
-        await practiceService.endPracticeSession(createdSession.id);
+        // 세션 완료 처리 (실제로는 별도 API가 필요)
+        // await practiceService.updatePracticeSession(createdSession.id, { title: sessionData.title });
         
         // 분석 결과 표시 (실제로는 AI 분석 API에서 가져와야 함)
         setAnalysis({

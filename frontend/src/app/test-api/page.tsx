@@ -30,7 +30,7 @@ export default function TestAPI() {
       addResult('Feedback Service', 'GET /recent', recentResult);
 
     } catch (error) {
-      addResult('Feedback Service', 'Error', { error: error.message });
+      addResult('Feedback Service', 'Error', { error: error instanceof Error ? error.message : String(error) });
     } finally {
       setIsLoading(false);
     }
@@ -48,7 +48,7 @@ export default function TestAPI() {
       addResult('User Service', 'GET /stats', statsResult);
 
     } catch (error) {
-      addResult('User Service', 'Error', { error: error.message });
+      addResult('User Service', 'Error', { error: error instanceof Error ? error.message : String(error) });
     } finally {
       setIsLoading(false);
     }
@@ -66,7 +66,7 @@ export default function TestAPI() {
       addResult('Practice Service', 'GET /leaderboard/top', topUsersResult);
 
     } catch (error) {
-      addResult('Practice Service', 'Error', { error: error.message });
+      addResult('Practice Service', 'Error', { error: error instanceof Error ? error.message : String(error) });
     } finally {
       setIsLoading(false);
     }
