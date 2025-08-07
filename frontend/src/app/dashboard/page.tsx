@@ -30,7 +30,7 @@ export default function Dashboard() {
       practiceService.getAnalyticsUserSummary(userId),
       practiceService.getAnalyticsUserTrend(userId, 'month'),
       practiceService.getTopUsers(8),
-      practiceService.getUserPracticeSessions(userId, 5)
+      practiceService.getUserPracticeSessions(userId, 0, 5)
     ])
       .then(([summaryRes, trendRes, topRes, sessionsRes]) => {
         if (!summaryRes.success || !trendRes.success || !topRes.success || !sessionsRes.success) {
@@ -39,7 +39,7 @@ export default function Dashboard() {
           setUserSummary(summaryRes.data!);
           setUserTrend(trendRes.data!);
           setTopUsers(topRes.data!);
-          setRecentSessions(sessionsRes.data!);
+          setRecentSessions(sessionsRes.data!.sessions || []);
         }
       })
       .catch(() => setError('대시보드 데이터를 불러오지 못했습니다.'))

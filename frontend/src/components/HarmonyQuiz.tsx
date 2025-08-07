@@ -9,10 +9,12 @@ import {
   QuizType
 } from '../services/quizService';
 import { authService } from '../services/authService';
+import { useAuth } from '../contexts/AuthContext';
 
 // QuizQuestion 인터페이스는 quizService에서 import
 
 const HarmonyQuiz: React.FC = () => {
+  const { user } = useAuth();
   const [quiz, setQuiz] = useState<QuizQuestion | null>(null);
   const [selected, setSelected] = useState<string | null>(null);
   const [result, setResult] = useState<QuizResultResponse | null>(null);
@@ -137,7 +139,7 @@ const HarmonyQuiz: React.FC = () => {
           <div className={`fw-bold mb-2 ${result.correct ? 'text-green-600' : 'text-red-600'}`}>
             {result.correct ? '정답입니다!' : '오답입니다.'}
           </div>
-          <div className="mb-2">정답: <span className="fw-bold">{quiz?.answer}</span></div>
+          <div className="mb-2">정답: <span className="fw-bold">{quiz?.correctAnswer}</span></div>
           <div className="mb-2 text-muted">{quiz?.explanation}</div>
           <button className="btn btn-primary me-2" onClick={fetchQuiz}>다음 문제</button>
           <button className="btn btn-outline-secondary" onClick={handleRanking}>랭킹 보기</button>
@@ -148,7 +150,7 @@ const HarmonyQuiz: React.FC = () => {
           <h3 className="fw-bold mb-2">최근 7일 랭킹</h3>
           <ol className="list-decimal list-inside">
             {rankings.map((r, idx) => (
-              <li key={r.userId} className={r.userId === USER_ID ? 'text-primary fw-bold' : ''}>
+              <li key={r.userId} className={r.userId === user?.id ? 'text-primary fw-bold' : ''}>
                 {idx + 1}위 - 사용자 {r.userId} : {r.score}점
               </li>
             ))}

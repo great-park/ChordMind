@@ -18,7 +18,7 @@ export default function PracticeHistory() {
         const response = await practiceService.getUserPracticeSessions(userId, 20);
         
         if (response.success && response.data) {
-          setSessions(response.data);
+          setSessions(response.data.sessions || []);
         } else {
           setError(response.message || '연습 기록을 불러오지 못했습니다.');
         }

@@ -75,12 +75,12 @@ export interface CreatePracticeGoalRequest {
 class PracticeService {
   // 연습 세션 생성
   async createPracticeSession(request: CreatePracticeSessionRequest): Promise<ApiResponse<PracticeSession>> {
-    return apiClient.post<PracticeSession>('/api/practice/sessions', request);
+    return apiClient.post<PracticeSession>('/api/practice-sessions', request);
   }
 
   // 연습 세션 조회
   async getPracticeSession(sessionId: number): Promise<ApiResponse<PracticeSession>> {
-    return apiClient.get<PracticeSession>(`/api/practice/sessions/${sessionId}`);
+    return apiClient.get<PracticeSession>(`/api/practice-sessions/${sessionId}`);
   }
 
   // 사용자별 연습 세션 목록 조회
@@ -92,7 +92,7 @@ class PracticeService {
     const params = { page, size };
     const queryString = apiClient.buildQueryParams(params);
     return apiClient.get<{ sessions: PracticeSession[]; totalElements: number }>(
-      `/api/practice/sessions/user/${userId}?${queryString}`
+      `/api/practice-sessions/user/${userId}?${queryString}`
     );
   }
 
@@ -101,12 +101,12 @@ class PracticeService {
     sessionId: number,
     request: Partial<CreatePracticeSessionRequest>
   ): Promise<ApiResponse<PracticeSession>> {
-    return apiClient.put<PracticeSession>(`/api/practice/sessions/${sessionId}`, request);
+    return apiClient.put<PracticeSession>(`/api/practice-sessions/${sessionId}`, request);
   }
 
   // 연습 세션 삭제
   async deletePracticeSession(sessionId: number): Promise<ApiResponse<string>> {
-    return apiClient.delete<string>(`/api/practice/sessions/${sessionId}`);
+    return apiClient.delete<string>(`/api/practice-sessions/${sessionId}`);
   }
 
   // 사용자 분석 요약 조회
@@ -132,7 +132,7 @@ class PracticeService {
   }
 
   // 사용자별 연습 세션 목록 조회 (최근 활동용)
-  async getUserPracticeSessions(userId: number, limit: number = 5): Promise<ApiResponse<PracticeSession[]>> {
+  async getRecentUserSessions(userId: number, limit: number = 5): Promise<ApiResponse<PracticeSession[]>> {
     const params = { limit };
     const queryString = apiClient.buildQueryParams(params);
     return apiClient.get<PracticeSession[]>(`/api/practice-sessions/user/${userId}?${queryString}`);
@@ -211,7 +211,7 @@ class PracticeService {
   }): Promise<ApiResponse<{ sessions: PracticeSession[]; totalElements: number }>> {
     const queryString = apiClient.buildQueryParams(params);
     return apiClient.get<{ sessions: PracticeSession[]; totalElements: number }>(
-      `/api/practice/sessions/search?${queryString}`
+      `/api/practice-sessions/search?${queryString}`
     );
   }
 
@@ -226,7 +226,7 @@ class PracticeService {
       overall: number;
     }
   ): Promise<ApiResponse<PracticeSession>> {
-    return apiClient.put<PracticeSession>(`/api/practice/sessions/${sessionId}/analysis`, analysis);
+    return apiClient.put<PracticeSession>(`/api/practice-sessions/${sessionId}/analysis`, analysis);
   }
 }
 
