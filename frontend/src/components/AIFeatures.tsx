@@ -64,6 +64,12 @@ const AIFeatures: React.FC = () => {
   // 학습 경로 상태
   const [learningPathUserId, setLearningPathUserId] = useState(selectedUserId)
   const [behaviorUserId, setBehaviorUserId] = useState(selectedUserId)
+  
+  // 새로운 AI 기능들 상태
+  const [maxRecommendations, setMaxRecommendations] = useState(5)
+  const [includeProgress, setIncludeProgress] = useState(true)
+  const [statsPeriod, setStatsPeriod] = useState('month')
+  const [includeComparison, setIncludeComparison] = useState(true)
 
   // 사용자가 로그인했을 때 폼 업데이트
   useEffect(() => {
@@ -214,6 +220,48 @@ const AIFeatures: React.FC = () => {
     }
   }
 
+  const handleLearningRecommendations = async () => {
+    setLoading(true)
+    setError(null)
+
+    try {
+      const response = await fetch(`/api/ai/learning-recommendations/${selectedUserId}?include_progress=${includeProgress}&max_recommendations=${maxRecommendations}`)
+
+      if (response.ok) {
+        const data = await response.json()
+        setResult(data)
+      } else {
+        const errorData = await response.json()
+        setError(errorData.error || '학습 추천에 실패했습니다.')
+      }
+    } catch (err) {
+      setError('네트워크 오류가 발생했습니다.')
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const handlePerformanceStats = async () => {
+    setLoading(true)
+    setError(null)
+
+    try {
+      const response = await fetch(`/api/ai/performance-stats/${selectedUserId}?period=${statsPeriod}&include_comparison=${includeComparison}`)
+
+      if (response.ok) {
+        const data = await response.json()
+        setResult(data)
+      } else {
+        const errorData = await response.json()
+        setError(errorData.error || '성과 통계 조회에 실패했습니다.')
+      }
+    } catch (err) {
+      setError('네트워크 오류가 발생했습니다.')
+    } finally {
+      setLoading(false)
+    }
+  }
+
   const renderResult = () => {
     if (!result) return null
 
@@ -294,9 +342,15 @@ const AIFeatures: React.FC = () => {
                     <Nav.Link eventKey="learning">학습 경로</Nav.Link>
                   </Nav.Item>
                   <Nav.Item>
-                    <Nav.Link eventKey="behavior">행동 분석</Nav.Link>
-                  </Nav.Item>
-                </Nav>
+                                    <Nav.Link eventKey="behavior">행동 분석</Nav.Link>
+              </Nav.Item>
+              <Nav.Item>
+                <Nav.Link eventKey="learning-recommendations">📚 학습 추천</Nav.Link>
+              </Nav.Item>
+              <Nav.Item>
+                <Nav.Link eventKey="performance-stats">📊 성과 통계</Nav.Link>
+              </Nav.Item>
+            </Nav>
               </Col>
               
               <Col md={9}>
@@ -542,6 +596,79 @@ const AIFeatures: React.FC = () => {
                         
                         <Button onClick={handleBehaviorAnalysis} disabled={loading}>
                           {loading ? '분석 중...' : '행동 분석 실행'}
+                        </Button>
+                      </Card.Body>
+                    </Card>
+                  </Tab.Pane>
+
+                  <Tab.Pane eventKey="learning-recommendations">
+                    <Card>
+                      <Card.Header>
+                        <h5>📚 학습 추천</h5>
+                      </Card.Header>
+                      <Card.Body>
+                        <p>사용자의 학습 패턴을 분석하여 개인화된 학습 추천을 제공합니다.</p>
+                        
+                        <Form.Group className="mb-3">
+                          <Form.Label>최대 추천 개수</Form.Label>
+                          <Form.Select 
+                            value={maxRecommendations}
+                            onChange={(e) => setMaxRecommendations(Number(e.target.value))}
+                          >
+                            <option value={3}>3개</option>
+                            <option value={5}>5개</option>
+                            <option value={10}>10개</option>
+                          </Form.Select>
+                        </Form.Group>
+                        
+                        <Form.Group className="mb-3">
+                          <Form.Check
+                            type="checkbox"
+                            label="진도 정보 포함"
+                            checked={includeProgress}
+                            onChange={(e) => setIncludeProgress(e.target.checked)}
+                          />
+                        </Form.Group>
+                        
+                        <Button onClick={handleLearningRecommendations} disabled={loading}>
+                          {loading ? '분석 중...' : '학습 추천 받기'}
+                        </Button>
+                      </Card.Body>
+                    </Card>
+                  </Tab.Pane>
+
+                  <Tab.Pane eventKey="performance-stats">
+                    <Card>
+                      <Card.Header>
+                        <h5>📊 성과 통계</h5>
+                      </Card.Header>
+                      <Card.Body>
+                        <p>AI가 분석한 사용자의 학습 성과와 발전 추이를 확인합니다.</p>
+                        
+                        <Form.Group className="mb-3">
+                          <Form.Label>통계 기간</Form.Label>
+                          <Form.Select 
+                            value={statsPeriod}
+                            onChange={(e) => setStatsPeriod(e.target.value)}
+                          >
+                            <option value="week">1주일</option>
+                            <option value="month">1개월</option>
+                            <option value="quarter">3개월</option>
+                            <option value="year">1년</option>
+                          </Form.Select>
+                        </Form.Group>
+                        
+                        <Form.Group className="mb-3">
+                          <Form.Check
+                            type="checkbox"
+                            label="이전 기간과 비교"
+                            checked={includeComparison}
+                            onChange={(e) => setIncludeComparison(e.target.checked)}
+                          />
+                        </Form.Group>
+                        
+                        <Button onClick={handlePerformanceStats} disabled={loading}>
+                          {loading ? '분석 중...' : '성과 통계 조회'}
                         </Button>
                       </Card.Body>
                     </Card>
