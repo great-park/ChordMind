@@ -16,7 +16,7 @@ class HealthController(
     private val webClient: WebClient
 ) {
 
-    private val serviceStatus = ConcurrentHashMap<MicroService, ServiceHealth>()
+    private val serviceStatus = ConcurrentHashMap<String, ServiceHealth>()
 
     @GetMapping
     fun gatewayHealth(): ResponseEntity<Map<String, Any>> {
@@ -32,12 +32,12 @@ class HealthController(
 
     @GetMapping("/services")
     fun servicesHealth(): ResponseEntity<Map<String, Any>> {
-        // Enum을 활용한 서비스 헬스체크
-        val healthChecks = MicroService.values().map { service ->
-            checkServiceHealth(service)
+        // Enum을 활용한 서비스 헬스체크 (비동기 업데이트)
+        MicroService.values().forEach { service ->
+            checkServiceHealth(service).subscribe()
         }
 
-        val statusMap = serviceStatus.mapKeys { it.key.serviceName }
+        val statusMap = serviceStatus.toMap()
         val overallStatus = GatewayOverallStatus.calculateOverallStatus(
             serviceStatus.mapValues { it.value.healthStatus }
         )
@@ -50,7 +50,7 @@ class HealthController(
                 "criticalServices" to MicroService.getCriticalServices().map { service ->
                     mapOf(
                         "name" to service.serviceName,
-                        "status" to serviceStatus[service]?.healthStatus ?: HealthStatus.UNKNOWN,
+                        "status" to (serviceStatus[service.serviceName]?.healthStatus ?: HealthStatus.UNKNOWN),
                         "priority" to service.priority
                     )
                 }
@@ -58,26 +58,40 @@ class HealthController(
         )
     }
 
-    private fun checkServiceHealth(serviceName: String, healthUrl: String): Mono<ServiceHealth> {
+    private fun checkServiceHealth(service: MicroService): Mono<ServiceHealth> {
+        val serviceName = service.serviceName
+        val healthUrl = when (service) {
+            MicroService.AI_SERVICE -> System.getenv("AI_SERVICE_URL")?.let { "$it${service.healthEndpoint}" }
+                ?: "http://localhost:8088${service.healthEndpoint}"
+            else -> service.getHealthUrl(useLocalhost = true)
+        }
+
         return webClient.get()
             .uri(healthUrl)
             .retrieve()
-            .bodyToM(Map::class.java)
+            .bodyToMono(Map::class.java)
             .map { response ->
-                val status = response["status"] as? String ?: "UNKNOWN"
+                @Suppress("UNCHECKED_CAST")
+                val body = response as Map<String, Any>
+                val statusStr = (body["status"] as? String) ?: "UNKNOWN"
+                val health = HealthStatus.fromString(statusStr)
                 ServiceHealth(
                     service = serviceName,
-                    status = status,
+                    healthStatus = health,
                     timestamp = LocalDateTime.now(),
-                    details = response
+                    details = body,
+                    priority = service.priority,
+                    category = service.category
                 )
             }
             .onErrorReturn(
                 ServiceHealth(
                     service = serviceName,
-                    status = "DOWN",
+                    healthStatus = HealthStatus.DOWN,
                     timestamp = LocalDateTime.now(),
-                    details = mapOf("error" to "Service unavailable")
+                    details = mapOf("error" to "Service unavailable"),
+                    priority = service.priority,
+                    category = service.category
                 )
             )
             .doOnNext { serviceStatus[serviceName] = it }

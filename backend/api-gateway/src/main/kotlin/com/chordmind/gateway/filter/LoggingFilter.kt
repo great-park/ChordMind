@@ -32,7 +32,7 @@ class LoggingFilter : GlobalFilter, Ordered {
 
     private fun logRequest(request: ServerHttpRequest) {
         val timestamp = LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME)
-        val method = request.method?.name ?: "UNKNOWN"
+        val method = request.method?.name() ?: "UNKNOWN"
         val path = request.path.value()
         val userAgent = request.headers.getFirst("User-Agent") ?: "Unknown"
         val userIp = request.remoteAddress?.address?.hostAddress ?: "Unknown"
