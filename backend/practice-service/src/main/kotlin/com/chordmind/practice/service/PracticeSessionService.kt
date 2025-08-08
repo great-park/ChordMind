@@ -320,22 +320,42 @@ class PracticeSessionService(
 
     fun getAdminPracticeSummary(): AdminPracticeSummaryResponse {
         val allSessions = sessionRepository.findAll()
-        val allProgress = allSessions.flatMap { progressRepository.findBySessionId(it.id!!) }
         val userIds = allSessions.map { it.userId }.distinct()
         val totalUsers = userIds.size
         val totalSessions = allSessions.size
-        val totalProgress = allProgress.size
-        val averageSessionPerUser = if (totalUsers > 0) totalSessions.toDouble() / totalUsers else 0.0
-        val allScores = allProgress.mapNotNull { it.score }
-        val averageScore = allScores.takeIf { it.isNotEmpty() }?.average()
-        val lastActivityAt = allProgress.maxOfOrNull { it.timestamp }
+
+        val now = LocalDateTime.now()
+        val sevenDaysAgo = now.minusDays(7)
+        val activeUsers = allSessions.filter { session ->
+            val hasRecentSession = (session.endedAt ?: session.startedAt).isAfter(sevenDaysAgo)
+            val hasRecentProgress = progressRepository.findBySessionId(session.id!!).any { it.timestamp.isAfter(sevenDaysAgo) }
+            hasRecentSession || hasRecentProgress
+        }.map { it.userId }.distinct().size
+
+        val totalPracticeTime = allSessions.sumOf { session ->
+            val duration = session.endedAt?.let { java.time.Duration.between(session.startedAt, it).toMinutes() }
+                ?: java.time.Duration.between(session.startedAt, now).toMinutes()
+            duration.coerceAtLeast(0)
+        }
+        val averageSessionTime = if (totalSessions > 0) totalPracticeTime.toDouble() / totalSessions else 0.0
+
+        val popularGoals = allSessions.mapNotNull { it.goal }
+            .groupingBy { it }
+            .eachCount()
+            .entries
+            .sortedByDescending { it.value }
+            .take(3)
+            .map { it.key }
+
+        val trendingSkills = listOf("화음 진행", "음정 인식", "리듬")
+
         return AdminPracticeSummaryResponse(
             totalUsers = totalUsers,
+            activeUsers = activeUsers,
             totalSessions = totalSessions,
-            totalProgress = totalProgress,
-            averageSessionPerUser = averageSessionPerUser,
-            averageScore = averageScore,
-            lastActivityAt = lastActivityAt
+            averageSessionTime = averageSessionTime,
+            popularGoals = popularGoals,
+            trendingSkills = trendingSkills
         )
     }
 
@@ -344,16 +364,22 @@ class PracticeSessionService(
         val userIds = allSessions.map { it.userId }.distinct()
         return userIds.map { userId ->
             val sessions = allSessions.filter { it.userId == userId }
-            val completedSessions = sessions.count { it.status == SessionStatus.COMPLETED }
-            val allScores = sessions.flatMap { session -> progressRepository.findBySessionId(session.id!!).mapNotNull { it.score } }
-            val averageScore = allScores.takeIf { it.isNotEmpty() }?.average()
-            val lastSessionAt = sessions.maxOfOrNull { it.endedAt ?: it.startedAt }
+            val allScores = sessions.flatMap { session ->
+                progressRepository.findBySessionId(session.id!!).mapNotNull { it.score }
+            }
+            val averageScore = allScores.takeIf { it.isNotEmpty() }?.average() ?: 0.0
+            val lastActiveAt = sessions.maxOfOrNull { it.endedAt ?: it.startedAt } ?: LocalDateTime.MIN
+            val totalPracticeTime = sessions.sumOf { session ->
+                val end = session.endedAt ?: LocalDateTime.now()
+                java.time.Duration.between(session.startedAt, end).toMinutes().coerceAtLeast(0)
+            }
             AdminUserSummary(
                 userId = userId,
+                username = "User$userId",
                 totalSessions = sessions.size,
-                completedSessions = completedSessions,
+                totalPracticeTime = totalPracticeTime,
                 averageScore = averageScore,
-                lastSessionAt = lastSessionAt
+                lastActiveAt = lastActiveAt
             )
         }
     }
@@ -362,34 +388,45 @@ class PracticeSessionService(
         val allSessions = sessionRepository.findAll()
         return allSessions.map { session ->
             val progresses = progressRepository.findBySessionId(session.id!!)
-            val averageScore = progresses.mapNotNull { it.score }.takeIf { it.isNotEmpty() }?.average()
+            val avgScore = progresses.mapNotNull { it.score }.average().let { if (it.isNaN()) 0.0 else it }
+            val duration = session.endedAt?.let { java.time.Duration.between(session.startedAt, it).toMinutes() }
+                ?: java.time.Duration.between(session.startedAt, LocalDateTime.now()).toMinutes()
             AdminSessionSummary(
-                sessionId = session.id!!,
+                sessionId = session.id,
                 userId = session.userId,
-                goal = session.goal,
+                username = "User${session.userId}",
                 startedAt = session.startedAt,
                 endedAt = session.endedAt,
-                status = session.status.name,
-                totalProgress = progresses.size,
-                averageScore = averageScore
+                duration = duration,
+                score = avgScore,
+                status = session.status.name
             )
         }
     }
 
     fun getAdminProgressSummaries(): List<AdminProgressSummary> {
         val allSessions = sessionRepository.findAll()
-        return allSessions.flatMap { session ->
-            progressRepository.findBySessionId(session.id!!).map { progress ->
-                AdminProgressSummary(
-                    progressId = progress.id!!,
-                    sessionId = session.id!!,
-                    userId = session.userId,
-                    note = progress.note,
-                    score = progress.score,
-                    timestamp = progress.timestamp
-                )
-            }
-        }
+        val allProgress = allSessions.flatMap { progressRepository.findBySessionId(it.id!!) }
+
+        val totalProgress = allProgress.size
+        val averageScore = allProgress.mapNotNull { it.score }.average().let { if (it.isNaN()) 0.0 else it }
+        val improvementRate = allSessions.map { session ->
+            val progresses = progressRepository.findBySessionId(session.id!!)
+            calculateSessionImprovementRate(progresses)
+        }.filter { !it.isNaN() }.average().let { if (it.isNaN()) 0.0 else it }
+
+        val topPerformers = getAdminUserSummaries().sortedByDescending { it.averageScore }.take(5)
+        val recentActivity = getAdminSessionSummaries().sortedByDescending { it.startedAt }.take(10)
+
+        return listOf(
+            AdminProgressSummary(
+                totalProgress = totalProgress,
+                averageScore = averageScore,
+                improvementRate = improvementRate,
+                topPerformers = topPerformers,
+                recentActivity = recentActivity
+            )
+        )
     }
 
     fun getGoalAchievementNotification(userId: Long, sessionId: Long): GoalAchievementNotification? {
@@ -492,15 +529,11 @@ class PracticeSessionService(
             trendData = trendData,
             overallTrend = overallTrend,
             improvementRate = improvementRate,
-            consistencyScore = calculateConsistencyScore(trendData)
+            consistencyScore = calculateConsistencyScoreFromTrend(trendData)
         )
     }
     
     fun getUserSkillAnalysis(userId: Long): SkillAnalysisResponse {
-        val sessions = sessionRepository.findByUserId(userId)
-        val progresses = sessions.flatMap { session ->
-            progressRepository.findBySessionId(session.id!!)
-        }
         
         val skills = listOf(
             SkillData("기본 화음", 75.0, 90.0, 83.3, 120, 15),
@@ -545,7 +578,7 @@ class PracticeSessionService(
                 } ?: 30.0
             }.average(),
             longestStreak = calculateLongestStreak(sessions),
-            consistencyScore = calculateConsistencyScore(sessions)
+            consistencyScore = calculateConsistencyScoreFromSessions(sessions)
         )
         
         val sessionPatterns = SessionPatterns(
@@ -681,6 +714,7 @@ class PracticeSessionService(
         )
     }
     
+    @Suppress("UNUSED_PARAMETER")
     fun getGlobalLeaderboard(limit: Int, period: String?): List<LeaderboardEntryResponse> {
         return (1..limit).map { rank ->
             LeaderboardEntryResponse(
@@ -707,7 +741,7 @@ class PracticeSessionService(
         )
     }
     
-    private fun calculateConsistencyScore(trendData: List<ProgressDataPoint>): Double {
+    private fun calculateConsistencyScoreFromTrend(trendData: List<ProgressDataPoint>): Double {
         if (trendData.size < 2) return 0.0
         val variances = trendData.zipWithNext().map { (first, second) ->
             kotlin.math.abs(second.averageScore - first.averageScore)
@@ -716,7 +750,7 @@ class PracticeSessionService(
         return (100.0 - averageVariance).coerceIn(0.0, 100.0)
     }
     
-    private fun calculateConsistencyScore(sessions: List<PracticeSession>): Double {
+    private fun calculateConsistencyScoreFromSessions(sessions: List<PracticeSession>): Double {
         if (sessions.size < 2) return 0.0
         val dailySessions = sessions.groupBy { it.startedAt.toLocalDate() }
         val sessionCounts = dailySessions.values.map { it.size }

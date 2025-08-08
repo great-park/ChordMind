@@ -363,4 +363,4 @@ class PracticeSessionServiceTest {
         assertEquals(1, result[0].rank)
         assertEquals(2, result[1].rank)
     }
-} 
+}

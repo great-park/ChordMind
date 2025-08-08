@@ -94,4 +94,4 @@ class PracticeProgressServiceTest {
         org.junit.jupiter.api.Assertions.assertEquals(1, result5.size)
         org.junit.jupiter.api.Assertions.assertEquals("즉흥 연주", result5[0].note)
     }
-} 
+}
