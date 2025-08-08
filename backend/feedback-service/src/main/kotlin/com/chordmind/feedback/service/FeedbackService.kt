@@ -4,9 +4,11 @@ import com.chordmind.feedback.domain.Feedback
 import com.chordmind.feedback.domain.FeedbackPriority
 import com.chordmind.feedback.domain.FeedbackStatus
 import com.chordmind.feedback.domain.FeedbackType
+import com.chordmind.feedback.domain.FeedbackCategory
 import com.chordmind.feedback.dto.*
 import com.chordmind.feedback.repository.FeedbackRepository
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.core.type.TypeReference
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Pageable
@@ -23,11 +25,14 @@ class FeedbackService(
 
     // 피드백 생성
     fun createFeedback(userId: Long, request: CreateFeedbackRequest): ApiResponse<FeedbackResponse> {
+        val categoryEnum: FeedbackCategory = enumValues<FeedbackCategory>()
+            .find { it.name.equals(request.category, ignoreCase = true) || it.displayName == request.category }
+            ?: FeedbackCategory.GENERAL
         val feedback = Feedback(
             userId = userId,
             sessionId = request.sessionId,
             feedbackType = request.feedbackType,
-            category = request.category,
+            category = categoryEnum,
             title = request.title,
             content = request.content,
             rating = request.rating,
@@ -204,14 +209,18 @@ class FeedbackService(
         userId = userId,
         sessionId = sessionId,
         feedbackType = feedbackType,
-        category = category,
+        category = category.name,
         title = title,
         content = content,
         rating = rating,
         priority = priority,
         status = status,
-        tags = tags?.let { objectMapper.readValue(it, List::class.java) as List<String> },
-        metadata = metadata?.let { objectMapper.readValue(it, Map::class.java) as Map<String, Any> },
+        tags = tags?.let { json ->
+            object : TypeReference<List<String>>() {}
+        }?.let { typeRef -> objectMapper.readValue(tags, typeRef) },
+        metadata = metadata?.let { json ->
+            object : TypeReference<Map<String, Any>>() {}
+        }?.let { typeRef -> objectMapper.readValue(metadata, typeRef) },
         createdAt = createdAt,
         updatedAt = updatedAt,
         resolvedAt = resolvedAt,
