@@ -41,6 +41,8 @@ dependencies {
     implementation("org.jetbrains.kotlin:kotlin-reflect")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testImplementation("org.springframework.security:spring-security-test")
+    testImplementation("org.testcontainers:junit-jupiter:1.19.7")
+    testImplementation("org.testcontainers:postgresql:1.19.7")
     testImplementation("org.mockito:mockito-core:5.2.0")
     testImplementation("org.mockito:mockito-junit-jupiter:5.2.0")
     testImplementation("org.mockito:mockito-inline:5.2.0")
