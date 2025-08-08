@@ -14,6 +14,7 @@ import org.mockito.kotlin.*
 import org.springframework.security.crypto.password.PasswordEncoder
 import java.time.LocalDateTime
 import java.util.Optional
+import com.fasterxml.jackson.databind.ObjectMapper
 
 @ExtendWith(MockitoExtension::class)
 class UserServiceTest {
@@ -24,6 +25,8 @@ class UserServiceTest {
     private lateinit var passwordEncoder: PasswordEncoder
     @Mock
     private lateinit var jwtService: JwtService
+    @Mock
+    private lateinit var objectMapper: ObjectMapper
     @InjectMocks
     private lateinit var userService: UserService
 
