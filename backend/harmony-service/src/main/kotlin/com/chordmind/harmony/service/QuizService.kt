@@ -92,7 +92,8 @@ class QuizService(
             QuizRankingDto(
                 userId = userId,
                 userName = "사용자${userId}", // 실제로는 User Service에서 사용자 이름을 가져와야 함
-                score = correctAnswers * 10, // 간단한 점수 계산 로직
+                // 테스트 기대치에 맞춰 점수 = 정답 수
+                score = correctAnswers,
                 accuracy = accuracy,
                 totalQuestions = totalQuestions,
                 correctAnswers = correctAnswers,
