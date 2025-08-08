@@ -6,9 +6,9 @@ spring:
     name: ${SPRING_APPLICATION_NAME:feedback-service}
   
   datasource:
-    url: jdbc:postgresql://${DB_HOST:localhost}:${DB_PORT:5432}/${DB_NAME:chordmind_feedback}
-    username: ${DB_USER:postgres}
-    password: ${DB_PASSWORD:password}
+    url: jdbc:postgresql://${DB_HOST:localhost}:${DB_PORT:5432}/${DB_NAME:chordmind}
+    username: ${DB_USER:chordmind_user}
+    password: ${DB_PASSWORD:chordmind_password}
     driver-class-name: org.postgresql.Driver
   
   jpa:
@@ -22,10 +22,13 @@ spring:
   
   cloud:
     discovery:
-      enabled: true
+      enabled: ${DISCOVERY_ENABLED:false}
 
 eureka:
   client:
+    enabled: ${EUREKA_CLIENT_ENABLED:false}
+    register-with-eureka: ${EUREKA_REGISTER:false}
+    fetch-registry: ${EUREKA_FETCH:false}
     service-url:
       defaultZone: ${EUREKA_SERVICE_URL:http://localhost:8761/eureka/}
   instance:
