@@ -2,18 +2,10 @@ package com.chordmind.user.service
 
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.test.context.TestPropertySource
 import org.springframework.test.util.ReflectionTestUtils
 import java.util.*
 
-@SpringBootTest
-@TestPropertySource(properties = [
-    "jwt.secret=test-jwt-secret-key-for-testing-only",
-    "jwt.expiration=3600000"
-])
 class JwtServiceTest {
-    
     private lateinit var jwtService: JwtService
 
     private val testEmail = "test@example.com"
@@ -22,6 +14,7 @@ class JwtServiceTest {
 
     @BeforeEach
     fun setUp() {
+        jwtService = JwtService()
         ReflectionTestUtils.setField(jwtService, "secret", testSecret)
         ReflectionTestUtils.setField(jwtService, "expiration", testExpiration)
     }
@@ -121,4 +114,4 @@ class JwtServiceTest {
         // Then
         assert(isExpired)
     }
-} 
+}
