@@ -48,21 +48,16 @@ class AuthenticationFilter : GlobalFilter, Ordered {
         
         return try {
             val claims = validateToken(token)
-            val userId = claims["userId"] as? String
-            val email = claims["email"] as? String
-            
-            if (userId != null && email != null) {
-                // 사용자 정보를 헤더에 추가
-                val requestBuilder = request.mutate()
-                    .header("X-User-ID", userId)
-                    .header("X-User-Email", email)
-                    .build()
-                
-                val mutatedExchange = exchange.mutate().request(requestBuilder).build()
-                chain.filter(mutatedExchange)
-            } else {
-                unauthorized(exchange, "Invalid token claims")
-            }
+            val userId = (claims["userId"] as? String)
+                ?: (claims["user_id"] as? String)
+            val email = (claims["email"] as? String) ?: claims.subject
+
+            // 사용자 정보를 헤더에 추가(존재하는 값만)
+            val builder = request.mutate()
+            if (!userId.isNullOrBlank()) builder.header("X-User-ID", userId)
+            if (!email.isNullOrBlank()) builder.header("X-User-Email", email)
+            val mutatedExchange = exchange.mutate().request(builder.build()).build()
+            chain.filter(mutatedExchange)
         } catch (e: Exception) {
             unauthorized(exchange, "Invalid token: ${e.message}")
         }
