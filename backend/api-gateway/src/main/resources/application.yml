@@ -4,6 +4,8 @@ server:
 spring:
   application:
     name: api-gateway
+  main:
+    web-application-type: reactive
   
   # Redis 설정 (Rate Limiting용)
   data:
@@ -26,6 +28,28 @@ spring:
           enabled: false
           lower-case-service-id: true
       routes:
+        # User Service public: signup
+        - id: user-service-signup
+          uri: ${USER_SERVICE_URL:http://localhost:8081}
+          predicates:
+            - Path=/api/users/signup
+          filters:
+            - name: CircuitBreaker
+              args:
+                name: user-service-circuit-breaker-public-signup
+                fallbackUri: forward:/fallback/users
+
+        # User Service public: signin
+        - id: user-service-signin
+          uri: ${USER_SERVICE_URL:http://localhost:8081}
+          predicates:
+            - Path=/api/users/signin
+          filters:
+            - name: CircuitBreaker
+              args:
+                name: user-service-circuit-breaker-public-signin
+                fallbackUri: forward:/fallback/users
+
         # Practice Service
         - id: practice-service
           uri: ${PRACTICE_SERVICE_URL:http://localhost:8082}
@@ -46,7 +70,7 @@ spring:
         # AI Analysis Service
         - id: ai-analysis-service
           # FastAPI ai-service is not registered to discovery; use explicit URL
-          uri: ${AI_SERVICE_URL:http://localhost:8088}
+          uri: ${AI_SERVICE_URL:http://localhost:8083}
           predicates:
             - Path=/api/analysis/**
           filters:
@@ -61,13 +85,12 @@ spring:
                 redis-rate-limiter.burstCapacity: 20
                 key-resolver: "#{@userKeyResolver}"
 
-        # User Service
+        # User Service (protected endpoints)
         - id: user-service
           uri: ${USER_SERVICE_URL:http://localhost:8081}
           predicates:
             - Path=/api/users/**
           filters:
-            - StripPrefix=1
             - name: CircuitBreaker
               args:
                 name: user-service-circuit-breaker
