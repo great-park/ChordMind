@@ -35,12 +35,14 @@ class AuthenticationFilter : GlobalFilter, Ordered {
 
         // 공개 경로는 인증 없이 통과
         if (publicPaths.any { path.startsWith(it) }) {
+            exchange.response.headers.add("X-Auth-Bypass", "true")
             return chain.filter(exchange)
         }
 
         val authHeader = request.headers.getFirst(HttpHeaders.AUTHORIZATION)
         
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            exchange.response.headers.add("X-Auth-Error", "MissingOrInvalidAuthHeader")
             return unauthorized(exchange, "Missing or invalid authorization header")
         }
 
@@ -59,6 +61,7 @@ class AuthenticationFilter : GlobalFilter, Ordered {
             val mutatedExchange = exchange.mutate().request(builder.build()).build()
             chain.filter(mutatedExchange)
         } catch (e: Exception) {
+            exchange.response.headers.add("X-Auth-Error", e.javaClass.simpleName)
             unauthorized(exchange, "Invalid token: ${e.message}")
         }
     }
