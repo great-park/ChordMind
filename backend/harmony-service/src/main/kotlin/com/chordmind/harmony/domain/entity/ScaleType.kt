@@ -6,11 +6,9 @@ import jakarta.persistence.*
 import java.time.LocalDateTime
 
 /**
- * 스케일 타입 엔티티 (Rich Domain Model)
- * 음계 이론과 모드 시스템을 포함
+ * 스케일 타입 도메인 모델 (Rich Domain Model)
+ * 주의: JPA 엔티티가 아니며, 영속성 매핑 대상이 아님
  */
-@Entity
-@Table(name = "scale_types")
 class ScaleType private constructor(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

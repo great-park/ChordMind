@@ -6,11 +6,9 @@ import java.time.LocalDateTime
 import java.time.temporal.ChronoUnit
 
 /**
- * 퀴즈 결과 엔티티 (Rich Domain Model)
- * 학습 분석과 개인화를 위한 풍부한 도메인 로직 포함
+ * 퀴즈 결과 도메인 모델 (Rich Domain Model)
+ * 주의: JPA 엔티티가 아니며, 영속성 매핑 대상이 아님
  */
-@Entity
-@Table(name = "quiz_result")
 class QuizResult private constructor(
     @Id 
     @GeneratedValue(strategy = GenerationType.IDENTITY)

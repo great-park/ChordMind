@@ -7,11 +7,9 @@ import jakarta.persistence.*
 import java.time.LocalDateTime
 
 /**
- * 퀴즈 문제 엔티티 (Rich Domain Model)
- * 불변성을 보장하고 비즈니스 로직을 포함
+ * 퀴즈 문제 도메인 모델 (Rich Domain Model)
+ * 주의: JPA 엔티티가 아니며, 영속성 매핑 대상이 아님
  */
-@Entity
-@Table(name = "quiz_question")
 class QuizQuestion private constructor(
     @Id 
     @GeneratedValue(strategy = GenerationType.IDENTITY)

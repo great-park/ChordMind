@@ -3,11 +3,9 @@ package com.chordmind.harmony.domain.entity
 import jakarta.persistence.*
 
 /**
- * 퀴즈 선택지 엔티티 (Value Object 성격의 Entity)
- * 불변성을 보장하고 QuizQuestion의 일부로 동작
+ * 퀴즈 선택지 도메인 모델 (Value Object 성격)
+ * 주의: JPA 엔티티가 아니며, 영속성 매핑 대상이 아님
  */
-@Entity
-@Table(name = "quiz_choice")
 class QuizChoice private constructor(
     @Id 
     @GeneratedValue(strategy = GenerationType.IDENTITY)
