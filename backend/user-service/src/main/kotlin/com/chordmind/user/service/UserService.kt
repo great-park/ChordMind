@@ -170,7 +170,11 @@ open class UserService(
     }
     
     fun searchUsers(request: UserSearchRequest, page: Int, size: Int): ApiResponse<PageResponse<UserResponse>> {
-        val users = userRepository.searchUsers(request.name, request.email, request.role)
+        val users = userRepository.findAll().filter { user ->
+            (request.name == null || user.name.contains(request.name, ignoreCase = true) || user.nickname?.contains(request.name, ignoreCase = true) == true) &&
+            (request.email == null || user.email.contains(request.email, ignoreCase = true)) &&
+            (request.role == null || user.role.name.equals(request.role, ignoreCase = true))
+        }
         val totalElements = users.size.toLong()
         val totalPages = if (size == 0) 1 else ((totalElements + size - 1) / size).toInt()
         val paged = if (size == 0) users else users.drop(page * size).take(size)
