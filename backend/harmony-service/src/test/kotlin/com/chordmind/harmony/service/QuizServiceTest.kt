@@ -84,4 +84,4 @@ class QuizServiceTest @Autowired constructor(
         assertTrue(scale.choices.any { it.text == scale.answer })
         assertTrue(quizService.checkAnswer(QuizAnswerRequest(scale.id, scale.answer)).correct)
     }
-} 
+}

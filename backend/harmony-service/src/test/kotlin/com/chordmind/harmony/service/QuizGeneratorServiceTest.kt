@@ -68,9 +68,9 @@ class QuizGeneratorServiceTest @Autowired constructor(
         // 화성 진행 패턴 데이터
         if (progressionPatternRepository.count() == 0L) {
             progressionPatternRepository.saveAll(listOf(
-                ProgressionPattern(name = "기본 진행", pattern = "I-IV-V", description = "기본 화성 진행", 
+                ProgressionPattern(name = "기본 진행", pattern = "I-IV-V", description = "기본 화성 진행",
                     genre = MusicGenre.ALL, difficultyLevel = DifficultyLevel.BEGINNER, popularityScore = 100),
-                ProgressionPattern(name = "팝 진행", pattern = "I-V-vi-IV", description = "현대 팝 음악 진행", 
+                ProgressionPattern(name = "팝 진행", pattern = "I-V-vi-IV", description = "현대 팝 음악 진행",
                     genre = MusicGenre.POP, difficultyLevel = DifficultyLevel.BEGINNER, popularityScore = 90)
             ))
         }
@@ -101,7 +101,7 @@ class QuizGeneratorServiceTest @Autowired constructor(
     @Test
     fun `DB 기반 코드 문제 생성 테스트`() {
         val questions = quizGeneratorService.generateChordQuestions(3, 2)
-        
+
         assertEquals(3, questions.size)
         questions.forEach { question ->
             assertEquals(QuizType.CHORD_NAME, question.type)
@@ -117,7 +117,7 @@ class QuizGeneratorServiceTest @Autowired constructor(
     @Test
     fun `DB 기반 화성 진행 문제 생성 테스트`() {
         val questions = quizGeneratorService.generateProgressionQuestions(2, 2)
-        
+
         assertEquals(2, questions.size)
         questions.forEach { question ->
             assertEquals(QuizType.PROGRESSION, question.type)
@@ -133,7 +133,7 @@ class QuizGeneratorServiceTest @Autowired constructor(
     @Test
     fun `DB 기반 음정 문제 생성 테스트`() {
         val questions = quizGeneratorService.generateIntervalQuestions(3, 2)
-        
+
         assertEquals(3, questions.size)
         questions.forEach { question ->
             assertEquals(QuizType.INTERVAL, question.type)
@@ -149,7 +149,7 @@ class QuizGeneratorServiceTest @Autowired constructor(
     @Test
     fun `DB 기반 스케일 문제 생성 테스트`() {
         val questions = quizGeneratorService.generateScaleQuestions(3, 2)
-        
+
         assertEquals(3, questions.size)
         questions.forEach { question ->
             assertEquals(QuizType.SCALE, question.type)
@@ -174,7 +174,7 @@ class QuizGeneratorServiceTest @Autowired constructor(
     @Test
     fun `혼합 문제 생성 테스트`() {
         val questions = quizGeneratorService.generateMixedQuestions(8, 2)
-        
+
         assertEquals(8, questions.size)
         // 각 타입별로 최소 1개는 있어야 함
         QuizType.values().forEach { type ->
@@ -185,7 +185,7 @@ class QuizGeneratorServiceTest @Autowired constructor(
     @Test
     fun `난이도 제한 테스트`() {
         val questions = quizGeneratorService.generateMixedQuestions(4, 1)
-        
+
         questions.forEach { question ->
             assertTrue(question.difficulty <= 1, "난이도가 1을 초과함: ${question.difficulty}")
         }
@@ -194,7 +194,7 @@ class QuizGeneratorServiceTest @Autowired constructor(
     @Test
     fun `코드 타입 데이터가 없을 때 예외 발생 테스트`() {
         chordTypeRepository.deleteAll()
-        
+
         assertThrows(IllegalStateException::class.java) {
             quizGeneratorService.generateChordQuestions(1, 3)
         }
@@ -203,7 +203,7 @@ class QuizGeneratorServiceTest @Autowired constructor(
     @Test
     fun `화성 진행 데이터가 없을 때 예외 발생 테스트`() {
         progressionPatternRepository.deleteAll()
-        
+
         assertThrows(IllegalStateException::class.java) {
             quizGeneratorService.generateProgressionQuestions(1, 3)
         }
@@ -212,7 +212,7 @@ class QuizGeneratorServiceTest @Autowired constructor(
     @Test
     fun `음정 타입 데이터가 없을 때 예외 발생 테스트`() {
         intervalTypeRepository.deleteAll()
-        
+
         assertThrows(IllegalStateException::class.java) {
             quizGeneratorService.generateIntervalQuestions(1, 3)
         }
@@ -221,7 +221,7 @@ class QuizGeneratorServiceTest @Autowired constructor(
     @Test
     fun `스케일 타입 데이터가 없을 때 예외 발생 테스트`() {
         scaleTypeRepository.deleteAll()
-        
+
         assertThrows(IllegalStateException::class.java) {
             quizGeneratorService.generateScaleQuestions(1, 3)
         }
@@ -237,7 +237,7 @@ class QuizGeneratorServiceTest @Autowired constructor(
     @Test
     fun `문제 저장 기능 테스트`() {
         val savedQuestions = quizGeneratorService.generateAndSaveQuestions(QuizType.CHORD_NAME, 2, 2)
-        
+
         assertEquals(2, savedQuestions.size)
         savedQuestions.forEach { question ->
             assertTrue(question.id > 0) // 저장되어 ID가 할당됨
