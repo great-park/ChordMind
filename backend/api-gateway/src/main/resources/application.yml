@@ -23,12 +23,12 @@ spring:
     gateway:
       discovery:
         locator:
-          enabled: true
+          enabled: false
           lower-case-service-id: true
       routes:
         # Practice Service
         - id: practice-service
-          uri: lb://practice-service
+          uri: ${PRACTICE_SERVICE_URL:http://localhost:8082}
           predicates:
             - Path=/api/practice/**
           filters:
@@ -63,7 +63,7 @@ spring:
 
         # User Service
         - id: user-service
-          uri: lb://user-service
+          uri: ${USER_SERVICE_URL:http://localhost:8081}
           predicates:
             - Path=/api/users/**
           filters:
@@ -80,7 +80,7 @@ spring:
 
         # Feedback Service
         - id: feedback-service
-          uri: lb://feedback-service
+          uri: ${FEEDBACK_SERVICE_URL:http://localhost:8085}
           predicates:
             - Path=/api/feedback/**
           filters:
@@ -97,7 +97,7 @@ spring:
 
         # Game Service
         - id: game-service
-          uri: lb://game-service
+          uri: ${GAME_SERVICE_URL:http://localhost:8086}
           predicates:
             - Path=/api/games/**
           filters:
@@ -114,7 +114,7 @@ spring:
 
         # Harmony Service
         - id: harmony-service
-          uri: lb://harmony-service
+          uri: ${HARMONY_SERVICE_URL:http://localhost:8084}
           predicates:
             - Path=/api/harmony/**
           filters:
@@ -149,11 +149,9 @@ spring:
 
 eureka:
   client:
-    service-url:
-      defaultZone: ${EUREKA_SERVICE_URL:http://localhost:8761/eureka/}
-  instance:
-    prefer-ip-address: true
-    instance-id: ${spring.application.name}:${server.port}
+    enabled: false
+    register-with-eureka: false
+    fetch-registry: false
 
     # Circuit Breaker Configuration
     circuitbreaker:
