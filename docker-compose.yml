@@ -45,16 +45,11 @@ services:
     container_name: chordmind-api-gateway
     ports:
       - "8080:8080"
+    env_file:
+      - ./backend/api-gateway/env.example
     environment:
-      - SPRING_PROFILES_ACTIVE=docker
       - REDIS_HOST=redis
       - REDIS_PORT=6379
-      - JWT_SECRET=chordmind-jwt-secret-key-2024-very-long-and-secure
-      - USER_SERVICE_URL=http://user-service:8081
-      - PRACTICE_SERVICE_URL=http://practice-service:8082
-      - FEEDBACK_SERVICE_URL=http://feedback-service:8085
-      - AI_SERVICE_URL=http://ai-service:8083
-      - HARMONY_SERVICE_URL=http://harmony-service:8084
     depends_on:
       redis:
         condition: service_healthy
@@ -74,13 +69,8 @@ services:
     container_name: chordmind-user-service
     ports:
       - "8081:8081"
-    environment:
-      - SPRING_PROFILES_ACTIVE=docker
-      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/chordmind
-      - SPRING_DATASOURCE_USERNAME=chordmind_user
-      - SPRING_DATASOURCE_PASSWORD=chordmind_password
-      - JWT_SECRET=chordmind-jwt-secret-key-2024-very-long-and-secure
-      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://api-gateway:8080/eureka/
+    env_file:
+      - ./backend/user-service/env.example
     depends_on:
       postgres:
         condition: service_healthy
@@ -100,12 +90,8 @@ services:
     container_name: chordmind-practice-service
     ports:
       - "8082:8082"
-    environment:
-      - SPRING_PROFILES_ACTIVE=docker
-      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/chordmind
-      - SPRING_DATASOURCE_USERNAME=chordmind_user
-      - SPRING_DATASOURCE_PASSWORD=chordmind_password
-      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://api-gateway:8080/eureka/
+    env_file:
+      - ./backend/practice-service/env.example
     depends_on:
       postgres:
         condition: service_healthy
@@ -125,13 +111,8 @@ services:
     container_name: chordmind-feedback-service
     ports:
       - "8085:8085"
-    environment:
-      - SPRING_PROFILES_ACTIVE=docker
-      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/chordmind
-      - SPRING_DATASOURCE_USERNAME=chordmind_user
-      - SPRING_DATASOURCE_PASSWORD=chordmind_password
-      - JWT_SECRET=chordmind-jwt-secret-key-2024-very-long-and-secure
-      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://api-gateway:8080/eureka/
+    env_file:
+      - ./backend/feedback-service/env.example
     depends_on:
       postgres:
         condition: service_healthy
@@ -151,9 +132,13 @@ services:
     container_name: chordmind-ai-service
     ports:
       - "8083:8083"
+    env_file:
+      - ./backend/ai-service/env.example
     environment:
-      - DATABASE_URL=postgresql://chordmind_user:chordmind_password@postgres:5432/chordmind
-      - HARMONY_SERVICE_URL=http://harmony-service:8084
+      - DB_HOST=postgres
+      - DB_NAME=chordmind
+      - DB_USER=chordmind_user
+      - DB_PASSWORD=chordmind_password
       - REDIS_HOST=redis
       - REDIS_PORT=6379
     depends_on:
@@ -177,12 +162,8 @@ services:
     container_name: chordmind-harmony-service
     ports:
       - "8084:8084"
-    environment:
-      - SPRING_PROFILES_ACTIVE=docker
-      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/chordmind
-      - SPRING_DATASOURCE_USERNAME=chordmind_user
-      - SPRING_DATASOURCE_PASSWORD=chordmind_password
-      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://api-gateway:8080/eureka/
+    env_file:
+      - ./backend/harmony-service/env.example
     depends_on:
       postgres:
         condition: service_healthy
