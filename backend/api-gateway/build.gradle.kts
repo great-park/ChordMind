@@ -35,6 +35,7 @@ dependencies {
     implementation("io.projectreactor.kotlin:reactor-kotlin-extensions")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testImplementation("io.projectreactor:reactor-test")
+    testImplementation("com.github.tomakehurst:wiremock-jre8:2.35.0")
 }
 
 dependencyManagement {
