@@ -1,8 +1,8 @@
 'use client'
 
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 
-interface UserStats {
+interface ProfileStats {
   totalPracticeTime: number;
   totalSessions: number;
   averageSessionTime: number;
@@ -31,12 +31,12 @@ interface Activity {
   score?: number;
 }
 
-export default function ProfileStats() {
-  const [stats, setStats] = useState<UserStats | null>(null);
+const ProfileStats: React.FC = () => {
+  const [stats, setStats] = useState<ProfileStats | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const mockStats: UserStats = {
+    const mockStats: ProfileStats = {
       totalPracticeTime: 1250, // 분 단위
       totalSessions: 45,
       averageSessionTime: 28,
@@ -101,166 +101,171 @@ export default function ProfileStats() {
     }, 1000);
   }, []);
 
-  const formatTime = (minutes: number) => {
-    const hours = Math.floor(minutes / 60);
-    const mins = minutes % 60;
-    return hours > 0 ? `${hours}시간 ${mins}분` : `${mins}분`;
-  };
+  // 계산 비용이 큰 로직을 useMemo로 최적화
+  const formattedStats = useMemo(() => {
+    if (!stats) return null;
+
+    const formatTime = (minutes: number) => {
+      const hours = Math.floor(minutes / 60);
+      const mins = minutes % 60;
+      return hours > 0 ? `${hours}시간 ${mins}분` : `${mins}분`;
+    };
+
+    return {
+      totalTimeFormatted: formatTime(stats.totalPracticeTime),
+      averageTimeFormatted: formatTime(stats.averageSessionTime),
+      achievementsByCategory: stats.achievements.reduce((acc, achievement) => {
+        if (!acc[achievement.category]) {
+          acc[achievement.category] = [];
+        }
+        acc[achievement.category].push(achievement);
+        return acc;
+      }, {} as Record<string, Achievement[]>)
+    };
+  }, [stats]);
+
+  const getActivityIcon = useMemo(() => (type: string) => {
+    switch (type) {
+      case 'practice':
+        return <i className="bi bi-play-circle text-primary"></i>;
+      case 'achievement':
+        return <i className="bi bi-trophy text-warning"></i>;
+      case 'goal':
+        return <i className="bi bi-target text-success"></i>;
+      default:
+        return <i className="bi bi-info-circle text-info"></i>;
+    }
+  }, []);
 
   if (loading) {
     return (
-      <div className="d-flex justify-content-center">
+      <div className="text-center py-5">
         <div className="spinner-border text-primary" role="status">
           <span className="visually-hidden">로딩 중...</span>
         </div>
+        <p className="mt-3">프로필 통계를 불러오는 중...</p>
       </div>
     );
   }
 
-  if (!stats) {
+  if (!stats || !formattedStats) {
     return (
-      <div className="alert alert-warning" role="alert">
-        통계 데이터를 불러올 수 없습니다.
+      <div className="text-center py-5">
+        <p>프로필 통계를 불러올 수 없습니다.</p>
       </div>
     );
   }
 
   return (
-    <div>
-      <h5 className="mb-4">학습 통계</h5>
-
-      {/* 주요 통계 카드 */}
+    <div className="profile-stats">
+      {/* 주요 통계 카드들 */}
       <div className="row mb-4">
-        <div className="col-md-3 mb-3">
-          <div className="card bg-primary text-white">
-            <div className="card-body text-center">
-              <i className="bi bi-clock display-4"></i>
-              <h4 className="mt-2">{formatTime(stats.totalPracticeTime)}</h4>
-              <p className="mb-0">총 연습 시간</p>
+        <div className="col-md-3 col-sm-6 mb-3">
+          <div className="card text-center h-100">
+            <div className="card-body">
+              <div className="stats-icon mb-3">
+                <i className="bi bi-clock-history text-primary fs-1"></i>
+              </div>
+              <h4 className="card-title text-primary">{formattedStats.totalTimeFormatted}</h4>
+              <p className="card-text">총 연습 시간</p>
             </div>
           </div>
         </div>
-        <div className="col-md-3 mb-3">
-          <div className="card bg-success text-white">
-            <div className="card-body text-center">
-              <i className="bi bi-play-circle display-4"></i>
-              <h4 className="mt-2">{stats.totalSessions}</h4>
-              <p className="mb-0">총 연습 세션</p>
+
+        <div className="col-md-3 col-sm-6 mb-3">
+          <div className="card text-center h-100">
+            <div className="card-body">
+              <div className="stats-icon mb-3">
+                <i className="bi bi-music-note-list text-success fs-1"></i>
+              </div>
+              <h4 className="card-title text-success">{stats.totalSessions}</h4>
+              <p className="card-text">총 연습 세션</p>
             </div>
           </div>
         </div>
-        <div className="col-md-3 mb-3">
-          <div className="card bg-info text-white">
-            <div className="card-body text-center">
-              <i className="bi bi-graph-up display-4"></i>
-              <h4 className="mt-2">{stats.improvementRate}%</h4>
-              <p className="mb-0">개선률</p>
+
+        <div className="col-md-3 col-sm-6 mb-3">
+          <div className="card text-center h-100">
+            <div className="card-body">
+              <div className="stats-icon mb-3">
+                <i className="bi bi-graph-up text-info fs-1"></i>
+              </div>
+              <h4 className="card-title text-info">{stats.completionRate}%</h4>
+              <p className="card-text">완료율</p>
             </div>
           </div>
         </div>
-        <div className="col-md-3 mb-3">
-          <div className="card bg-warning text-white">
-            <div className="card-body text-center">
-              <i className="bi bi-fire display-4"></i>
-              <h4 className="mt-2">{stats.streakDays}일</h4>
-              <p className="mb-0">연속 연습</p>
+
+        <div className="col-md-3 col-sm-6 mb-3">
+          <div className="card text-center h-100">
+            <div className="card-body">
+              <div className="stats-icon mb-3">
+                <i className="bi bi-fire text-danger fs-1"></i>
+              </div>
+              <h4 className="card-title text-danger">{stats.streakDays}일</h4>
+              <p className="card-text">연속 연습</p>
             </div>
           </div>
         </div>
       </div>
 
+      {/* 업적 및 활동 섹션 */}
       <div className="row">
-        {/* 상세 통계 */}
-        <div className="col-md-6 mb-4">
-          <div className="card">
+        {/* 업적 섹션 */}
+        <div className="col-lg-6 mb-4">
+          <div className="card h-100">
             <div className="card-header">
-              <h6 className="mb-0">상세 통계</h6>
+              <h5 className="mb-0">
+                <i className="bi bi-trophy text-warning me-2"></i>
+                획득한 업적
+              </h5>
             </div>
             <div className="card-body">
-              <div className="row">
-                <div className="col-6 mb-3">
-                  <div className="text-center">
-                    <h5 className="text-primary">{stats.averageSessionTime}분</h5>
-                    <small className="text-white-50">평균 세션 시간</small>
-                  </div>
-                </div>
-                <div className="col-6 mb-3">
-                  <div className="text-center">
-                    <h5 className="text-success">{stats.completionRate}%</h5>
-                    <small className="text-white-50">완료율</small>
-                  </div>
-                </div>
-              </div>
-              
-              <div className="progress mb-3">
-                <div 
-                  className="progress-bar bg-success" 
-                  style={{ width: `${stats.completionRate}%` }}
-                ></div>
-              </div>
-              
-              <div className="d-flex justify-content-between">
-                <small className="text-muted">목표 달성률</small>
-                <small className="text-muted">{stats.completionRate}%</small>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* 최근 활동 */}
-        <div className="col-md-6 mb-4">
-          <div className="card">
-            <div className="card-header">
-              <h6 className="mb-0">최근 활동</h6>
-            </div>
-            <div className="card-body">
-              {stats.recentActivity.slice(0, 3).map(activity => (
-                <div key={activity.id} className="d-flex align-items-center mb-3">
-                  <div className="me-3">
-                    {activity.type === 'practice' && <i className="bi bi-play-circle text-primary"></i>}
-                    {activity.type === 'achievement' && <i className="bi bi-trophy text-warning"></i>}
-                    {activity.type === 'goal' && <i className="bi bi-target text-success"></i>}
-                  </div>
-                  <div className="flex-grow-1">
-                    <h6 className="mb-1">{activity.title}</h6>
-                    <small className="text-muted">{activity.description}</small>
-                    <br />
-                    <small className="text-muted">
-                      {new Date(activity.timestamp).toLocaleDateString('ko-KR')}
-                    </small>
-                  </div>
-                  {activity.score && (
-                    <div className="text-end">
-                      <span className="badge bg-primary">{activity.score}%</span>
+              <div className="achievements-list">
+                {stats.achievements.map((achievement) => (
+                  <div key={achievement.id} className="achievement-item d-flex align-items-center mb-3">
+                    <div className="achievement-icon me-3">
+                      <span className="fs-2">{achievement.icon}</span>
                     </div>
-                  )}
-                </div>
-              ))}
+                    <div className="achievement-info flex-grow-1">
+                      <h6 className="mb-1">{achievement.name}</h6>
+                      <p className="mb-1 small text-muted">{achievement.description}</p>
+                      <small className="text-muted">
+                        {new Date(achievement.earnedAt).toLocaleDateString('ko-KR')}
+                      </small>
+                    </div>
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
         </div>
-      </div>
 
-      {/* 업적 */}
-      <div className="row">
-        <div className="col-12">
-          <div className="card">
+        {/* 최근 활동 섹션 */}
+        <div className="col-lg-6 mb-4">
+          <div className="card h-100">
             <div className="card-header">
-              <h6 className="mb-0">업적</h6>
+              <h5 className="mb-0">
+                <i className="bi bi-activity text-info me-2"></i>
+                최근 활동
+              </h5>
             </div>
             <div className="card-body">
-              <div className="row">
-                {stats.achievements.map(achievement => (
-                  <div key={achievement.id} className="col-md-4 mb-3">
-                    <div className="card border-0 bg-light">
-                      <div className="card-body text-center">
-                        <div className="display-4 mb-2">{achievement.icon}</div>
-                        <h6 className="card-title">{achievement.name}</h6>
-                        <p className="card-text small text-muted">{achievement.description}</p>
-                        <small className="text-muted">
-                          {new Date(achievement.earnedAt).toLocaleDateString('ko-KR')}
-                        </small>
-                      </div>
+              <div className="activity-list">
+                {stats.recentActivity.map((activity) => (
+                  <div key={activity.id} className="activity-item d-flex align-items-start mb-3">
+                    <div className="activity-icon me-3 mt-1">
+                      {getActivityIcon(activity.type)}
+                    </div>
+                    <div className="activity-info flex-grow-1">
+                      <h6 className="mb-1">{activity.title}</h6>
+                      <p className="mb-1 small text-muted">{activity.description}</p>
+                      <small className="text-muted">
+                        {new Date(activity.timestamp).toLocaleDateString('ko-KR')}
+                      </small>
+                      {activity.score && (
+                        <span className="badge bg-primary ms-2">{activity.score}점</span>
+                      )}
                     </div>
                   </div>
                 ))}
@@ -269,37 +274,8 @@ export default function ProfileStats() {
           </div>
         </div>
       </div>
-
-      {/* 연습 트렌드 */}
-      <div className="row mt-4">
-        <div className="col-12">
-          <div className="card">
-            <div className="card-header">
-              <h6 className="mb-0">연습 트렌드</h6>
-            </div>
-            <div className="card-body">
-              <div className="row text-center">
-                <div className="col-md-3">
-                  <h5 className="text-primary">이번 주</h5>
-                  <p className="text-muted">5일 연습</p>
-                </div>
-                <div className="col-md-3">
-                  <h5 className="text-success">이번 달</h5>
-                  <p className="text-muted">18일 연습</p>
-                </div>
-                <div className="col-md-3">
-                  <h5 className="text-info">평균 점수</h5>
-                  <p className="text-muted">84%</p>
-                </div>
-                <div className="col-md-3">
-                  <h5 className="text-warning">목표 달성</h5>
-                  <p className="text-muted">85%</p>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
     </div>
   );
-} 
+};
+
+export default ProfileStats; 

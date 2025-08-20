@@ -4,58 +4,18 @@ import React, { useState, useEffect } from 'react'
 import { Container, Row, Col, Card, Button, Form, Alert, ProgressBar } from 'react-bootstrap'
 import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend, LineElement, PointElement } from 'chart.js'
 import { Bar, Line } from 'react-chartjs-2'
-import { useAuth } from '@/contexts/AuthContext'
+import { useAuth } from '../../contexts/AuthContext'
 import { apiClient } from '@/services/apiClient'
+import { QuizUserStats, UserProgress, DifficultyStats, WeakestArea, GlobalStats } from '../../types/analytics'
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend, LineElement, PointElement)
-
-interface UserStats {
-  totalAttempts: number
-  correctAnswers: number
-  accuracy: number
-  typeStats: Record<string, {
-    attempts: number
-    correct: number
-    accuracy: number
-  }>
-}
-
-interface UserProgress {
-  date: string
-  attempts: number
-  correct: number
-  accuracy: number
-}
-
-interface DifficultyStats {
-  difficultyStats: Record<string, {
-    attempts: number
-    correct: number
-    accuracy: number
-  }>
-}
-
-interface WeakestArea {
-  type: string
-  attempts: number
-  correct: number
-  accuracy: number
-}
-
-interface GlobalStats {
-  totalQuestions: number
-  totalResults: number
-  totalCorrect: number
-  globalAccuracy: number
-  typeDistribution: Record<string, number>
-}
 
 const AnalyticsDashboard: React.FC = () => {
   const { user, isAuthenticated } = useAuth()
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [selectedUserId, setSelectedUserId] = useState<number>(1)
-  const [userStats, setUserStats] = useState<UserStats | null>(null)
+  const [userStats, setUserStats] = useState<QuizUserStats | null>(null)
   const [userProgress, setUserProgress] = useState<UserProgress[]>([])
   const [difficultyStats, setDifficultyStats] = useState<DifficultyStats | null>(null)
   const [weakestAreas, setWeakestAreas] = useState<WeakestArea[]>([])

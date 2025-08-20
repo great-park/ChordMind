@@ -163,6 +163,30 @@ const QuizManagementPage: React.FC = () => {
     return ['초급', '중급', '고급'][difficulty - 1] || '초급'
   }
 
+  const checkAdminPermission = () => {
+    // 실제 관리자 권한 체크 로직
+    if (!user || user.role !== 'admin') {
+      setError('관리자 권한이 필요합니다.');
+      return false;
+    }
+    return true;
+  };
+
+  const handleAddQuestion = () => {
+    if (!checkAdminPermission()) return;
+    
+    setShowModal(true);
+    setEditingQuestion(null);
+    setFormData({
+      type: QuizType.CHORD_NAME,
+      question: '',
+      answer: '',
+      explanation: '',
+      difficulty: 1,
+      choices: ['', '', '', '']
+    });
+  };
+
   // 관리자 권한 체크
   if (!isAuthenticated) {
     return (
@@ -255,7 +279,7 @@ const QuizManagementPage: React.FC = () => {
           <Card>
             <Card.Header className="d-flex justify-content-between align-items-center">
               <h5 className="mb-0">퀴즈 문제 목록</h5>
-              <Button variant="primary" onClick={() => setShowModal(true)}>
+              <Button variant="primary" onClick={handleAddQuestion}>
                 새 문제 추가
               </Button>
             </Card.Header>

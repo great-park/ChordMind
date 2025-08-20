@@ -1,13 +1,15 @@
 'use client'
 
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { practiceService, PracticeSession } from '../services/practiceService';
+import { useAuth } from '../contexts/AuthContext';
 
-export default function PracticeHistory() {
+const PracticeHistory: React.FC = () => {
+  const { user } = useAuth();
+  const userId = user?.id || 1; // 사용자 ID 또는 기본값
   const [sessions, setSessions] = useState<PracticeSession[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const userId = 1; // TODO: 실제 로그인 사용자 ID로 대체
 
   useEffect(() => {
     const fetchPracticeHistory = async () => {

@@ -21,15 +21,17 @@ import type {
   AnalyticsUserTrendResponse,
   UserRankingResponse
 } from '../services/practiceService';
+import { useAuth } from '../contexts/AuthContext';
 
 export default function Home() {
+  const { user } = useAuth();
+  const userId = user?.id || 1; // 사용자 ID 또는 기본값
   const [isVisible, setIsVisible] = useState(false);
   const [userSummary, setUserSummary] = useState<AnalyticsUserSummaryResponse | null>(null);
   const [userTrend, setUserTrend] = useState<AnalyticsUserTrendResponse | null>(null);
   const [topUsers, setTopUsers] = useState<UserRankingResponse[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const userId = 1; // TODO: 실제 로그인 사용자 ID로 대체
 
   useEffect(() => {
     setIsVisible(true);

@@ -1,11 +1,11 @@
 'use client'
 
-import { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useAuth } from '../contexts/AuthContext';
 
-export default function Navigation() {
+const Navigation: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
   const pathname = usePathname();
   const { user, isAuthenticated, logout } = useAuth();
@@ -18,17 +18,25 @@ export default function Navigation() {
     { name: '프로필', href: '/profile', icon: 'bi-person' },
   ];
 
-  const isActive = (href: string) => {
+  const isActive = useCallback((href: string) => {
     if (href === '/') {
       return pathname === '/';
     }
     return pathname?.startsWith(href) || false;
-  };
+  }, [pathname]);
 
-  const handleLogout = () => {
+  const handleLogout = useCallback(() => {
     logout();
     setIsOpen(false);
-  };
+  }, [logout]);
+
+  const toggleMenu = useCallback(() => {
+    setIsOpen(prev => !prev);
+  }, []);
+
+  const closeMenu = useCallback(() => {
+    setIsOpen(false);
+  }, []);
 
   return (
     <nav className="navbar navbar-expand-lg navbar-dark bg-primary">
@@ -43,7 +51,7 @@ export default function Navigation() {
         <button
           className="navbar-toggler"
           type="button"
-          onClick={() => setIsOpen(!isOpen)}
+          onClick={toggleMenu}
           aria-controls="navbarNav"
           aria-expanded={isOpen}
           aria-label="Toggle navigation"
@@ -59,7 +67,7 @@ export default function Navigation() {
                 <Link
                   className={`nav-link ${isActive(item.href) ? 'active' : ''}`}
                   href={item.href}
-                  onClick={() => setIsOpen(false)}
+                  onClick={closeMenu}
                 >
                   <i className={`bi ${item.icon} me-1`}></i>
                   {item.name}
@@ -100,32 +108,26 @@ export default function Navigation() {
                   </li>
                   <li><hr className="dropdown-divider" /></li>
                   <li>
-                    <a className="dropdown-item" href="#" onClick={handleLogout}>
+                    <button className="dropdown-item" onClick={handleLogout}>
                       <i className="bi bi-box-arrow-right me-2"></i>
                       로그아웃
-                    </a>
+                    </button>
                   </li>
                 </ul>
               </li>
             ) : (
-              <>
-                <li className="nav-item">
-                  <Link className="nav-link" href="/login">
-                    <i className="bi bi-box-arrow-in-right me-1"></i>
-                    로그인
-                  </Link>
-                </li>
-                <li className="nav-item">
-                  <Link className="nav-link" href="/register">
-                    <i className="bi bi-person-plus me-1"></i>
-                    회원가입
-                  </Link>
-                </li>
-              </>
+              <li className="nav-item">
+                <Link className="nav-link" href="/login">
+                  <i className="bi bi-box-arrow-in-right me-1"></i>
+                  로그인
+                </Link>
+              </li>
             )}
           </ul>
         </div>
       </div>
     </nav>
   );
-} 
+};
+
+export default Navigation; 

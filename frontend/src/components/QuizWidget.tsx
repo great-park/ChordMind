@@ -1,169 +1,133 @@
 import React, { useState, useEffect } from 'react';
-
-interface Question {
-  id: number;
-  question: string;
-  choices: string[];
-  correct: string;
-}
-
-interface QuizResult {
-  correct: boolean;
-  explanation: string;
-}
+import { COLORS, CARD_STYLES, BADGE_STYLES } from '../constants/styles';
 
 interface QuizWidgetProps {
   className?: string;
 }
 
 const QuizWidget: React.FC<QuizWidgetProps> = ({ className = '' }) => {
-  const [questions, setQuestions] = useState<Question[]>([]);
-  const [current, setCurrent] = useState(0);
-  const [selected, setSelected] = useState<string | null>(null);
-  const [result, setResult] = useState<QuizResult | null>(null);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [quiz, setQuiz] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
+  const [selectedAnswer, setSelectedAnswer] = useState<number | null>(null);
+  const [showResult, setShowResult] = useState(false);
+  const [isCorrect, setIsCorrect] = useState(false);
 
   useEffect(() => {
-    setLoading(true);
-    // 임시 퀴즈 데이터
-    const mockQuestions: Question[] = [
-      {
+    // 퀴즈 데이터 로딩 시뮬레이션
+    setTimeout(() => {
+      setQuiz({
         id: 1,
-        question: 'C Major Scale의 첫 번째 음은?',
-        choices: ['C', 'D', 'E', 'F'],
-        correct: 'C'
-      }
-    ];
-    setQuestions(mockQuestions);
-    setLoading(false);
+        question: 'C Major 스케일의 첫 번째 음은 무엇일까요?',
+        options: ['C', 'D', 'E', 'F'],
+        correctAnswer: 0,
+        explanation: 'C Major 스케일은 C부터 시작하여 C, D, E, F, G, A, B, C 순서로 진행됩니다.'
+      });
+      setLoading(false);
+    }, 1000);
   }, []);
 
-  const handleSelect = (choice: string) => {
-    setSelected(choice);
+  const handleAnswerSelect = (answerIndex: number) => {
+    setSelectedAnswer(answerIndex);
+    setShowResult(true);
+    setIsCorrect(answerIndex === quiz.correctAnswer);
   };
 
-  const handleSubmit = async () => {
-    if (!questions[current] || !selected) return;
+  const handleNextQuiz = () => {
+    setSelectedAnswer(null);
+    setShowResult(false);
     setLoading(true);
-    try {
-      // 임시 결과
-      const isCorrect = selected === questions[current].correct;
-      setResult({ 
-        correct: isCorrect, 
-        explanation: isCorrect ? '정답입니다!' : '틀렸습니다.' 
+    // 다음 퀴즈 로딩 시뮬레이션
+    setTimeout(() => {
+      setQuiz({
+        id: 2,
+        question: 'G Major 스케일의 5번째 음은 무엇일까요?',
+        options: ['G', 'A', 'B', 'C'],
+        correctAnswer: 2,
+        explanation: 'G Major 스케일은 G, A, B, C, D, E, F#, G 순서로 진행되므로 5번째 음은 D입니다.'
       });
-    } catch {
-      setError('정답 제출에 실패했습니다.');
-    } finally {
       setLoading(false);
-    }
+    }, 1000);
   };
 
-  if (loading) return (
-    <div className={`card shadow mb-4 ${className}`} style={{
-      background: 'linear-gradient(135deg, #334155 0%, #475569 100%)',
-      borderRadius: '16px',
-      border: '1px solid rgba(139, 92, 246, 0.15)',
-      boxShadow: '0 8px 20px -5px rgba(0, 0, 0, 0.2), 0 4px 6px -1px rgba(0, 0, 0, 0.1)'
-    }}>
-      <div className="card-body text-center">
-        <div className="spinner-border text-primary mb-2" role="status">
-          <span className="visually-hidden">로딩 중...</span>
-        </div>
-        <p className="mb-0" style={{color: '#cbd5e1'}}>퀴즈 로딩 중...</p>
-      </div>
-    </div>
-  );
-  
-  if (error) return (
-    <div className={`card shadow mb-4 ${className}`} style={{
-      background: 'linear-gradient(135deg, #334155 0%, #475569 100%)',
-      borderRadius: '16px',
-      border: '1px solid rgba(139, 92, 246, 0.15)',
-      boxShadow: '0 8px 20px -5px rgba(0, 0, 0, 0.2), 0 4px 6px -1px rgba(0, 0, 0, 0.1)'
-    }}>
-      <div className="card-body">
-        <div className="alert alert-danger border-0">
-          <i className="bi bi-exclamation-triangle-fill me-2"></i>
-          {error}
+  if (loading) {
+    return (
+      <div className={`card shadow mb-4 ${className}`} style={CARD_STYLES.dark}>
+        <div className="card-body text-center p-4">
+          <div className="spinner-border text-primary mb-3" role="status">
+            <span className="visually-hidden">로딩 중...</span>
+          </div>
+          <p className="mb-0" style={{color: COLORS.text.secondary}}>퀴즈 로딩 중...</p>
         </div>
       </div>
-    </div>
-  );
-  
-  if (!questions.length) return (
-    <div className={`card shadow mb-4 ${className}`} style={{
-      background: 'linear-gradient(135deg, #334155 0%, #475569 100%)',
-      borderRadius: '16px',
-      border: '1px solid rgba(139, 92, 246, 0.15)',
-      boxShadow: '0 8px 20px -5px rgba(0, 0, 0, 0.2), 0 4px 6px -1px rgba(0, 0, 0, 0.1)'
-    }}>
-      <div className="card-body text-center">
-        <i className="bi bi-question-circle display-4 text-muted mb-3"></i>
-        <p className="mb-0" style={{color: '#cbd5e1'}}>퀴즈가 없습니다.</p>
-      </div>
-    </div>
-  );
+    );
+  }
 
-  const q = questions[current];
+  if (!quiz) {
+    return (
+      <div className={`card shadow mb-4 ${className}`} style={CARD_STYLES.dark}>
+        <div className="card-body text-center p-4">
+          <i className="bi bi-question-circle display-4 text-muted mb-3"></i>
+          <p className="mb-0" style={{color: COLORS.text.secondary}}>퀴즈가 없습니다.</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
-    <div className={`card shadow mb-4 ${className}`} style={{
-      background: 'linear-gradient(135deg, #334155 0%, #475569 100%)',
-      borderRadius: '16px',
-      border: '1px solid rgba(139, 92, 246, 0.15)',
-      boxShadow: '0 8px 20px -5px rgba(0, 0, 0, 0.2), 0 4px 6px -1px rgba(0, 0, 0, 0.1)'
-    }}>
-      <div className="card-header border-0 bg-transparent p-4">
-        <h5 className="mb-0 fw-bold" style={{color: 'white'}}>🧠 오늘의 퀴즈</h5>
-      </div>
+    <div className={`card shadow mb-4 ${className}`} style={CARD_STYLES.dark}>
       <div className="card-body p-4">
-        <div className="mb-3">
-          <h6 className="fw-bold" style={{color: 'white'}}>{q.question}</h6>
+        <div className="d-flex justify-content-between align-items-center mb-3">
+          <h5 className="mb-0 fw-bold" style={{color: COLORS.text.primary}}>🧠 오늘의 퀴즈</h5>
+          <span className="badge rounded-pill" style={BADGE_STYLES.primary}>#1</span>
         </div>
-        <div className="mb-3">
-          {q.choices.map((choice: string) => (
+        
+        <h6 className="fw-bold" style={{color: COLORS.text.primary}}>{quiz.question}</h6>
+        
+        <div className="mt-4">
+          {quiz.options.map((option: string, index: number) => (
             <button
-              key={choice}
-              onClick={() => handleSelect(choice)}
-              className="btn me-2 mb-2 px-3 py-2"
+              key={index}
+              className={`btn w-100 mb-2 text-start ${
+                selectedAnswer === index
+                  ? isCorrect
+                    ? 'btn-success'
+                    : 'btn-danger'
+                  : 'btn-outline-light'
+              }`}
+              onClick={() => handleAnswerSelect(index)}
+              disabled={showResult}
               style={{
-                background: selected === choice ? '#8b5cf6' : 'transparent',
-                color: selected === choice ? 'white' : '#a78bfa',
-                border: `2px solid #8b5cf6`,
+                border: selectedAnswer === index ? 'none' : `1px solid ${COLORS.primary.border}`,
                 borderRadius: '8px',
-                fontWeight: '500'
+                padding: '12px 16px'
               }}
-              disabled={!!result}
             >
-              {choice}
+              <span className="me-2">{String.fromCharCode(65 + index)}.</span>
+              {option}
             </button>
           ))}
         </div>
-        {!result && (
-          <button 
-            onClick={handleSubmit} 
-            disabled={!selected} 
-            className="btn px-3 py-2"
-            style={{
-              background: '#10b981',
-              color: 'white',
-              border: 'none',
-              borderRadius: '8px',
-              fontWeight: '500'
-            }}
-          >
-            <i className="bi bi-check-circle me-1"></i>
-            정답 제출
-          </button>
-        )}
-        {result && (
-          <div className={`alert ${result.correct ? 'alert-success' : 'alert-danger'} border-0`}>
-            <div className="d-flex align-items-center">
-              <i className={`bi ${result.correct ? 'bi-check-circle-fill' : 'bi-x-circle-fill'} me-2`}></i>
-              <strong>{result.explanation}</strong>
+
+        {showResult && (
+          <div className="mt-4">
+            <div className={`alert ${isCorrect ? 'alert-success' : 'alert-danger'}`} role="alert">
+              <i className={`bi ${isCorrect ? 'bi-check-circle' : 'bi-x-circle'} me-2`}></i>
+              <strong>{isCorrect ? '정답입니다!' : '틀렸습니다.'}</strong>
+              <p className="mb-0 mt-2">{quiz.explanation}</p>
             </div>
+            
+            <button
+              className="btn btn-primary w-100"
+              onClick={handleNextQuiz}
+              style={{
+                background: COLORS.primary.main,
+                border: 'none',
+                borderRadius: '8px',
+                padding: '12px 16px'
+              }}
+            >
+              다음 퀴즈
+            </button>
           </div>
         )}
       </div>

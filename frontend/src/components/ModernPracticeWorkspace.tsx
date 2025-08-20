@@ -128,22 +128,40 @@ const ModernPracticeWorkspace: React.FC = () => {
     setSessionTime(0)
   }
 
-  const endSession = () => {
+  const handleSessionEnd = () => {
     if (currentSession) {
-      setCurrentSession({ ...currentSession, isActive: false, duration: sessionTime })
-      // TODO: 세션 데이터 저장
+      // 세션 데이터 저장
+      const endTime = new Date();
+      const duration = endTime.getTime() - currentSession.startTime.getTime();
+      
+      const completedSession = {
+        ...currentSession,
+        endTime,
+        duration
+      };
+      
+      // TODO: API 호출로 세션 데이터 저장
+      console.log('세션 완료:', completedSession);
+      
+      setCurrentSession(null);
     }
-  }
+  };
 
   const toggleMetronome = () => {
-    setIsMetronomeOn(!isMetronomeOn)
+    setIsMetronomeOn(!isMetronomeOn);
     // TODO: 메트로놈 사운드 구현
-  }
+    if (!isMetronomeOn) {
+      console.log('메트로놈 시작');
+    } else {
+      console.log('메트로놈 중지');
+    }
+  };
 
-  const toggleRecording = () => {
-    setIsRecording(!isRecording)
+  const startRecording = () => {
+    setIsRecording(true);
     // TODO: 녹음 기능 구현
-  }
+    console.log('녹음 시작');
+  };
 
   return (
     <Container fluid className="modern-practice-workspace p-0">
@@ -402,7 +420,7 @@ const ModernPracticeWorkspace: React.FC = () => {
                 {currentSession?.isActive ? (
                   <Button
                     className="control-button danger"
-                    onClick={endSession}
+                    onClick={handleSessionEnd}
                     title="연습 종료"
                   >
                     ⏹️
@@ -419,7 +437,7 @@ const ModernPracticeWorkspace: React.FC = () => {
 
                 <Button
                   className={`control-button ${isRecording ? 'danger recording' : 'primary'}`}
-                  onClick={toggleRecording}
+                  onClick={startRecording}
                   title="녹음"
                 >
                   🎙️
