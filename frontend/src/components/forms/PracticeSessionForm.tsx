@@ -3,7 +3,8 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { useAppStore } from '../../stores/useAppStore';
-import { PracticeType, DifficultyLevel, type ApiResult } from '../../types/advanced';
+import { PracticeType, DifficultyLevel } from '../../types/practice';
+import { ApiResult } from '../../types/api';
 
 // 폼 스키마 정의 - satisfies operator 활용
 const practiceSessionSchema = z.object({

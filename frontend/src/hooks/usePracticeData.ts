@@ -1,5 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { practiceService } from '../services/practiceService';
+import { ApiResult } from '../types/api';
 import type { 
   AnalyticsUserSummaryResponse,
   AnalyticsUserTrendResponse,
@@ -46,9 +47,14 @@ export function useUpdatePracticeGoal() {
   const queryClient = useQueryClient();
   
   return useMutation({
-    mutationFn: async ({ userId, goal }: { userId: number; goal: string }) => {
+    mutationFn: async ({ userId, goal }: { userId: number; goal: string }): Promise<ApiResult<void>> => {
       // 실제 API 호출 구현 필요
-      return Promise.resolve({ success: true, data: { userId, goal } });
+      return Promise.resolve({ 
+        success: true, 
+        data: undefined,
+        message: '목표가 업데이트되었습니다.',
+        timestamp: new Date().toISOString()
+      });
     },
     onSuccess: (data, variables) => {
       // 성공 시 관련 쿼리 무효화
@@ -61,9 +67,14 @@ export function useSubmitPracticeSession() {
   const queryClient = useQueryClient();
   
   return useMutation({
-    mutationFn: async (sessionData: any) => {
+    mutationFn: async (sessionData: any): Promise<ApiResult<void>> => {
       // 실제 API 호출 구현 필요
-      return Promise.resolve({ success: true, data: sessionData });
+      return Promise.resolve({ 
+        success: true, 
+        data: undefined,
+        message: '연습 세션이 제출되었습니다.',
+        timestamp: new Date().toISOString()
+      });
     },
     onSuccess: (data, variables) => {
       // 성공 시 관련 쿼리 무효화

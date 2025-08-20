@@ -1,21 +1,7 @@
 import { create } from 'zustand';
 import { devtools, persist } from 'zustand/middleware';
-
-interface User {
-  id: number;
-  username: string;
-  email: string;
-  avatar?: string;
-}
-
-interface PracticeSession {
-  id: string;
-  startTime: Date;
-  endTime?: Date;
-  duration: number;
-  type: 'scale' | 'chord' | 'song' | 'theory';
-  score?: number;
-}
+import { User, UserPreferences } from '../types/user';
+import { PracticeSession, PracticeType } from '../types/practice';
 
 interface AppState {
   // 사용자 정보
@@ -32,11 +18,7 @@ interface AppState {
   practiceHistory: PracticeSession[];
   
   // 설정
-  settings: {
-    notifications: boolean;
-    autoSave: boolean;
-    practiceReminders: boolean;
-  };
+  settings: UserPreferences;
 }
 
 interface AppActions {
@@ -52,12 +34,12 @@ interface AppActions {
   setLanguage: (language: 'ko' | 'en') => void;
   
   // 연습 관련 액션
-  startPracticeSession: (type: PracticeSession['type']) => void;
+  startPracticeSession: (type: PracticeType) => void;
   endPracticeSession: (score?: number) => void;
   addPracticeSession: (session: PracticeSession) => void;
   
   // 설정 관련 액션
-  updateSettings: (settings: Partial<AppState['settings']>) => void;
+  updateSettings: (settings: Partial<UserPreferences>) => void;
   resetSettings: () => void;
 }
 
@@ -72,6 +54,8 @@ const initialState: AppState = {
   currentPracticeSession: null,
   practiceHistory: [],
   settings: {
+    theme: 'dark',
+    language: 'ko',
     notifications: true,
     autoSave: true,
     practiceReminders: true,
@@ -101,6 +85,7 @@ export const useAppStore = create<AppStore>()(
             id: Date.now().toString(),
             startTime: new Date(),
             type,
+            difficulty: 'beginner',
             duration: 0,
           };
           set({ currentPracticeSession: session });
