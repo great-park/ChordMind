@@ -33,11 +33,11 @@ const AIFeatures: React.FC = () => {
   const [loading, setLoading] = useState(false)
   const [result, setResult] = useState<any>(null)
   const [error, setError] = useState<string | null>(null)
-  const [selectedUserId, setSelectedUserId] = useState(user?.id || 1)
+  const [selectedUserId, setSelectedUserId] = useState<number | null>(user?.id || null);
 
   // 피드백 폼 상태
   const [feedbackForm, setFeedbackForm] = useState<AIFeedbackRequest>({
-    user_id: selectedUserId,
+    user_id: selectedUserId || 1,
     question_type: 'CHORD_NAME',
     user_answer: '',
     correct_answer: '',
@@ -48,22 +48,22 @@ const AIFeatures: React.FC = () => {
 
   // 적응형 문제 폼 상태
   const [adaptiveForm, setAdaptiveForm] = useState<AIAdaptiveRequest>({
-    user_id: selectedUserId,
+    user_id: selectedUserId || 1,
     question_type: 'CHORD_NAME',
     count: 3
   })
 
   // 힌트 폼 상태
   const [hintsForm, setHintsForm] = useState<AIHintsRequest>({
-    user_id: selectedUserId,
+    user_id: selectedUserId || 1,
     question_type: 'CHORD_NAME',
     difficulty: 2,
     show_detailed: false
   })
 
   // 학습 경로 상태
-  const [learningPathUserId, setLearningPathUserId] = useState(selectedUserId)
-  const [behaviorUserId, setBehaviorUserId] = useState(selectedUserId)
+  const [learningPathUserId, setLearningPathUserId] = useState<number | null>(user?.id || null);
+  const [behaviorUserId, setBehaviorUserId] = useState<number | null>(user?.id || null);
   
   // 새로운 AI 기능들 상태
   const [maxRecommendations, setMaxRecommendations] = useState(5)
@@ -311,7 +311,7 @@ const AIFeatures: React.FC = () => {
               <Form.Group>
                 <Form.Label>사용자 ID</Form.Label>
                 <Form.Select 
-                  value={selectedUserId} 
+                  value={selectedUserId || ''} 
                   onChange={(e) => handleUserIdChange(Number(e.target.value))}
                 >
                   <option value={1}>사용자 1</option>
@@ -564,7 +564,7 @@ const AIFeatures: React.FC = () => {
                           <Form.Label>사용자 ID</Form.Label>
                           <Form.Control
                             type="number"
-                            value={learningPathUserId}
+                            value={learningPathUserId || ''}
                             onChange={(e) => setLearningPathUserId(Number(e.target.value))}
                             min="1"
                           />
@@ -588,7 +588,7 @@ const AIFeatures: React.FC = () => {
                           <Form.Label>사용자 ID</Form.Label>
                           <Form.Control
                             type="number"
-                            value={behaviorUserId}
+                            value={behaviorUserId || ''}
                             onChange={(e) => setBehaviorUserId(Number(e.target.value))}
                             min="1"
                           />

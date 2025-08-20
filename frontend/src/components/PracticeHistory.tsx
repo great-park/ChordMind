@@ -6,33 +6,35 @@ import { useAuth } from '../contexts/AuthContext';
 
 const PracticeHistory: React.FC = () => {
   const { user } = useAuth();
-  const userId = user?.id || 1; // 사용자 ID 또는 기본값
   const [sessions, setSessions] = useState<PracticeSession[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    const fetchPracticeHistory = async () => {
+    if (!user?.id) {
+      setError('로그인이 필요합니다.');
+      setLoading(false);
+      return;
+    }
+
+    const loadSessions = async () => {
       try {
         setLoading(true);
-        setError(null);
-        
-        const response = await practiceService.getUserPracticeSessions(userId, 20);
-        
+        const response = await practiceService.getUserSessions(user.id);
         if (response.success && response.data) {
-          setSessions(response.data.sessions || []);
+          setSessions(response.data);
         } else {
           setError(response.message || '연습 기록을 불러오지 못했습니다.');
         }
-      } catch (error) {
+      } catch (err) {
         setError('연습 기록을 불러오는 중 오류가 발생했습니다.');
       } finally {
         setLoading(false);
       }
     };
 
-    fetchPracticeHistory();
-  }, [userId]);
+    loadSessions();
+  }, [user?.id]);
 
   if (loading) {
     return (

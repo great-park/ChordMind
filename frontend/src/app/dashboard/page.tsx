@@ -17,7 +17,6 @@ import { useAuth } from '@/hooks/useAuth';
 
 export default function Dashboard() {
   const { user } = useAuth();
-  const userId = user?.id || 1; // 사용자 ID 또는 기본값
   const [userSummary, setUserSummary] = useState<AnalyticsUserSummaryResponse | null>(null);
   const [userTrend, setUserTrend] = useState<AnalyticsUserTrendResponse | null>(null);
   const [topUsers, setTopUsers] = useState<UserRankingResponse[]>([]);
@@ -26,27 +25,37 @@ export default function Dashboard() {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    setLoading(true);
-    setError(null);
-    Promise.all([
-      practiceService.getAnalyticsUserSummary(userId),
-      practiceService.getAnalyticsUserTrend(userId, 'month'),
-      practiceService.getTopUsers(8),
-      practiceService.getUserPracticeSessions(userId, 0, 5)
-    ])
-      .then(([summaryRes, trendRes, topRes, sessionsRes]) => {
-        if (!summaryRes.success || !trendRes.success || !topRes.success || !sessionsRes.success) {
-          setError('대시보드 데이터를 불러오지 못했습니다.');
-        } else {
-          setUserSummary(summaryRes.data!);
-          setUserTrend(trendRes.data!);
-          setTopUsers(topRes.data!);
-          setRecentSessions(sessionsRes.data!.sessions || []);
-        }
-      })
-      .catch(() => setError('대시보드 데이터를 불러오지 못했습니다.'))
-      .finally(() => setLoading(false));
-  }, []);
+    const loadData = async () => {
+      if (!user?.id) {
+        setError('로그인이 필요합니다.');
+        setLoading(false);
+        return;
+      }
+
+      try {
+        setLoading(true);
+        setError(null);
+
+        const [summaryRes, trendRes, topRes, sessionsRes] = await Promise.all([
+          practiceService.getAnalyticsUserSummary(user.id),
+          practiceService.getAnalyticsUserTrend(user.id, 'month'),
+          practiceService.getTopUsers(8),
+          practiceService.getRecentSessions(user.id, 5)
+        ]);
+
+        if (summaryRes.success) setUserSummary(summaryRes.data);
+        if (trendRes.success) setUserTrend(trendRes.data);
+        if (topRes.success) setTopUsers(topRes.data || []);
+        if (sessionsRes.success) setRecentSessions(sessionsRes.data || []);
+      } catch (err) {
+        setError('대시보드 데이터를 불러오는 중 오류가 발생했습니다.');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadData();
+  }, [user?.id]);
 
   if (loading) {
     return (

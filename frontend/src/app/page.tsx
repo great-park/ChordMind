@@ -25,7 +25,6 @@ import { useAuth } from '../contexts/AuthContext';
 
 export default function Home() {
   const { user } = useAuth();
-  const userId = user?.id || 1; // 사용자 ID 또는 기본값
   const [isVisible, setIsVisible] = useState(false);
   const [userSummary, setUserSummary] = useState<AnalyticsUserSummaryResponse | null>(null);
   const [userTrend, setUserTrend] = useState<AnalyticsUserTrendResponse | null>(null);
@@ -34,26 +33,36 @@ export default function Home() {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    setIsVisible(true);
-    setLoading(true);
-    setError(null);
-    Promise.all([
-      practiceService.getAnalyticsUserSummary(userId),
-      practiceService.getAnalyticsUserTrend(userId, 'month'),
-      practiceService.getTopUsers(8)
-    ])
-      .then(([summaryRes, trendRes, topRes]) => {
-        if (!summaryRes.success || !trendRes.success || !topRes.success) {
-          setError('통계 데이터를 불러오지 못했습니다.');
-        } else {
-          setUserSummary(summaryRes.data!);
-          setUserTrend(trendRes.data!);
-          setTopUsers(topRes.data!);
+    const loadData = async () => {
+      try {
+        setLoading(true);
+        setError(null);
+
+        // 사용자가 로그인한 경우에만 개인 데이터 로드
+        if (user?.id) {
+          const [summaryRes, trendRes] = await Promise.all([
+            practiceService.getAnalyticsUserSummary(user.id),
+            practiceService.getAnalyticsUserTrend(user.id, 'month')
+          ]);
+
+          if (summaryRes.success) setUserSummary(summaryRes.data);
+          if (trendRes.success) setUserTrend(trendRes.data);
         }
-      })
-      .catch(() => setError('통계 데이터를 불러오지 못했습니다.'))
-      .finally(() => setLoading(false));
-  }, []);
+
+        // 공통 데이터는 항상 로드
+        const topUsersRes = await practiceService.getTopUsers(8);
+        if (topUsersRes.success) {
+          setTopUsers(topUsersRes.data || []);
+        }
+      } catch (err) {
+        setError('데이터를 불러오는 중 오류가 발생했습니다.');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadData();
+  }, [user?.id]);
 
   return (
     <div className="d-flex" style={{minHeight: '100vh'}}>
@@ -277,7 +286,7 @@ export default function Home() {
                 <div className="card-body p-4">
                   <ProgressChart 
                     title="이번 주 연습 시간"
-                    progress={userSummary?.totalPracticeTime || 245}
+                    progress={userSummary?.totalPracticeTime || 0}
                     target={1000}
                     unit="분"
                     color="primary"
