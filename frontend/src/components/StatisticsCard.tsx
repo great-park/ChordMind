@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 
 interface StatisticsCardProps {
   title: string;
@@ -10,7 +10,7 @@ interface StatisticsCardProps {
   description?: string;
 }
 
-const StatisticsCard: React.FC<StatisticsCardProps> = ({
+const StatisticsCard: React.FC<StatisticsCardProps> = React.memo(({
   title,
   value,
   change,
@@ -19,7 +19,7 @@ const StatisticsCard: React.FC<StatisticsCardProps> = ({
   color = 'primary',
   description
 }) => {
-  const getChangeIcon = () => {
+  const changeIcon = useMemo(() => {
     switch (changeType) {
       case 'positive':
         return 'bi-arrow-up';
@@ -28,18 +28,44 @@ const StatisticsCard: React.FC<StatisticsCardProps> = ({
       default:
         return 'bi-dash';
     }
-  };
+  }, [changeType]);
 
-  const getChangeColor = () => {
+  const changeColor = useMemo(() => {
     switch (changeType) {
       case 'positive':
-        return 'text-success';
+        return '#10b981';
       case 'negative':
-        return 'text-danger';
+        return '#ef4444';
       default:
-        return 'text-muted';
+        return '#6b7280';
     }
-  };
+  }, [changeType]);
+
+  const iconBackground = useMemo(() => {
+    switch (color) {
+      case 'primary':
+        return 'rgba(139, 92, 246, 0.15)';
+      case 'success':
+        return 'rgba(34, 197, 94, 0.15)';
+      case 'warning':
+        return 'rgba(245, 158, 11, 0.15)';
+      default:
+        return 'rgba(59, 130, 246, 0.15)';
+    }
+  }, [color]);
+
+  const iconColor = useMemo(() => {
+    switch (color) {
+      case 'primary':
+        return '#a78bfa';
+      case 'success':
+        return '#4ade80';
+      case 'warning':
+        return '#fbbf24';
+      default:
+        return '#60a5fa';
+    }
+  }, [color]);
 
   return (
     <div className="card border-0 shadow-lg h-100" style={{
@@ -54,17 +80,13 @@ const StatisticsCard: React.FC<StatisticsCardProps> = ({
                style={{
                  width: '48px', 
                  height: '48px',
-                 background: `rgba(${color === 'primary' ? '139, 92, 246' : color === 'success' ? '34, 197, 94' : color === 'warning' ? '245, 158, 11' : '59, 130, 246'}, 0.15)`
+                 background: iconBackground
                }}>
-            <i className={`bi ${icon} fs-4`} style={{
-              color: color === 'primary' ? '#a78bfa' : color === 'success' ? '#4ade80' : color === 'warning' ? '#fbbf24' : '#60a5fa'
-            }} aria-hidden="true"></i>
+            <i className={`bi ${icon} fs-4`} style={{ color: iconColor }} aria-hidden="true"></i>
           </div>
           {change && (
-            <div className="d-flex align-items-center" style={{
-              color: changeType === 'positive' ? '#10b981' : changeType === 'negative' ? '#ef4444' : '#6b7280'
-            }}>
-              <i className={`bi ${getChangeIcon()} me-1`} aria-hidden="true"></i>
+            <div className="d-flex align-items-center" style={{ color: changeColor }}>
+              <i className={`bi ${changeIcon} me-1`} aria-hidden="true"></i>
               <small className="fw-medium">{change}</small>
             </div>
           )}
@@ -77,6 +99,8 @@ const StatisticsCard: React.FC<StatisticsCardProps> = ({
       </div>
     </div>
   );
-};
+});
+
+StatisticsCard.displayName = 'StatisticsCard';
 
 export default StatisticsCard; 

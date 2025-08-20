@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 
 interface ProgressChartProps {
   title: string;
@@ -9,7 +9,7 @@ interface ProgressChartProps {
   description?: string;
 }
 
-const ProgressChart: React.FC<ProgressChartProps> = ({
+const ProgressChart: React.FC<ProgressChartProps> = React.memo(({
   title,
   progress,
   target,
@@ -17,7 +17,16 @@ const ProgressChart: React.FC<ProgressChartProps> = ({
   color = 'primary',
   description
 }) => {
-  const percentage = Math.min((progress / target) * 100, 100);
+  const percentage = useMemo(() => Math.min((progress / target) * 100, 100), [progress, target]);
+
+  const progressBarStyle = useMemo(() => ({
+    width: `${percentage}%`,
+    background: color === 'primary' ? 'linear-gradient(90deg, #8b5cf6 0%, #a855f7 100%)' : 
+               color === 'success' ? 'linear-gradient(90deg, #10b981 0%, #059669 100%)' :
+               color === 'warning' ? 'linear-gradient(90deg, #f59e0b 0%, #d97706 100%)' :
+               'linear-gradient(90deg, #3b82f6 0%, #2563eb 100%)',
+    borderRadius: '4px'
+  }), [percentage, color]);
 
   return (
     <div className="card border-0 shadow-lg h-100" style={{
@@ -42,14 +51,7 @@ const ProgressChart: React.FC<ProgressChartProps> = ({
         </div>
         <div className="progress mb-3" style={{height: '8px', borderRadius: '4px'}} role="progressbar" 
              aria-valuenow={percentage} aria-valuemin={0} aria-valuemax={100}>
-          <div className="progress-bar" style={{
-            width: `${percentage}%`,
-            background: color === 'primary' ? 'linear-gradient(90deg, #8b5cf6 0%, #a855f7 100%)' : 
-                       color === 'success' ? 'linear-gradient(90deg, #10b981 0%, #059669 100%)' :
-                       color === 'warning' ? 'linear-gradient(90deg, #f59e0b 0%, #d97706 100%)' :
-                       'linear-gradient(90deg, #3b82f6 0%, #2563eb 100%)',
-            borderRadius: '4px'
-          }}></div>
+          <div className="progress-bar" style={progressBarStyle}></div>
         </div>
         {description && (
           <p className="small mb-0" style={{color: '#cbd5e1'}}>{description}</p>
@@ -57,6 +59,8 @@ const ProgressChart: React.FC<ProgressChartProps> = ({
       </div>
     </div>
   );
-};
+});
+
+ProgressChart.displayName = 'ProgressChart';
 
 export default ProgressChart; 
