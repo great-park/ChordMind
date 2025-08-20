@@ -62,18 +62,28 @@ function QuizWidget() {
   };
 
   if (loading) return (
-    <div className="card shadow mb-4">
+    <div className="card shadow mb-4" style={{
+      background: 'linear-gradient(135deg, #334155 0%, #475569 100%)',
+      borderRadius: '16px',
+      border: '1px solid rgba(139, 92, 246, 0.15)',
+      boxShadow: '0 8px 20px -5px rgba(0, 0, 0, 0.2), 0 4px 6px -1px rgba(0, 0, 0, 0.1)'
+    }}>
       <div className="card-body text-center">
         <div className="spinner-border text-primary mb-2" role="status">
           <span className="visually-hidden">로딩 중...</span>
         </div>
-        <p className="text-white-50 mb-0">퀴즈 로딩 중...</p>
+        <p className="mb-0" style={{color: '#cbd5e1'}}>퀴즈 로딩 중...</p>
       </div>
     </div>
   );
   
   if (error) return (
-    <div className="card shadow mb-4">
+    <div className="card shadow mb-4" style={{
+      background: 'linear-gradient(135deg, #334155 0%, #475569 100%)',
+      borderRadius: '16px',
+      border: '1px solid rgba(139, 92, 246, 0.15)',
+      boxShadow: '0 8px 20px -5px rgba(0, 0, 0, 0.2), 0 4px 6px -1px rgba(0, 0, 0, 0.1)'
+    }}>
       <div className="card-body">
         <div className="alert alert-danger border-0">
           <i className="bi bi-exclamation-triangle-fill me-2"></i>
@@ -84,10 +94,15 @@ function QuizWidget() {
   );
   
   if (!questions.length) return (
-    <div className="card shadow mb-4">
+    <div className="card shadow mb-4" style={{
+      background: 'linear-gradient(135deg, #334155 0%, #475569 100%)',
+      borderRadius: '16px',
+      border: '1px solid rgba(139, 92, 246, 0.15)',
+      boxShadow: '0 8px 20px -5px rgba(0, 0, 0, 0.2), 0 4px 6px -1px rgba(0, 0, 0, 0.1)'
+    }}>
       <div className="card-body text-center">
         <i className="bi bi-question-circle display-4 text-muted mb-3"></i>
-        <p className="text-white-50 mb-0">퀴즈가 없습니다.</p>
+        <p className="mb-0" style={{color: '#cbd5e1'}}>퀴즈가 없습니다.</p>
       </div>
     </div>
   );
@@ -95,22 +110,32 @@ function QuizWidget() {
   const q = questions[current];
 
   return (
-    <div className="card shadow mb-4">
-      <div className="card-header">
-        <h5 className="mb-0 text-white">🧠 오늘의 퀴즈</h5>
+    <div className="card shadow mb-4" style={{
+      background: 'linear-gradient(135deg, #334155 0%, #475569 100%)',
+      borderRadius: '16px',
+      border: '1px solid rgba(139, 92, 246, 0.15)',
+      boxShadow: '0 8px 20px -5px rgba(0, 0, 0, 0.2), 0 4px 6px -1px rgba(0, 0, 0, 0.1)'
+    }}>
+      <div className="card-header border-0 bg-transparent p-4">
+        <h5 className="mb-0 fw-bold" style={{color: 'white'}}>🧠 오늘의 퀴즈</h5>
       </div>
-      <div className="card-body">
+      <div className="card-body p-4">
         <div className="mb-3">
-          <h6 className="text-white fw-bold">{q.question}</h6>
+          <h6 className="fw-bold" style={{color: 'white'}}>{q.question}</h6>
         </div>
         <div className="mb-3">
           {q.choices.map((choice: string) => (
             <button
               key={choice}
               onClick={() => handleSelect(choice)}
-              className={`btn me-2 mb-2 ${
-                selected === choice ? 'btn-primary' : 'btn-outline-primary'
-              }`}
+              className={`btn me-2 mb-2 px-3 py-2`}
+              style={{
+                background: selected === choice ? '#8b5cf6' : 'transparent',
+                color: selected === choice ? 'white' : '#a78bfa',
+                border: `2px solid #8b5cf6`,
+                borderRadius: '8px',
+                fontWeight: '500'
+              }}
               disabled={!!result}
             >
               {choice}
@@ -121,7 +146,14 @@ function QuizWidget() {
           <button 
             onClick={handleSubmit} 
             disabled={!selected} 
-            className="btn btn-success"
+            className="btn px-3 py-2"
+            style={{
+              background: '#10b981',
+              color: 'white',
+              border: 'none',
+              borderRadius: '8px',
+              fontWeight: '500'
+            }}
           >
             <i className="bi bi-check-circle me-1"></i>
             정답 제출
@@ -178,7 +210,7 @@ export default function Home() {
       
       {/* 메인 콘텐츠 */}
       <div className="flex-grow-1 p-4" style={{
-        background: 'linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%)',
+        background: 'linear-gradient(135deg, #1e293b 0%, #334155 50%, #475569 100%)',
         minHeight: '100vh'
       }}>
         <div className="row">
@@ -206,7 +238,7 @@ export default function Home() {
         </div>
 
         {/* 히어로 섹션 */}
-        <section 
+        <section
           className={`hero-section mb-5 fade-in ${isVisible ? 'visible' : ''}`}
           aria-labelledby="hero-title"
           style={{
@@ -216,167 +248,54 @@ export default function Home() {
             color: 'white'
           }}
         >
-          <div className="particles">
-            {[...Array(20)].map((_, i) => (
-              <div 
-                key={i} 
-                className="particle" 
-                style={{
-                  left: `${Math.random() * 100}%`,
-                  animationDelay: `${Math.random() * 6}s`,
-                  animationDuration: `${4 + Math.random() * 4}s`
-                }}
-              />
-            ))}
-          </div>
-          <div className="row align-items-center">
-            <div className="col-lg-6">
-              <div className="mb-3">
-                <span className="badge px-3 py-2 rounded-pill" style={{
-                  background: 'rgba(139, 92, 246, 0.2)',
-                  color: '#a855f7',
-                  border: '1px solid rgba(139, 92, 246, 0.3)'
-                }}>
-                  🎵 AI 기반 음악 학습 플랫폼
-                </span>
-              </div>
-              <h1 id="hero-title" className="display-4 fw-bold mb-4" style={{color: 'white'}}>
-                음악의 새로운 차원<br />
-                <span style={{color: '#a855f7'}}>ChordMind</span>와 함께
-              </h1>
-              <p className="lead mb-4" style={{color: '#e2e8f0'}}>
-                최첨단 AI 기술로 당신의 연주를 실시간 분석하고,<br />
-                개인화된 피드백으로 <strong style={{color: '#fbbf24'}}>더 빠른 성장</strong>을 경험하세요.<br />
-                <span style={{color: '#60a5fa'}}>박자·음정·화성·표현력</span>까지 완벽하게!
-              </p>
-              <div className="d-flex flex-wrap gap-3 mb-4">
-                <a href="/register" className="btn btn-lg px-4" style={{
-                  background: 'linear-gradient(135deg, #8b5cf6 0%, #a855f7 100%)',
-                  border: 'none',
-                  color: 'white',
-                  borderRadius: '12px',
-                  boxShadow: '0 4px 14px rgba(139, 92, 246, 0.4)'
-                }}>
-                  <i className="bi bi-person-plus me-2"></i>
-                  무료로 시작하기
-                </a>
-                <a href="/login" className="btn btn-outline-light btn-lg px-4" style={{
-                  border: '2px solid rgba(255, 255, 255, 0.3)',
-                  borderRadius: '12px',
-                  color: 'white',
-                  background: 'rgba(255, 255, 255, 0.1)'
-                }}>
-                  <i className="bi bi-box-arrow-in-right me-2"></i>
-                  로그인
-                </a>
-              </div>
-              <div className="d-flex align-items-center gap-4" style={{color: '#cbd5e1'}}>
-                <div className="d-flex align-items-center">
-                  <i className="bi bi-star-fill text-warning me-1"></i>
-                  <span>4.9/5 평점</span>
-                </div>
-                <div className="d-flex align-items-center">
-                  <i className="bi bi-people-fill text-success me-1"></i>
-                  <span>10,000+ 사용자</span>
-                </div>
-                <div className="d-flex align-items-center">
-                  <i className="bi bi-lightning-fill text-info me-1"></i>
-                  <span>실시간 분석</span>
-                </div>
-              </div>
-            </div>
-            <div className="col-lg-6 text-center">
-              <div className="position-relative">
-                <div className="rounded-4 p-5 shadow-lg position-relative" style={{
-                  background: 'linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%)',
-                  border: '1px solid rgba(255, 255, 255, 0.1)'
-                }}>
-                  <div className="d-flex justify-content-center mb-4">
-                    <div className="position-relative">
-                      <i className="bi bi-vinyl display-1 text-white" aria-hidden="true" style={{animation: 'spin 10s linear infinite'}}></i>
-                      <div className="position-absolute top-50 start-50 translate-middle">
-                        <i className="bi bi-music-note-beamed fs-1 text-white"></i>
-                      </div>
-                    </div>
-                  </div>
-                  <h4 className="text-white mb-3">AI Music Intelligence</h4>
-                  <div className="row g-2 text-white">
-                    <div className="col-6">
-                      <div className="rounded-3 p-2" style={{
-                        background: 'rgba(255, 255, 255, 0.15)',
-                        border: '1px solid rgba(255, 255, 255, 0.2)'
-                      }}>
-                        <i className="bi bi-cpu mb-1"></i>
-                        <div className="small">실시간 AI</div>
-                      </div>
-                    </div>
-                    <div className="col-6">
-                      <div className="rounded-3 p-2" style={{
-                        background: 'rgba(255, 255, 255, 0.15)',
-                        border: '1px solid rgba(255, 255, 255, 0.2)'
-                      }}>
-                        <i className="bi bi-graph-up-arrow mb-1"></i>
-                        <div className="small">성장 추적</div>
-                      </div>
-                    </div>
-                    <div className="col-6">
-                      <div className="rounded-3 p-2" style={{
-                        background: 'rgba(255, 255, 255, 0.15)',
-                        border: '1px solid rgba(255, 255, 255, 0.2)'
-                      }}>
-                        <i className="bi bi-palette mb-1"></i>
-                        <div className="small">맞춤 피드백</div>
-                      </div>
-                    </div>
-                    <div className="col-6">
-                      <div className="rounded-3 p-2" style={{
-                        background: 'rgba(255, 255, 255, 0.15)',
-                        border: '1px solid rgba(255, 255, 255, 0.2)'
-                      }}>
-                        <i className="bi bi-award mb-1"></i>
-                        <div className="small">목표 달성</div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                {/* 플로팅 카드들 */}
-                <div className="position-absolute" style={{top: '10%', left: '-10%', animation: 'float 3s ease-in-out infinite'}}>
-                  <div className="card border-0 shadow-sm" style={{
-                    width: '80px', 
-                    height: '60px',
-                    background: 'rgba(255, 255, 255, 0.9)',
-                    borderRadius: '12px'
-                  }}>
-                    <div className="card-body d-flex align-items-center justify-content-center p-2">
-                      <i className="bi bi-heart-fill text-danger"></i>
-                    </div>
-                  </div>
-                </div>
-                <div className="position-absolute" style={{top: '20%', right: '-5%', animation: 'float 3s ease-in-out infinite 1s'}}>
-                  <div className="card border-0 shadow-sm" style={{
-                    width: '80px', 
-                    height: '60px',
-                    background: 'rgba(255, 255, 255, 0.9)',
-                    borderRadius: '12px'
-                  }}>
-                    <div className="card-body d-flex align-items-center justify-content-center p-2">
-                      <i className="bi bi-trophy-fill text-warning"></i>
-                    </div>
-                  </div>
-                </div>
-                <div className="position-absolute" style={{bottom: '15%', left: '5%', animation: 'float 3s ease-in-out infinite 2s'}}>
-                  <div className="card border-0 shadow-sm" style={{
-                    width: '80px', 
-                    height: '60px',
-                    background: 'rgba(255, 255, 255, 0.9)',
-                    borderRadius: '12px'
-                  }}>
-                    <div className="card-body d-flex align-items-center justify-content-center p-2">
-                      <i className="bi bi-lightning-fill text-primary"></i>
-                    </div>
-                  </div>
-                </div>
-              </div>
+          <div className="text-center">
+            <span className="badge px-3 py-2 rounded-pill mb-3" style={{
+              background: 'rgba(139, 92, 246, 0.2)',
+              color: '#a78bfa',
+              border: '1px solid rgba(139, 92, 246, 0.3)',
+              fontSize: '0.875rem',
+              fontWeight: '500'
+            }}>
+              🎵 AI 기반 음악 연주 분석
+            </span>
+            <h1 className="display-4 fw-bold mb-4" style={{
+              color: 'white',
+              fontSize: '3.5rem',
+              lineHeight: '1.2'
+            }}>
+              당신의 <span style={{color: '#a78bfa'}}>음악 여정</span>을<br />
+              <span style={{color: '#a78bfa'}}>AI와 함께</span>하세요
+            </h1>
+            <p className="lead mb-5" style={{
+              color: '#e2e8f0',
+              fontSize: '1.25rem',
+              lineHeight: '1.6'
+            }}>
+              실시간 연주 분석, 개인화된 피드백, 그리고 AI 코칭으로<br />
+              음악 실력을 한 단계 끌어올리세요
+            </p>
+            <div className="d-flex gap-3 justify-content-center flex-wrap">
+              <button className="btn px-4 py-3 fw-bold" style={{
+                background: 'linear-gradient(135deg, #8b5cf6 0%, #a855f7 100%)',
+                color: 'white',
+                border: 'none',
+                borderRadius: '12px',
+                fontSize: '1.1rem',
+                boxShadow: '0 8px 25px rgba(139, 92, 246, 0.3)'
+              }}>
+                <i className="bi bi-play-circle me-2"></i>
+                시작하기
+              </button>
+              <button className="btn px-4 py-3 fw-bold" style={{
+                background: 'transparent',
+                color: '#a78bfa',
+                border: '2px solid #a78bfa',
+                borderRadius: '12px',
+                fontSize: '1.1rem'
+              }}>
+                <i className="bi bi-person-circle me-2"></i>
+                로그인
+              </button>
             </div>
           </div>
         </section>
@@ -390,16 +309,18 @@ export default function Home() {
         >
           <div className="text-center mb-5">
             <span className="badge px-3 py-2 rounded-pill mb-3" style={{
-              background: 'rgba(139, 92, 246, 0.1)',
-              color: '#8b5cf6',
-              border: '1px solid rgba(139, 92, 246, 0.2)'
+              background: 'rgba(139, 92, 246, 0.2)',
+              color: '#a78bfa',
+              border: '1px solid rgba(139, 92, 246, 0.3)',
+              fontSize: '0.875rem',
+              fontWeight: '500'
             }}>
               ✨ 혁신적인 기능들
             </span>
-            <h2 id="features-title" className="display-5 fw-bold mb-3" style={{color: '#1e293b'}}>
-              AI가 만드는 <span style={{color: '#8b5cf6'}}>음악 학습의 미래</span>
+            <h2 id="features-title" className="display-5 fw-bold mb-3" style={{color: 'white'}}>
+              AI가 만드는 <span style={{color: '#a78bfa'}}>음악 학습의 미래</span>
             </h2>
-            <p className="lead mb-0" style={{color: '#64748b'}}>
+            <p className="lead mb-0" style={{color: '#cbd5e1'}}>
               첨단 기술과 음악 교육의 완벽한 만남으로 당신의 연주 실력을 한 단계 끌어올리세요
             </p>
           </div>
@@ -407,10 +328,10 @@ export default function Home() {
             {FEATURES.map((feature, index) => (
               <div key={index} className="col-lg-4 col-md-6">
                 <div className="card h-100 border-0 hover-shadow position-relative overflow-hidden" style={{
-                  background: 'linear-gradient(135deg, #ffffff 0%, #f8fafc 100%)',
+                  background: 'linear-gradient(135deg, #334155 0%, #475569 100%)',
                   borderRadius: '16px',
-                  boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)',
-                  border: '1px solid rgba(139, 92, 246, 0.1)'
+                  boxShadow: '0 8px 20px -5px rgba(0, 0, 0, 0.2), 0 4px 6px -1px rgba(0, 0, 0, 0.1)',
+                  border: '1px solid rgba(139, 92, 246, 0.15)'
                 }}>
                   <div className="position-absolute top-0 end-0 p-3">
                     <div className="badge rounded-circle p-2" style={{
@@ -422,42 +343,35 @@ export default function Home() {
                       {index + 1}
                     </div>
                   </div>
-                  <div className="card-body text-center p-4">
-                    <div className="mb-4">
-                      <div className="rounded-circle d-inline-flex align-items-center justify-content-center" 
-                           style={{
-                             width: '80px', 
-                             height: '80px',
-                             background: 'rgba(139, 92, 246, 0.1)',
-                             border: '2px solid rgba(139, 92, 246, 0.2)'
-                           }}>
-                        <div className="display-6" style={{color: '#8b5cf6'}} role="img" aria-label={feature.title}>
-                          {feature.icon}
-                        </div>
-                      </div>
-                    </div>
-                    <h5 className="card-title fw-bold mb-3" style={{
-                      color: '#1e293b',
-                      fontSize: '1.25rem',
-                      lineHeight: '1.4'
-                    }}>{feature.title}</h5>
-                    <p className="card-text mb-4" style={{
-                      color: '#475569',
-                      fontSize: '0.95rem',
-                      lineHeight: '1.6'
-                    }}>{feature.description}</p>
-                    <div className="d-flex justify-content-center">
-                      <button className="btn btn-outline-primary btn-sm px-3 py-2" style={{
-                        borderColor: '#8b5cf6',
-                        color: '#8b5cf6',
-                        borderRadius: '8px',
-                        fontSize: '0.875rem',
-                        fontWeight: '500',
-                        transition: 'all 0.3s ease'
+                  <div className="card-body p-4">
+                    <div className="d-flex align-items-center mb-3">
+                      <div className="feature-icon me-3" style={{
+                        width: '60px',
+                        height: '60px',
+                        background: `rgba(${feature.color === 'primary' ? '139, 92, 246' : feature.color === 'success' ? '34, 197, 94' : feature.color === 'warning' ? '245, 158, 11' : '59, 130, 246'}, 0.15)`,
+                        borderRadius: '16px',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center'
                       }}>
-                        <i className="bi bi-arrow-right me-1"></i>
-                        자세히 보기
-                      </button>
+                        <i className={`bi ${feature.icon} fs-2`} style={{
+                          color: feature.color === 'primary' ? '#a78bfa' : feature.color === 'success' ? '#4ade80' : feature.color === 'warning' ? '#fbbf24' : '#60a5fa'
+                        }}></i>
+                      </div>
+                      <h5 className="mb-0 fw-bold" style={{color: 'white'}}>{feature.title}</h5>
+                    </div>
+                    <p className="mb-3" style={{color: '#cbd5e1', lineHeight: '1.6'}}>{feature.description}</p>
+                    <div className="d-flex align-items-center justify-content-between">
+                      <span className="badge px-2 py-1 rounded-pill" style={{
+                        background: `rgba(${feature.color === 'primary' ? '139, 92, 246' : feature.color === 'success' ? '34, 197, 94' : feature.color === 'warning' ? '245, 158, 11' : '59, 130, 246'}, 0.2)`,
+                        color: feature.color === 'primary' ? '#a78bfa' : feature.color === 'success' ? '#4ade80' : feature.color === 'warning' ? '#fbbf24' : '#60a5fa',
+                        fontSize: '0.75rem'
+                      }}>
+                        {feature.tag}
+                      </span>
+                      <a href={feature.link} className="text-decoration-none" style={{color: '#a78bfa'}}>
+                        자세히 보기 <i className="bi bi-arrow-right ms-1"></i>
+                      </a>
                     </div>
                   </div>
                   {/* 카드 배경 그라디언트 효과 */}
@@ -476,23 +390,23 @@ export default function Home() {
         <section className={`mb-5 fade-in ${isVisible ? 'visible' : ''}`} style={{ animationDelay: '0.2s' }}>
           <div className="text-center mb-5">
             <span className="badge px-3 py-2 rounded-pill mb-3" style={{
-              background: 'rgba(34, 197, 94, 0.1)',
-              color: '#16a34a',
-              border: '1px solid rgba(34, 197, 94, 0.2)',
+              background: 'rgba(34, 197, 94, 0.2)',
+              color: '#4ade80',
+              border: '1px solid rgba(34, 197, 94, 0.3)',
               fontSize: '0.875rem',
               fontWeight: '500'
             }}>
               📊 실시간 대시보드
             </span>
             <h2 className="display-6 fw-bold mb-3" style={{
-              color: '#1e293b',
+              color: 'white',
               fontSize: '2.5rem',
               lineHeight: '1.2'
             }}>
-              당신의 <span style={{color: '#8b5cf6'}}>성장을 한눈에</span>
+              당신의 <span style={{color: '#a78bfa'}}>성장을 한눈에</span>
             </h2>
             <p className="lead mb-0" style={{
-              color: '#475569',
+              color: '#cbd5e1',
               fontSize: '1.125rem',
               lineHeight: '1.6'
             }}>
@@ -503,19 +417,20 @@ export default function Home() {
           <div className="row mb-5">
             <div className="col-lg-8">
               <div className="card shadow-lg border-0 hover-shadow" style={{
-                background: 'linear-gradient(135deg, #ffffff 0%, #f8fafc 100%)',
+                background: 'linear-gradient(135deg, #334155 0%, #475569 100%)',
                 borderRadius: '20px',
-                border: '1px solid rgba(139, 92, 246, 0.1)'
+                border: '1px solid rgba(139, 92, 246, 0.15)',
+                boxShadow: '0 8px 20px -5px rgba(0, 0, 0, 0.2), 0 4px 6px -1px rgba(0, 0, 0, 0.1)'
               }}>
                 <div className="card-header border-0 bg-transparent d-flex align-items-center justify-content-between p-4">
                   <div>
                     <h5 className="mb-1" style={{
-                      color: '#1e293b',
+                      color: 'white',
                       fontSize: '1.25rem',
                       fontWeight: '600'
                     }}>📈 학습 진행 상황</h5>
                     <small style={{
-                      color: '#64748b',
+                      color: '#cbd5e1',
                       fontSize: '0.875rem'
                     }}>이번 주 목표 달성도</small>
                   </div>
@@ -543,19 +458,20 @@ export default function Home() {
             </div>
             <div className="col-lg-4">
               <div className="card shadow-lg border-0 hover-shadow h-100" style={{
-                background: 'linear-gradient(135deg, #ffffff 0%, #f8fafc 100%)',
+                background: 'linear-gradient(135deg, #334155 0%, #475569 100%)',
                 borderRadius: '20px',
-                border: '1px solid rgba(139, 92, 246, 0.1)'
+                border: '1px solid rgba(139, 92, 246, 0.15)',
+                boxShadow: '0 8px 20px -5px rgba(0, 0, 0, 0.2), 0 4px 6px -1px rgba(0, 0, 0, 0.1)'
               }}>
                 <div className="card-header border-0 bg-transparent d-flex align-items-center justify-content-between p-4">
                   <div>
                     <h5 className="mb-1" style={{
-                      color: '#1e293b',
+                      color: 'white',
                       fontSize: '1.25rem',
                       fontWeight: '600'
                     }}>🎯 최근 활동</h5>
                     <small style={{
-                      color: '#64748b',
+                      color: '#cbd5e1',
                       fontSize: '0.875rem'
                     }}>오늘의 연습 기록</small>
                   </div>
@@ -610,19 +526,20 @@ export default function Home() {
           <div className="row">
             <div className="col-12">
               <div className="card shadow-lg border-0 hover-shadow" style={{
-                background: 'linear-gradient(135deg, #ffffff 0%, #f8fafc 100%)',
+                background: 'linear-gradient(135deg, #334155 0%, #475569 100%)',
                 borderRadius: '20px',
-                border: '1px solid rgba(139, 92, 246, 0.1)'
+                border: '1px solid rgba(139, 92, 246, 0.15)',
+                boxShadow: '0 8px 20px -5px rgba(0, 0, 0, 0.2), 0 4px 6px -1px rgba(0, 0, 0, 0.1)'
               }}>
                 <div className="card-header border-0 bg-transparent d-flex align-items-center justify-content-between p-4">
                   <div>
                     <h5 className="mb-1" style={{
-                      color: '#1e293b',
+                      color: 'white',
                       fontSize: '1.25rem',
                       fontWeight: '600'
                     }}>🏆 커뮤니티 리더보드</h5>
                     <small style={{
-                      color: '#64748b',
+                      color: '#cbd5e1',
                       fontSize: '0.875rem'
                     }}>이번 주 최고의 연주자들</small>
                   </div>
@@ -703,6 +620,57 @@ export default function Home() {
                       { id: '5', rank: 5, name: '🎺 트럼펫 마스터', score: 2490, category: '🎵 열정적인 연주자', change: 0 }
                     ]}
                   />
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* 성장 인사이트 섹션 */}
+        <section className="mb-5">
+          <div className="card border-0 shadow-lg" style={{
+            background: 'linear-gradient(135deg, #334155 0%, #475569 100%)',
+            borderRadius: '20px',
+            border: '1px solid rgba(139, 92, 246, 0.15)',
+            boxShadow: '0 8px 20px -5px rgba(0, 0, 0, 0.2), 0 4px 6px -1px rgba(0, 0, 0, 0.1)'
+          }}>
+            <div className="card-header border-0 bg-transparent p-4">
+              <h5 className="mb-0 fw-bold" style={{color: 'white'}}>
+                <i className="bi bi-lightbulb me-2" style={{color: '#fbbf24'}}></i>
+                성장 인사이트
+              </h5>
+            </div>
+            <div className="card-body p-4">
+              <div className="row align-items-center">
+                <div className="col-md-8">
+                  <h6 className="fw-bold mb-3" style={{color: 'white'}}>이번 주 연습 목표 달성률</h6>
+                  <div className="mb-3">
+                    <div className="d-flex justify-content-between align-items-center mb-2">
+                      <span style={{color: '#cbd5e1'}}>목표: 5시간</span>
+                      <span style={{color: '#cbd5e1'}}>4.2시간 (84%)</span>
+                    </div>
+                    <div className="progress" style={{height: '8px', borderRadius: '4px'}}>
+                      <div className="progress-bar" style={{
+                        width: '84%',
+                        background: 'linear-gradient(90deg, #8b5cf6 0%, #a855f7 100%)',
+                        borderRadius: '4px'
+                      }}></div>
+                    </div>
+                  </div>
+                  <p className="mb-0" style={{color: '#cbd5e1', fontSize: '0.9rem'}}>
+                    <i className="bi bi-arrow-up-circle me-1" style={{color: '#10b981'}}></i>
+                    지난 주 대비 <strong style={{color: '#10b981'}}>12% 향상</strong>되었습니다!
+                  </p>
+                </div>
+                <div className="col-md-4 text-center">
+                  <div className="d-inline-flex align-items-center justify-content-center rounded-circle" style={{
+                    width: '80px',
+                    height: '80px',
+                    background: 'linear-gradient(135deg, #8b5cf6 0%, #a855f7 100%)',
+                    color: 'white'
+                  }}>
+                    <span className="fs-2 fw-bold">84%</span>
+                  </div>
                 </div>
               </div>
             </div>
