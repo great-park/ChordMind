@@ -23,32 +23,50 @@ export const FEATURES = [
   {
     title: 'AI 실시간 분석',
     description: '연주를 실시간으로 분석하여 정확한 피드백을 제공합니다.',
-    icon: '🤖',
+    icon: 'bi-cpu',
+    color: 'primary',
+    tag: 'AI',
+    link: '/ai-analysis'
   },
   {
     title: '맞춤형 연습 계획',
     description: '개인 수준에 맞는 최적화된 연습 계획을 제시합니다.',
-    icon: '📋',
+    icon: 'bi-calendar-check',
+    color: 'success',
+    tag: '계획',
+    link: '/practice-plan'
   },
   {
     title: '진행 상황 추적',
     description: '학습 진행 상황을 시각적으로 확인할 수 있습니다.',
-    icon: '📊',
+    icon: 'bi-graph-up',
+    color: 'info',
+    tag: '추적',
+    link: '/progress'
   },
   {
     title: '커뮤니티',
     description: '다른 학습자들과 경험을 공유하고 소통할 수 있습니다.',
-    icon: '👥',
+    icon: 'bi-people',
+    color: 'warning',
+    tag: '소통',
+    link: '/community'
   },
   {
     title: '업적 시스템',
     description: '목표 달성 시 업적을 획득하여 동기부여를 제공합니다.',
-    icon: '🏆',
+    icon: 'bi-trophy',
+    color: 'primary',
+    tag: '업적',
+    link: '/achievements'
   },
   {
     title: '다양한 연습 모드',
     description: '스케일, 코드, 리듬 등 다양한 연습 모드를 제공합니다.',
-    icon: '🎵',
+    icon: 'bi-music-note-beamed',
+    color: 'success',
+    tag: '연습',
+    link: '/practice-modes'
   },
 ];
 
