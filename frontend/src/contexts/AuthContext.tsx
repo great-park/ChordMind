@@ -14,6 +14,7 @@ interface AuthContextType {
   refreshUser: () => Promise<void>;
   updateUser: (updatedUser: Partial<UserProfile>) => void;
   clearError: () => void;
+  loginAsTestUser: () => void;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -121,6 +122,22 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setError(null);
   };
 
+  const loginAsTestUser = () => {
+    const testUser: UserProfile = {
+      id: 1,
+      name: '테스트 사용자',
+      email: 'test@chordmind.com',
+      nickname: '테스트뮤지션',
+      profileImage: null,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString()
+    };
+    setUser(testUser);
+    setError(null);
+    // 로컬 스토리지에 테스트 사용자 정보 저장
+    localStorage.setItem('chordmind_user', JSON.stringify(testUser));
+  };
+
   const value: AuthContextType = {
     user,
     isAuthenticated,
@@ -132,6 +149,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     refreshUser,
     updateUser,
     clearError,
+    loginAsTestUser,
   };
 
   return (

@@ -24,7 +24,7 @@ import type {
 import { useAuth } from '../contexts/AuthContext';
 
 export default function Home() {
-  const { user } = useAuth();
+  const { user, loginAsTestUser } = useAuth();
   const [isVisible, setIsVisible] = useState(false);
   const [userSummary, setUserSummary] = useState<AnalyticsUserSummaryResponse | null>(null);
   const [userTrend, setUserTrend] = useState<AnalyticsUserTrendResponse | null>(null);
@@ -135,14 +135,14 @@ export default function Home() {
               음악 실력을 한 단계 끌어올리세요
             </p>
             <div className="d-flex gap-3 justify-content-center flex-wrap">
-              <button className="btn px-4 py-3 fw-bold" style={{
+              <a href="/practice" className="btn px-4 py-3 fw-bold text-decoration-none" style={{
                 ...BUTTON_STYLES.primary,
                 fontSize: '1.1rem',
                 boxShadow: '0 8px 25px rgba(139, 92, 246, 0.3)'
               }}>
                 <i className="bi bi-play-circle me-2"></i>
                 시작하기
-              </button>
+              </a>
               <button className="btn px-4 py-3 fw-bold" style={{
                 ...BUTTON_STYLES.outline,
                 fontSize: '1.1rem'
@@ -150,6 +150,23 @@ export default function Home() {
                 <i className="bi bi-person-circle me-2"></i>
                 로그인
               </button>
+              {!user && (
+                <button 
+                  className="btn px-4 py-3 fw-bold" 
+                  style={{
+                    background: '#10b981',
+                    color: 'white',
+                    border: 'none',
+                    borderRadius: '8px',
+                    fontWeight: '500',
+                    fontSize: '1.1rem'
+                  }}
+                  onClick={loginAsTestUser}
+                >
+                  <i className="bi bi-person-check me-2"></i>
+                  테스트 계정으로 로그인
+                </button>
+              )}
             </div>
           </div>
         </section>
