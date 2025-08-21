@@ -3,6 +3,7 @@
 import React, { useState, useEffect, useRef } from 'react'
 import { Container, Row, Col, Card, Button, ProgressBar, Badge, Modal } from 'react-bootstrap'
 import { useAuth } from '../contexts/AuthContext'
+import { GRADIENTS, COLORS, CARD_STYLES, BADGE_STYLES, BUTTON_STYLES } from '../constants/styles'
 
 interface PracticeMode {
   id: string
@@ -164,155 +165,35 @@ const ModernPracticeWorkspace: React.FC = () => {
   };
 
   return (
-    <Container fluid className="modern-practice-workspace p-0">
-      <style jsx>{`
-        .modern-practice-workspace {
-          min-height: 100vh;
-          background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-          position: relative;
-        }
-        
-        .workspace-header {
-          background: rgba(255, 255, 255, 0.1);
-          backdrop-filter: blur(20px);
-          border: 1px solid rgba(255, 255, 255, 0.2);
-          border-radius: 0;
-          color: white;
-        }
-        
-        .mode-card {
-          background: rgba(255, 255, 255, 0.95);
-          backdrop-filter: blur(20px);
-          border: 1px solid rgba(255, 255, 255, 0.3);
-          border-radius: 20px;
-          transition: all 0.3s ease;
-          cursor: pointer;
-          height: 200px;
-        }
-        
-        .mode-card:hover {
-          transform: translateY(-5px);
-          box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
-        }
-        
-        .mode-card.active {
-          border: 2px solid #fff;
-          box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
-        }
-        
-        .control-panel {
-          background: rgba(255, 255, 255, 0.95);
-          backdrop-filter: blur(20px);
-          border-radius: 25px;
-          border: 1px solid rgba(255, 255, 255, 0.3);
-          padding: 2rem;
-          margin-top: 2rem;
-        }
-        
-        .session-status {
-          background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
-          color: white;
-          border-radius: 15px;
-          padding: 1.5rem;
-          text-align: center;
-        }
-        
-        .control-button {
-          width: 80px;
-          height: 80px;
-          border-radius: 50%;
-          border: none;
-          font-size: 1.5rem;
-          transition: all 0.3s ease;
-          margin: 0 10px;
-        }
-        
-        .control-button:hover {
-          transform: scale(1.1);
-        }
-        
-        .control-button.primary {
-          background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-          color: white;
-        }
-        
-        .control-button.danger {
-          background: linear-gradient(135deg, #ff6b6b 0%, #ffa500 100%);
-          color: white;
-        }
-        
-        .control-button.success {
-          background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
-          color: white;
-        }
-        
-        .metronome-controls {
-          background: rgba(102, 126, 234, 0.1);
-          border-radius: 15px;
-          padding: 1.5rem;
-          margin-bottom: 1rem;
-        }
-        
-        .bpm-display {
-          font-size: 3rem;
-          font-weight: bold;
-          color: #667eea;
-        }
-        
-        .mode-icon {
-          font-size: 3rem;
-          margin-bottom: 1rem;
-        }
-        
-        .practice-stats {
-          background: rgba(255, 255, 255, 0.1);
-          backdrop-filter: blur(20px);
-          border-radius: 15px;
-          padding: 1rem;
-          color: white;
-          margin-bottom: 1rem;
-        }
-        
-        .floating-widget {
-          position: fixed;
-          bottom: 30px;
-          right: 30px;
-          z-index: 1000;
-        }
-        
-        .pulse {
-          animation: pulse 1s infinite;
-        }
-        
-        @keyframes pulse {
-          0% { transform: scale(1); }
-          50% { transform: scale(1.05); }
-          100% { transform: scale(1); }
-        }
-        
-        .recording {
-          animation: recording-blink 1s infinite;
-        }
-        
-        @keyframes recording-blink {
-          0%, 50% { background-color: #ff4757; }
-          51%, 100% { background-color: #ff6b7a; }
-        }
-      `}</style>
-
+    <div style={{ 
+      minHeight: '100vh', 
+      background: GRADIENTS.dark,
+      padding: '2rem 0'
+    }}>
       {/* 헤더 */}
-      <div className="workspace-header p-4">
+      <div className="p-4 mb-4" style={{
+        background: 'rgba(139, 92, 246, 0.1)',
+        borderRadius: '20px',
+        border: '1px solid rgba(139, 92, 246, 0.2)',
+        margin: '0 2rem'
+      }}>
         <Row className="align-items-center">
           <Col md={6}>
-            <h2 className="mb-1">🎵 연습 워크스페이스</h2>
-            <p className="mb-0 opacity-75">AI와 함께하는 스마트 음악 연습</p>
+            <h2 className="mb-1" style={{color: COLORS.text.primary}}>🎵 연습 워크스페이스</h2>
+            <p className="mb-0" style={{color: COLORS.text.secondary}}>AI와 함께하는 스마트 음악 연습</p>
           </Col>
           <Col md={6} className="text-end">
             {user && (
               <div>
-                <span className="me-3">안녕하세요, {user.name}님!</span>
-                <Badge bg="light" text="dark" className="me-2">연습 레벨: 중급</Badge>
-                <Badge bg="warning">연속 연습: 5일</Badge>
+                <span className="me-3" style={{color: COLORS.text.primary}}>안녕하세요, {user.name}님!</span>
+                <span className="badge me-2" style={{
+                  ...BADGE_STYLES.info,
+                  fontSize: '0.75rem'
+                }}>연습 레벨: 중급</span>
+                <span className="badge" style={{
+                  ...BADGE_STYLES.warning,
+                  fontSize: '0.75rem'
+                }}>연속 연습: 5일</span>
               </div>
             )}
           </Col>
@@ -323,19 +204,26 @@ const ModernPracticeWorkspace: React.FC = () => {
         {/* 연습 모드 선택 */}
         <Row className="mb-4">
           <Col>
-            <h4 className="text-white mb-3">🎯 연습 모드를 선택하세요</h4>
+            <h4 style={{color: COLORS.text.primary}} className="mb-3">🎯 연습 모드를 선택하세요</h4>
             <Row>
               {practiceModes.map((mode) => (
                 <Col key={mode.id} md={4} lg={2} className="mb-3">
                   <Card 
                     className={`mode-card ${currentMode === mode.id ? 'active' : ''}`}
                     onClick={() => setCurrentMode(mode.id)}
-                    style={{ background: mode.color }}
+                    style={{ 
+                      background: mode.color,
+                      borderRadius: '20px',
+                      border: currentMode === mode.id ? '3px solid white' : 'none',
+                      cursor: 'pointer',
+                      transition: 'all 0.3s ease',
+                      height: '200px'
+                    }}
                   >
-                    <Card.Body className="d-flex flex-column justify-content-center align-items-center text-center text-white">
-                      <div className="mode-icon">{mode.icon}</div>
-                      <h6 className="mb-2">{mode.name}</h6>
-                      <small className="opacity-75">{mode.description}</small>
+                    <Card.Body className="d-flex flex-column justify-content-center align-items-center text-center text-white p-4">
+                      <div style={{fontSize: '3rem', marginBottom: '1rem'}}>{mode.icon}</div>
+                      <h6 className="mb-2 fw-bold">{mode.name}</h6>
+                      <small style={{opacity: 0.9}}>{mode.description}</small>
                     </Card.Body>
                   </Card>
                 </Col>
@@ -347,18 +235,32 @@ const ModernPracticeWorkspace: React.FC = () => {
         {/* 메인 연습 영역 */}
         <Row>
           <Col lg={8}>
-            <div className="control-panel">
+            <div style={{
+              ...CARD_STYLES.large,
+              padding: '2rem',
+              marginBottom: '2rem'
+            }}>
               {/* 현재 모드 정보 */}
               <div className="text-center mb-4">
-                <h3 style={{ color: currentModeData?.color || '#667eea' }}>
+                <h3 style={{ 
+                  color: COLORS.text.primary,
+                  marginBottom: '0.5rem'
+                }}>
                   {currentModeData?.icon} {currentModeData?.name}
                 </h3>
-                <p className="text-muted">{currentModeData?.description}</p>
+                <p style={{color: COLORS.text.secondary}}>{currentModeData?.description}</p>
               </div>
 
               {/* 세션 상태 */}
               {currentSession?.isActive ? (
-                <div className="session-status mb-4">
+                <div style={{
+                  background: GRADIENTS.success,
+                  color: 'white',
+                  borderRadius: '15px',
+                  padding: '1.5rem',
+                  marginBottom: '1.5rem',
+                  textAlign: 'center'
+                }}>
                   <h4>🎼 연습 중...</h4>
                   <div className="h2 mb-2">{formatTime(sessionTime)}</div>
                   <ProgressBar 
@@ -371,29 +273,42 @@ const ModernPracticeWorkspace: React.FC = () => {
                 </div>
               ) : (
                 <div className="text-center mb-4">
-                  <h5 className="text-muted">연습을 시작할 준비가 되셨나요?</h5>
-                  <p className="text-muted">아래 버튼을 눌러 새로운 연습 세션을 시작하세요.</p>
+                  <h5 style={{color: COLORS.text.secondary}}>연습을 시작할 준비가 되셨나요?</h5>
+                  <p style={{color: COLORS.text.tertiary}}>아래 버튼을 눌러 새로운 연습 세션을 시작하세요.</p>
                 </div>
               )}
 
               {/* 메트로놈 컨트롤 */}
-              <div className="metronome-controls">
+              <div style={{
+                background: 'rgba(139, 92, 246, 0.1)',
+                borderRadius: '15px',
+                padding: '1.5rem',
+                marginBottom: '1rem'
+              }}>
                 <Row className="align-items-center">
                   <Col md={4} className="text-center">
-                    <div className="bpm-display">{metronome.bpm}</div>
-                    <small className="text-muted">BPM</small>
+                    <div style={{
+                      fontSize: '3rem',
+                      fontWeight: 'bold',
+                      color: COLORS.primary.main
+                    }}>{metronome.bpm}</div>
+                    <small style={{color: COLORS.text.tertiary}}>BPM</small>
                   </Col>
                   <Col md={4}>
                     <Button
-                      variant="outline-primary"
+                      style={{
+                        ...BUTTON_STYLES.outline,
+                        marginRight: '0.5rem'
+                      }}
                       size="sm"
-                      className="me-2"
                       onClick={() => setMetronome({...metronome, bpm: Math.max(60, metronome.bpm - 5)})}
                     >
                       -5
                     </Button>
                     <Button
-                      variant="outline-primary" 
+                      style={{
+                        ...BUTTON_STYLES.outline
+                      }}
                       size="sm"
                       onClick={() => setMetronome({...metronome, bpm: Math.min(200, metronome.bpm + 5)})}
                     >
@@ -401,8 +316,8 @@ const ModernPracticeWorkspace: React.FC = () => {
                     </Button>
                   </Col>
                   <Col md={4} className="text-center">
-                    <div>{metronome.timeSignature}</div>
-                    <small className="text-muted">박자</small>
+                    <div style={{color: COLORS.text.primary, fontSize: '1.5rem', fontWeight: 'bold'}}>{metronome.timeSignature}</div>
+                    <small style={{color: COLORS.text.tertiary}}>박자</small>
                   </Col>
                 </Row>
               </div>
@@ -410,7 +325,17 @@ const ModernPracticeWorkspace: React.FC = () => {
               {/* 컨트롤 버튼들 */}
               <div className="text-center mb-4">
                 <Button
-                  className={`control-button ${isMetronomeOn ? 'success' : 'primary'} ${isMetronomeOn ? 'pulse' : ''}`}
+                  style={{
+                    width: '80px',
+                    height: '80px',
+                    borderRadius: '50%',
+                    border: 'none',
+                    fontSize: '1.5rem',
+                    transition: 'all 0.3s ease',
+                    margin: '0 10px',
+                    background: isMetronomeOn ? GRADIENTS.success : GRADIENTS.primary,
+                    color: 'white'
+                  }}
                   onClick={toggleMetronome}
                   title="메트로놈"
                 >
@@ -419,7 +344,17 @@ const ModernPracticeWorkspace: React.FC = () => {
 
                 {currentSession?.isActive ? (
                   <Button
-                    className="control-button danger"
+                    style={{
+                      width: '80px',
+                      height: '80px',
+                      borderRadius: '50%',
+                      border: 'none',
+                      fontSize: '1.5rem',
+                      transition: 'all 0.3s ease',
+                      margin: '0 10px',
+                      background: GRADIENTS.warning,
+                      color: 'white'
+                    }}
                     onClick={handleSessionEnd}
                     title="연습 종료"
                   >
@@ -427,7 +362,17 @@ const ModernPracticeWorkspace: React.FC = () => {
                   </Button>
                 ) : (
                   <Button
-                    className="control-button success"
+                    style={{
+                      width: '80px',
+                      height: '80px',
+                      borderRadius: '50%',
+                      border: 'none',
+                      fontSize: '1.5rem',
+                      transition: 'all 0.3s ease',
+                      margin: '0 10px',
+                      background: GRADIENTS.success,
+                      color: 'white'
+                    }}
                     onClick={startSession}
                     title="연습 시작"
                   >
@@ -436,7 +381,17 @@ const ModernPracticeWorkspace: React.FC = () => {
                 )}
 
                 <Button
-                  className={`control-button ${isRecording ? 'danger recording' : 'primary'}`}
+                  style={{
+                    width: '80px',
+                    height: '80px',
+                    borderRadius: '50%',
+                    border: 'none',
+                    fontSize: '1.5rem',
+                    transition: 'all 0.3s ease',
+                    margin: '0 10px',
+                    background: isRecording ? GRADIENTS.warning : GRADIENTS.primary,
+                    color: 'white'
+                  }}
                   onClick={startRecording}
                   title="녹음"
                 >
@@ -446,28 +401,32 @@ const ModernPracticeWorkspace: React.FC = () => {
 
               {/* 실시간 피드백 영역 */}
               <div className="text-center">
-                <Card style={{ background: 'rgba(102, 126, 234, 0.1)', border: 'none' }}>
+                <Card style={{ 
+                  background: 'rgba(139, 92, 246, 0.1)', 
+                  border: 'none',
+                  borderRadius: '15px'
+                }}>
                   <Card.Body>
-                    <h6 className="mb-3">🤖 AI 실시간 분석</h6>
+                    <h6 className="mb-3" style={{color: COLORS.text.primary}}>🤖 AI 실시간 분석</h6>
                     {currentSession?.isActive ? (
                       <div>
                         <Row>
                           <Col md={4}>
-                            <div className="h4 text-success">92%</div>
-                            <small>박자 정확도</small>
+                            <div className="h4" style={{color: COLORS.success.main}}>92%</div>
+                            <small style={{color: COLORS.text.secondary}}>박자 정확도</small>
                           </Col>
                           <Col md={4}>
-                            <div className="h4 text-warning">87%</div>
-                            <small>음정 정확도</small>
+                            <div className="h4" style={{color: COLORS.warning.main}}>87%</div>
+                            <small style={{color: COLORS.text.secondary}}>음정 정확도</small>
                           </Col>
                           <Col md={4}>
-                            <div className="h4 text-info">95%</div>
-                            <small>전체 평가</small>
+                            <div className="h4" style={{color: COLORS.info.main}}>95%</div>
+                            <small style={{color: COLORS.text.secondary}}>전체 평가</small>
                           </Col>
                         </Row>
                       </div>
                     ) : (
-                      <p className="text-muted">연습을 시작하면 실시간 분석이 표시됩니다</p>
+                      <p style={{color: COLORS.text.tertiary}}>연습을 시작하면 실시간 분석이 표시됩니다</p>
                     )}
                   </Card.Body>
                 </Card>
@@ -478,69 +437,106 @@ const ModernPracticeWorkspace: React.FC = () => {
           {/* 사이드 패널 */}
           <Col lg={4}>
             {/* 오늘의 연습 통계 */}
-            <div className="practice-stats mb-3">
-              <h6>📊 오늘의 연습</h6>
+            <div style={{
+              background: 'rgba(139, 92, 246, 0.1)',
+              borderRadius: '15px',
+              padding: '1rem',
+              color: COLORS.text.primary,
+              marginBottom: '1rem',
+              border: '1px solid rgba(139, 92, 246, 0.2)'
+            }}>
+              <h6 style={{color: COLORS.text.primary}}>📊 오늘의 연습</h6>
               <div className="d-flex justify-content-between">
-                <span>연습 시간</span>
-                <strong>45분</strong>
+                <span style={{color: COLORS.text.secondary}}>연습 시간</span>
+                <strong style={{color: COLORS.text.primary}}>45분</strong>
               </div>
               <div className="d-flex justify-content-between">
-                <span>완료한 세션</span>
-                <strong>3개</strong>
+                <span style={{color: COLORS.text.secondary}}>완료한 세션</span>
+                <strong style={{color: COLORS.text.primary}}>3개</strong>
               </div>
               <div className="d-flex justify-content-between">
-                <span>평균 정확도</span>
-                <strong>91%</strong>
+                <span style={{color: COLORS.text.secondary}}>평균 정확도</span>
+                <strong style={{color: COLORS.text.primary}}>91%</strong>
               </div>
             </div>
 
             {/* 추천 연습 */}
-            <Card className="mb-3" style={{ background: 'rgba(255, 255, 255, 0.95)' }}>
-              <Card.Header>
-                <h6 className="mb-0">💡 AI 추천 연습</h6>
+            <Card className="mb-3" style={CARD_STYLES.dark}>
+              <Card.Header className="border-0 bg-transparent p-3">
+                <h6 className="mb-0" style={{color: COLORS.text.primary}}>💡 AI 추천 연습</h6>
               </Card.Header>
-              <Card.Body>
+              <Card.Body className="p-3">
                 <div className="mb-2">
-                  <Badge bg="primary" className="me-2">리듬</Badge>
-                  <span className="small">복합박자 연습</span>
+                  <span className="badge me-2" style={{
+                    ...BADGE_STYLES.primary,
+                    fontSize: '0.75rem'
+                  }}>리듬</span>
+                  <span className="small" style={{color: COLORS.text.secondary}}>복합박자 연습</span>
                 </div>
                 <div className="mb-2">
-                  <Badge bg="success" className="me-2">음정</Badge>
-                  <span className="small">3화음 인식</span>
+                  <span className="badge me-2" style={{
+                    ...BADGE_STYLES.success,
+                    fontSize: '0.75rem'
+                  }}>음정</span>
+                  <span className="small" style={{color: COLORS.text.secondary}}>3화음 인식</span>
                 </div>
                 <div className="mb-2">
-                  <Badge bg="warning" className="me-2">테크닉</Badge>
-                  <span className="small">레가토 연주법</span>
+                  <span className="badge me-2" style={{
+                    ...BADGE_STYLES.warning,
+                    fontSize: '0.75rem'
+                  }}>테크닉</span>
+                  <span className="small" style={{color: COLORS.text.secondary}}>레가토 연주법</span>
                 </div>
               </Card.Body>
             </Card>
 
             {/* 연습 목표 */}
-            <Card style={{ background: 'rgba(255, 255, 255, 0.95)' }}>
-              <Card.Header>
-                <h6 className="mb-0">🎯 이번 주 목표</h6>
+            <Card style={CARD_STYLES.dark}>
+              <Card.Header className="border-0 bg-transparent p-3">
+                <h6 className="mb-0" style={{color: COLORS.text.primary}}>🎯 이번 주 목표</h6>
               </Card.Header>
-              <Card.Body>
+              <Card.Body className="p-3">
                 <div className="mb-3">
                   <div className="d-flex justify-content-between small">
-                    <span>일일 연습 시간</span>
-                    <span>45/60분</span>
+                    <span style={{color: COLORS.text.secondary}}>일일 연습 시간</span>
+                    <span style={{color: COLORS.text.primary}}>45/60분</span>
                   </div>
-                  <ProgressBar now={75} variant="success" style={{ height: '6px' }} />
+                  <ProgressBar 
+                    now={75} 
+                    style={{ 
+                      height: '6px',
+                      background: COLORS.primary.background
+                    }}
+                    className="mt-1"
+                  />
                 </div>
                 <div className="mb-3">
                   <div className="d-flex justify-content-between small">
-                    <span>정확도 목표</span>
-                    <span>91/90%</span>
+                    <span style={{color: COLORS.text.secondary}}>정확도 목표</span>
+                    <span style={{color: COLORS.text.primary}}>91/90%</span>
                   </div>
-                  <ProgressBar now={100} variant="info" style={{ height: '6px' }} />
+                  <ProgressBar 
+                    now={100} 
+                    style={{ 
+                      height: '6px',
+                      background: COLORS.success.background
+                    }}
+                    className="mt-1"
+                  />
                 </div>
                 <div>
                   <div className="d-flex justify-content-between small">
-                    <span>새로운 곡 학습</span>
-                    <span>2/3곡</span>
+                    <span style={{color: COLORS.text.secondary}}>새로운 곡 학습</span>
+                    <span style={{color: COLORS.text.primary}}>2/3곡</span>
                   </div>
-                  <ProgressBar now={67} variant="warning" style={{ height: '6px' }} />
+                  <ProgressBar 
+                    now={67} 
+                    style={{ 
+                      height: '6px',
+                      background: COLORS.warning.background
+                    }}
+                    className="mt-1"
+                  />
                 </div>
               </Card.Body>
             </Card>
@@ -549,17 +545,25 @@ const ModernPracticeWorkspace: React.FC = () => {
       </Container>
 
       {/* 플로팅 도움말 버튼 */}
-      <div className="floating-widget">
+      <div style={{
+        position: 'fixed',
+        bottom: '30px',
+        right: '30px',
+        zIndex: 1000
+      }}>
         <Button
-          variant="primary"
-          className="rounded-circle"
-          style={{ width: '60px', height: '60px' }}
+          style={{
+            ...BUTTON_STYLES.primary,
+            width: '60px',
+            height: '60px',
+            borderRadius: '50%'
+          }}
           title="도움말"
         >
           ❓
         </Button>
       </div>
-    </Container>
+    </div>
   )
 }
 
