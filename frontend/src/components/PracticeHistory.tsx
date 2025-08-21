@@ -20,9 +20,9 @@ const PracticeHistory: React.FC = () => {
     const loadSessions = async () => {
       try {
         setLoading(true);
-        const response = await practiceService.getUserSessions(user.id);
+        const response = await practiceService.getUserPracticeSessions(user.id, 20);
         if (response.success && response.data) {
-          setSessions(response.data);
+          setSessions(response.data.sessions || []);
         } else {
           setError(response.message || '연습 기록을 불러오지 못했습니다.');
         }
@@ -135,4 +135,6 @@ const PracticeHistory: React.FC = () => {
       )}
     </div>
   );
-} 
+};
+
+export default PracticeHistory; 

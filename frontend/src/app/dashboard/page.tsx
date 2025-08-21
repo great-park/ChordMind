@@ -13,7 +13,7 @@ import {
   UserRankingResponse,
   PracticeSession
 } from '../../services/practiceService';
-import { useAuth } from '@/hooks/useAuth';
+import { useAuth } from '../../contexts/AuthContext';
 
 export default function Dashboard() {
   const { user } = useAuth();
@@ -40,11 +40,11 @@ export default function Dashboard() {
           practiceService.getAnalyticsUserSummary(user.id),
           practiceService.getAnalyticsUserTrend(user.id, 'month'),
           practiceService.getTopUsers(8),
-          practiceService.getRecentSessions(user.id, 5)
+          practiceService.getRecentUserSessions(user.id, 5)
         ]);
 
-        if (summaryRes.success) setUserSummary(summaryRes.data);
-        if (trendRes.success) setUserTrend(trendRes.data);
+        if (summaryRes.success && summaryRes.data) setUserSummary(summaryRes.data);
+        if (trendRes.success && trendRes.data) setUserTrend(trendRes.data);
         if (topRes.success) setTopUsers(topRes.data || []);
         if (sessionsRes.success) setRecentSessions(sessionsRes.data || []);
       } catch (err) {

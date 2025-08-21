@@ -152,9 +152,12 @@ const QuizManagementPage: React.FC = () => {
   const getTypeLabel = (type: QuizType) => {
     const labels = {
       [QuizType.CHORD_NAME]: '코드 이름',
+      [QuizType.SCALE_NAME]: '스케일 이름',
+      [QuizType.SCALE]: '스케일',
       [QuizType.PROGRESSION]: '화성 진행',
       [QuizType.INTERVAL]: '음정',
-      [QuizType.SCALE]: '스케일'
+      [QuizType.RHYTHM]: '리듬',
+      [QuizType.THEORY]: '이론'
     }
     return labels[type]
   }

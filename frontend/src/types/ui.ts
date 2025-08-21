@@ -7,27 +7,6 @@ export interface ComponentVariant {
   size: SizeVariant;
 }
 
-export interface ButtonProps {
-  variant: ColorVariant;
-  size: SizeVariant;
-  disabled?: boolean;
-  loading?: boolean;
-  fullWidth?: boolean;
-}
-
-export interface CardProps {
-  variant: 'default' | 'elevated' | 'outlined';
-  padding: 'sm' | 'md' | 'lg';
-  border: boolean;
-  shadow: boolean;
-}
-
-export interface BadgeProps {
-  variant: ColorVariant;
-  size: SizeVariant;
-  rounded: boolean;
-}
-
 // 공통 스타일 타입
 export interface CommonStyles {
   background: string;

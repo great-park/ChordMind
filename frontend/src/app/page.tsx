@@ -37,6 +37,7 @@ export default function Home() {
       try {
         setLoading(true);
         setError(null);
+        setIsVisible(true); // 카드들이 보이도록 설정
 
         // 사용자가 로그인한 경우에만 개인 데이터 로드
         if (user?.id) {
@@ -45,8 +46,8 @@ export default function Home() {
             practiceService.getAnalyticsUserTrend(user.id, 'month')
           ]);
 
-          if (summaryRes.success) setUserSummary(summaryRes.data);
-          if (trendRes.success) setUserTrend(trendRes.data);
+          if (summaryRes.success && summaryRes.data) setUserSummary(summaryRes.data);
+          if (trendRes.success && trendRes.data) setUserTrend(trendRes.data);
         }
 
         // 공통 데이터는 항상 로드

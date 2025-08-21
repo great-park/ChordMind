@@ -47,41 +47,34 @@ export type Trim<T extends string> = TrimStart<TrimEnd<T>>;
 
 // 숫자 타입
 export type NumberRange<T extends number, U extends number> = Exclude<number, Exclude<number, T | U>>;
-export type IsPositive<T extends number> = T extends 0 ? false : T extends number ? true : never;
+export type IsPositive<T extends number> = T extends 0 ? false : T extends number ? T extends 0 ? false : true : false;
 
-// 유틸리티 타입
+// 컴포넌트 Props 타입
 export type ExtractProps<T> = T extends React.ComponentType<infer P> ? P : never;
 export type ComponentProps<T> = T extends React.ComponentType<infer P> ? P : never;
 
-// API 관련 타입
-export type HTTPMethod = 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE';
-export type HTTPStatus = 200 | 201 | 204 | 400 | 401 | 403 | 404 | 500;
-
-// 상태 관리 타입
-export type Action<T = any> = {
-  type: string;
-  payload?: T;
-};
-
-export type Reducer<S, A extends Action> = (state: S, action: A) => S;
-
-export type Dispatch<A extends Action> = (action: A) => void;
+// HTTP 타입
+export type HTTPMethod = 'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH';
+export type HTTPStatus = 200 | 201 | 400 | 401 | 403 | 404 | 500;
 
 // 이벤트 타입
-export type KeyboardEvent = React.KeyboardEvent<HTMLElement>;
-export type MouseEvent = React.MouseEvent<HTMLElement>;
-export type ChangeEvent = React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>;
-export type FormEvent = React.FormEvent<HTMLFormElement>;
+export type Action<T = any> = { type: string; payload?: T };
+export type Reducer<S, A extends Action> = (state: S, action: A) => S;
+export type Dispatch<A extends Action> = (action: A) => void;
+
+// DOM 이벤트 타입
+export type KeyboardEvent = any;
+export type MouseEvent = any;
+export type ChangeEvent = any;
+export type FormEvent = any;
 
 // 스타일 타입
-export type CSSProperties = React.CSSProperties;
+export type CSSProperties = any;
 export type CSSValue = string | number;
 
 // 테마 타입
 export type Theme = 'light' | 'dark' | 'auto';
-export type ColorScheme = 'primary' | 'secondary' | 'success' | 'warning' | 'danger' | 'info';
-
-// 반응형 타입
+export type ColorScheme = 'light' | 'dark';
 export type Breakpoint = 'xs' | 'sm' | 'md' | 'lg' | 'xl' | 'xxl';
 export type ResponsiveValue<T> = T | Partial<Record<Breakpoint, T>>;
 
@@ -89,3 +82,36 @@ export type ResponsiveValue<T> = T | Partial<Record<Breakpoint, T>>;
 export type AnimationDuration = 'fast' | 'normal' | 'slow';
 export type AnimationEasing = 'linear' | 'ease' | 'ease-in' | 'ease-out' | 'ease-in-out';
 export type AnimationState = 'idle' | 'running' | 'paused' | 'finished';
+
+// 데이터 타입
+export interface Feature {
+  title: string;
+  description: string;
+  icon: string;
+  color: string;
+  tag: string;
+  link: string;
+}
+
+export interface Review {
+  user: string;
+  role: string;
+  text: string;
+  color: string;
+}
+
+export interface Keyword {
+  text: string;
+  rank?: number;
+}
+
+// 퀴즈 타입
+export enum QuizType {
+  CHORD_NAME = 'CHORD_NAME',
+  SCALE_NAME = 'SCALE_NAME',
+  SCALE = 'SCALE',
+  INTERVAL = 'INTERVAL',
+  RHYTHM = 'RHYTHM',
+  THEORY = 'THEORY',
+  PROGRESSION = 'PROGRESSION'
+}
