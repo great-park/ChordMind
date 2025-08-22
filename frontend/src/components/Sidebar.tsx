@@ -26,6 +26,57 @@ export default function Sidebar() {
           ))}
         </div>
         
+        {/* Service Section */}
+        <div className="service-section mb-5">
+          <div className="section-header d-flex align-items-center mb-3">
+            <i className="bi bi-list-ul me-2 text-purple"></i>
+            <h6 className="mb-0 fw-bold">서비스</h6>
+            <div className="purple-underline ms-2" style={{
+              width: '20px',
+              height: '2px',
+              background: '#8b5cf6',
+              borderRadius: '1px'
+            }}></div>
+          </div>
+          <ul className="list-unstyled">
+            <li className="mb-2">
+              <a href="/practice" className="text-light text-decoration-none" style={{opacity: 0.8, fontSize: '0.9rem'}}>
+                연습하기
+              </a>
+            </li>
+            <li className="mb-2">
+              <a href="/composition" className="text-light text-decoration-none" style={{opacity: 0.8, fontSize: '0.9rem'}}>
+                🎼 AI 작곡
+              </a>
+            </li>
+            <li className="mb-2">
+              <a href="/theory" className="text-light text-decoration-none" style={{opacity: 0.8, fontSize: '0.9rem'}}>
+                📚 음악 이론
+              </a>
+            </li>
+            <li className="mb-2">
+              <a href="/practice-plan" className="text-light text-decoration-none" style={{opacity: 0.8, fontSize: '0.9rem'}}>
+                🎯 맞춤 연습
+              </a>
+            </li>
+            <li className="mb-2">
+              <a href="/dashboard" className="text-light text-decoration-none" style={{opacity: 0.8, fontSize: '0.9rem'}}>
+                대시보드
+              </a>
+            </li>
+            <li className="mb-2">
+              <a href="/feedback" className="text-light text-decoration-none" style={{opacity: 0.8, fontSize: '0.9rem'}}>
+                피드백
+              </a>
+            </li>
+            <li className="mb-2">
+              <a href="/profile" className="text-light text-decoration-none" style={{opacity: 0.8, fontSize: '0.9rem'}}>
+                프로필
+              </a>
+            </li>
+          </ul>
+        </div>
+        
         {/* 하단 프로필/로그인 */}
         <div className="mt-auto pt-3 border-top">
           <div className="d-flex align-items-center justify-content-between mb-3">
