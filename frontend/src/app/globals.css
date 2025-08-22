@@ -325,18 +325,16 @@ small, .small {
 }
 
 ::-webkit-scrollbar-track {
-  background: rgba(22, 33, 62, 0.8);
+  background: rgba(26, 26, 46, 0.3);
 }
 
 ::-webkit-scrollbar-thumb {
   background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
-  border-radius: 10px;
-  box-shadow: 0 2px 10px rgba(99, 102, 241, 0.3);
+  border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
   background: linear-gradient(135deg, #5854ec 0%, #7c3aed 100%);
-  box-shadow: 0 4px 15px rgba(99, 102, 241, 0.5);
 }
 
 /* 반응형 디자인 */
@@ -741,4 +739,358 @@ small, .small {
 
 ::-webkit-scrollbar-thumb:hover {
   background: #a8a8a8;
+} 
+
+/* 새로운 컴포넌트 스타일 */
+.cursor-pointer {
+  cursor: pointer;
+}
+
+/* 음악 이론 학습 대시보드 */
+.theory-dashboard .card {
+  transition: all 0.3s ease;
+}
+
+.theory-dashboard .card:hover {
+  transform: translateY(-5px);
+}
+
+.progression-pattern {
+  font-family: 'Courier New', monospace;
+}
+
+.structure-item {
+  transition: all 0.2s ease;
+}
+
+.structure-item:hover {
+  background: rgba(139, 92, 246, 0.1) !important;
+}
+
+/* AI 작곡 어시스턴트 */
+.composition-assistant .form-control,
+.composition-assistant .form-select {
+  transition: all 0.3s ease;
+}
+
+.composition-assistant .form-control:focus,
+.composition-assistant .form-select:focus {
+  border-color: rgba(139, 92, 246, 0.6);
+  box-shadow: 0 0 0 0.2rem rgba(139, 92, 246, 0.25);
+}
+
+.progression-display {
+  transition: all 0.3s ease;
+}
+
+.progression-display:hover {
+  transform: scale(1.02);
+  box-shadow: 0 8px 25px rgba(139, 92, 246, 0.2);
+}
+
+/* 개인 맞춤 연습 계획 */
+.practice-plan-generator .form-check {
+  transition: all 0.2s ease;
+}
+
+.practice-plan-generator .form-check:hover {
+  transform: translateX(5px);
+}
+
+.practice-plan-result .card {
+  transition: all 0.3s ease;
+}
+
+.practice-plan-result .card:hover {
+  transform: translateY(-3px);
+}
+
+/* 진행률 표시 */
+.progress {
+  background: rgba(139, 92, 246, 0.1);
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.progress-bar {
+  background: linear-gradient(90deg, #8b5cf6 0%, #a855f7 100%);
+  border-radius: 10px;
+}
+
+/* 배지 스타일 개선 */
+.badge {
+  font-weight: 500;
+  letter-spacing: 0.5px;
+}
+
+/* 카드 호버 효과 개선 */
+.card {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.card:hover {
+  transform: translateY(-8px) scale(1.02);
+}
+
+/* 버튼 호버 효과 */
+.btn {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+}
+
+.btn::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  transition: left 0.5s;
+}
+
+.btn:hover::before {
+  left: 100%;
+}
+
+/* 애니메이션 클래스 */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideInLeft {
+  from {
+    opacity: 0;
+    transform: translateX(-30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes slideInRight {
+  from {
+    opacity: 0;
+    transform: translateX(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.animate-fade-in-up {
+  animation: fadeInUp 0.6s ease-out;
+}
+
+.animate-slide-in-left {
+  animation: slideInLeft 0.6s ease-out;
+}
+
+.animate-slide-in-right {
+  animation: slideInRight 0.6s ease-out;
+}
+
+/* 반응형 개선 */
+@media (max-width: 768px) {
+  .card {
+    margin-bottom: 1rem;
+  }
+  
+  .btn {
+    width: 100%;
+    margin-bottom: 0.5rem;
+  }
+  
+  .progression-pattern {
+    font-size: 1.2rem !important;
+  }
+}
+
+/* 다크모드 스크롤바 */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(26, 26, 46, 0.3);
+}
+
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(135deg, #5854ec 0%, #7c3aed 100%);
+}
+
+/* 포커스 스타일 */
+.form-control:focus,
+.form-select:focus {
+  border-color: rgba(139, 92, 246, 0.6);
+  box-shadow: 0 0 0 0.2rem rgba(139, 92, 246, 0.25);
+}
+
+/* 로딩 스피너 */
+.spinner-border {
+  color: #8b5cf6;
+}
+
+/* 알림 스타일 */
+.alert {
+  border: none;
+  border-radius: 12px;
+  backdrop-filter: blur(10px);
+}
+
+.alert-info {
+  background: rgba(59, 130, 246, 0.1);
+  color: #93c5fd;
+  border-left: 4px solid #3b82f6;
+}
+
+.alert-warning {
+  background: rgba(251, 191, 36, 0.1);
+  color: #fcd34d;
+  border-left: 4px solid #f59e0b;
+}
+
+.alert-success {
+  background: rgba(34, 197, 94, 0.1);
+  color: #86efac;
+  border-left: 4px solid #22c55e;
+}
+
+/* 툴팁 스타일 */
+.tooltip {
+  font-size: 0.875rem;
+}
+
+.tooltip-inner {
+  background: rgba(26, 26, 46, 0.95);
+  border: 1px solid rgba(139, 92, 246, 0.3);
+  backdrop-filter: blur(10px);
+}
+
+/* 모달 스타일 */
+.modal-content {
+  background: linear-gradient(145deg, rgba(22, 33, 62, 0.98) 0%, rgba(14, 52, 96, 0.95) 100%);
+  border: 1px solid rgba(139, 92, 246, 0.3);
+  backdrop-filter: blur(20px);
+}
+
+.modal-header {
+  border-bottom: 1px solid rgba(139, 92, 246, 0.2);
+}
+
+.modal-footer {
+  border-top: 1px solid rgba(139, 92, 246, 0.2);
+}
+
+/* 드롭다운 스타일 */
+.dropdown-menu {
+  background: linear-gradient(145deg, rgba(22, 33, 62, 0.98) 0%, rgba(14, 52, 96, 0.95) 100%);
+  border: 1px solid rgba(139, 92, 246, 0.3);
+  backdrop-filter: blur(20px);
+}
+
+.dropdown-item {
+  color: #eaeaea;
+  transition: all 0.2s ease;
+}
+
+.dropdown-item:hover {
+  background: rgba(139, 92, 246, 0.2);
+  color: #eaeaea;
+}
+
+/* 테이블 스타일 */
+.table {
+  color: #eaeaea;
+}
+
+.table th {
+  border-bottom: 2px solid rgba(139, 92, 246, 0.3);
+  color: #8b5cf6;
+}
+
+.table td {
+  border-bottom: 1px solid rgba(139, 92, 246, 0.1);
+}
+
+.table-hover tbody tr:hover {
+  background: rgba(139, 92, 246, 0.05);
+}
+
+/* 리스트 그룹 스타일 */
+.list-group-item {
+  background: rgba(22, 33, 62, 0.5);
+  border: 1px solid rgba(139, 92, 246, 0.2);
+  color: #eaeaea;
+  transition: all 0.2s ease;
+}
+
+.list-group-item:hover {
+  background: rgba(139, 92, 246, 0.1);
+  border-color: rgba(139, 92, 246, 0.4);
+}
+
+.list-group-item.active {
+  background: linear-gradient(135deg, #8b5cf6 0%, #a855f7 100%);
+  border-color: #8b5cf6;
+}
+
+/* 페이지네이션 스타일 */
+.page-link {
+  background: rgba(22, 33, 62, 0.5);
+  border: 1px solid rgba(139, 92, 246, 0.2);
+  color: #eaeaea;
+  transition: all 0.2s ease;
+}
+
+.page-link:hover {
+  background: rgba(139, 92, 246, 0.2);
+  border-color: rgba(139, 92, 246, 0.4);
+  color: #eaeaea;
+}
+
+.page-item.active .page-link {
+  background: linear-gradient(135deg, #8b5cf6 0%, #a855f7 100%);
+  border-color: #8b5cf6;
+}
+
+/* 아코디언 스타일 */
+.accordion-item {
+  background: rgba(22, 33, 62, 0.5);
+  border: 1px solid rgba(139, 92, 246, 0.2);
+}
+
+.accordion-button {
+  background: rgba(22, 33, 62, 0.7);
+  color: #eaeaea;
+  border: none;
+}
+
+.accordion-button:not(.collapsed) {
+  background: rgba(139, 92, 246, 0.2);
+  color: #eaeaea;
+}
+
+.accordion-button:focus {
+  box-shadow: 0 0 0 0.2rem rgba(139, 92, 246, 0.25);
+}
+
+.accordion-body {
+  background: rgba(22, 33, 62, 0.3);
+  color: #eaeaea;
 } 

@@ -45,10 +45,18 @@ export const FEATURES = [
     link: '/progress'
   },
   {
+    title: 'When-in-Rome 코퍼스',
+    description: '체계적인 화성학 학습을 위한 전문 코퍼스 데이터를 제공합니다.',
+    icon: 'bi-music-note-list',
+    color: 'warning',
+    tag: '코퍼스',
+    link: '/corpus'
+  },
+  {
     title: '커뮤니티',
     description: '다른 학습자들과 경험을 공유하고 소통할 수 있습니다.',
     icon: 'bi-people',
-    color: 'warning',
+    color: 'primary',
     tag: '소통',
     link: '/community'
   },
@@ -56,7 +64,7 @@ export const FEATURES = [
     title: '업적 시스템',
     description: '목표 달성 시 업적을 획득하여 동기부여를 제공합니다.',
     icon: 'bi-trophy',
-    color: 'primary',
+    color: 'success',
     tag: '업적',
     link: '/achievements'
   },
@@ -64,7 +72,7 @@ export const FEATURES = [
     title: '다양한 연습 모드',
     description: '스케일, 코드, 리듬 등 다양한 연습 모드를 제공합니다.',
     icon: 'bi-music-note-beamed',
-    color: 'success',
+    color: 'info',
     tag: '연습',
     link: '/practice-modes'
   },

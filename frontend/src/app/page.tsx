@@ -522,6 +522,351 @@ export default function Home() {
             </div>
           </div>
         </section>
+
+          {/* AI 작곡 어시스턴트 섹션 */}
+          <div className="row g-4 mb-5">
+            <div className="col-12">
+              <div className="text-center mb-4">
+                <span className="badge px-3 py-2 mb-3" style={{
+                  ...BADGE_STYLES.primary,
+                  fontSize: '1rem'
+                }}>
+                  🎼 새로운 기능
+                </span>
+                <h2 className="mb-3" style={{color: COLORS.text.primary}}>
+                  AI 작곡 어시스턴트
+                </h2>
+                <p className="lead mb-0" style={{color: COLORS.text.secondary}}>
+                  When-in-Rome 기반의 전문적인 화성학 지식으로 작곡을 도와드립니다
+                </p>
+              </div>
+            </div>
+            
+            <div className="col-md-4">
+              <div className="card h-100" style={CARD_STYLES.large}>
+                <div className="card-body text-center p-4">
+                  <div className="mb-3" style={{
+                    width: '80px',
+                    height: '80px',
+                    background: GRADIENTS.primary,
+                    borderRadius: '50%',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    margin: '0 auto'
+                  }}>
+                    <i className="bi bi-arrow-repeat fs-1 text-white"></i>
+                  </div>
+                  <h5 className="mb-3" style={{color: COLORS.text.primary}}>화성 진행 제안</h5>
+                  <p style={{color: COLORS.text.secondary}}>
+                    팝, 재즈, 클래식 등 스타일별로 최적화된 화성 진행 패턴을 제안합니다
+                  </p>
+                  <div className="mt-3">
+                    <span className="badge me-2" style={BADGE_STYLES.success}>I-V-vi-IV</span>
+                    <span className="badge me-2" style={BADGE_STYLES.info}>ii-V-I</span>
+                    <span className="badge" style={BADGE_STYLES.warning}>I-vi-IV-V</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="col-md-4">
+              <div className="card h-100" style={CARD_STYLES.large}>
+                <div className="card-body text-center p-4">
+                  <div className="mb-3" style={{
+                    width: '80px',
+                    height: '80px',
+                    background: GRADIENTS.success,
+                    borderRadius: '50%',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    margin: '0 auto'
+                  }}>
+                    <i className="bi bi-music-note fs-1 text-white"></i>
+                  </div>
+                  <h5 className="mb-3" style={{color: COLORS.text.primary}}>멜로디 생성</h5>
+                  <p style={{color: COLORS.text.secondary}}>
+                    화성 진행에 맞는 멜로디 라인과 리듬 패턴을 자동으로 생성합니다
+                  </p>
+                  <div className="mt-3">
+                    <span className="badge me-2" style={BADGE_STYLES.primary}>상승 선율</span>
+                    <span className="badge me-2" style={BADGE_STYLES.info}>파동 선율</span>
+                    <span className="badge" style={BADGE_STYLES.warning}>안정 선율</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="col-md-4">
+              <div className="card h-100" style={CARD_STYLES.large}>
+                <div className="card-body text-center p-4">
+                  <div className="mb-3" style={{
+                    width: '80px',
+                    height: '80px',
+                    background: GRADIENTS.warning,
+                    borderRadius: '50%',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    margin: '0 auto'
+                  }}>
+                    <i className="bi bi-arrow-repeat fs-1 text-white"></i>
+                  </div>
+                  <h5 className="mb-3" style={{color: COLORS.text.primary}}>조성 전환 가이드</h5>
+                  <p style={{color: COLORS.text.secondary}}>
+                    피벗 화성, 직접 전환 등 전문적인 조성 전환 기법을 안내합니다
+                  </p>
+                  <div className="mt-3">
+                    <span className="badge me-2" style={BADGE_STYLES.primary}>피벗 화성</span>
+                    <span className="badge me-2" style={BADGE_STYLES.info}>직접 전환</span>
+                    <span className="badge" style={BADGE_STYLES.warning}>반음계적</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className="text-center mb-5">
+            <a href="/composition" className="btn px-4 py-3 fw-bold text-decoration-none" style={{
+              ...BUTTON_STYLES.primary,
+              fontSize: '1.2rem',
+              borderRadius: '25px'
+            }}>
+              <i className="bi bi-magic me-2"></i>
+              AI 작곡 어시스턴트 시작하기
+            </a>
+          </div>
+
+          {/* 음악 이론 학습 시스템 섹션 */}
+          <div className="row g-4 mb-5">
+            <div className="col-12">
+              <div className="text-center mb-4">
+                <span className="badge px-3 py-2 mb-3" style={{
+                  ...BADGE_STYLES.success,
+                  fontSize: '1rem'
+                }}>
+                  📚 체계적 학습
+                </span>
+                <h2 className="mb-3" style={{color: COLORS.text.primary}}>
+                  음악 이론 학습 시스템
+                </h2>
+                <p className="lead mb-0" style={{color: COLORS.text.secondary}}>
+                  When-in-Rome 기반의 체계적인 화성학 학습으로 음악적 이해를 높여보세요
+                </p>
+              </div>
+            </div>
+            
+            <div className="col-md-4">
+              <div className="card h-100" style={CARD_STYLES.large}>
+                <div className="card-body text-center p-4">
+                  <div className="mb-3" style={{
+                    width: '80px',
+                    height: '80px',
+                    background: GRADIENTS.primary,
+                    borderRadius: '50%',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    margin: '0 auto'
+                  }}>
+                    <span className="fs-2">📚</span>
+                  </div>
+                  <h5 className="mb-3" style={{color: COLORS.text.primary}}>체계적 커리큘럼</h5>
+                  <p style={{color: COLORS.text.secondary}}>
+                    초급부터 고급까지 단계별로 구성된 체계적인 학습 경로
+                  </p>
+                  <div className="mt-3">
+                    <span className="badge me-2" style={BADGE_STYLES.success}>화성학 기초</span>
+                    <span className="badge me-2" style={BADGE_STYLES.info}>진행 패턴</span>
+                    <span className="badge" style={BADGE_STYLES.warning}>모달 믹스처</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="col-md-4">
+              <div className="card h-100" style={CARD_STYLES.large}>
+                <div className="card-body text-center p-4">
+                  <div className="mb-3" style={{
+                    width: '80px',
+                    height: '80px',
+                    background: GRADIENTS.success,
+                    borderRadius: '50%',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    margin: '0 auto'
+                  }}>
+                    <span className="fs-2">🔄</span>
+                  </div>
+                  <h5 className="mb-3" style={{color: COLORS.text.primary}}>진행 패턴 연습</h5>
+                  <p style={{color: COLORS.text.secondary}}>
+                    실제 곡 예시와 함께하는 화성 진행 패턴 학습
+                  </p>
+                  <div className="mt-3">
+                    <span className="badge me-2" style={BADGE_STYLES.primary}>팝 진행</span>
+                    <span className="badge me-2" style={BADGE_STYLES.info}>재즈 진행</span>
+                    <span className="badge" style={BADGE_STYLES.warning}>클래식 진행</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="col-md-4">
+              <div className="card h-100" style={CARD_STYLES.large}>
+                <div className="card-body text-center p-4">
+                  <div className="mb-3" style={{
+                    width: '80px',
+                    height: '80px',
+                    background: GRADIENTS.warning,
+                    borderRadius: '50%',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    margin: '0 auto'
+                  }}>
+                    <span className="fs-2">🎨</span>
+                  </div>
+                  <h5 className="mb-3" style={{color: COLORS.text.primary}}>모달 믹스처 가이드</h5>
+                  <p style={{color: COLORS.text.secondary}}>
+                    고급 화성 기법을 단계별로 학습하는 전문 가이드
+                  </p>
+                  <div className="mt-3">
+                    <span className="badge me-2" style={BADGE_STYLES.primary}>자연단음계</span>
+                    <span className="badge me-2" style={BADGE_STYLES.info}>평행조</span>
+                    <span className="badge" style={BADGE_STYLES.warning}>반음계적</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className="text-center mb-5">
+            <a href="/theory" className="btn px-4 py-3 fw-bold text-decoration-none" style={{
+              ...BUTTON_STYLES.success,
+              fontSize: '1.2rem',
+              borderRadius: '25px'
+            }}>
+              <i className="bi bi-book me-2"></i>
+              음악 이론 학습 시작하기
+            </a>
+          </div>
+
+          {/* 개인 맞춤 연습 계획 섹션 */}
+          <div className="row g-4 mb-5">
+            <div className="col-12">
+              <div className="text-center mb-4">
+                <span className="badge px-3 py-2 mb-3" style={{
+                  ...BADGE_STYLES.warning,
+                  fontSize: '1rem'
+                }}>
+                  🎯 개인 맞춤
+                </span>
+                <h2 className="mb-3" style={{color: COLORS.text.primary}}>
+                  개인 맞춤 연습 계획
+                </h2>
+                <p className="lead mb-0" style={{color: COLORS.text.secondary}}>
+                  AI가 분석하는 당신만의 연습 계획으로 효율적인 실력 향상을 경험하세요
+                </p>
+              </div>
+            </div>
+            
+            <div className="col-md-4">
+              <div className="card h-100" style={CARD_STYLES.large}>
+                <div className="card-body text-center p-4">
+                  <div className="mb-3" style={{
+                    width: '80px',
+                    height: '80px',
+                    background: GRADIENTS.primary,
+                    borderRadius: '50%',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    margin: '0 auto'
+                  }}>
+                    <span className="fs-2">🎯</span>
+                  </div>
+                  <h5 className="mb-3" style={{color: COLORS.text.primary}}>AI 진단</h5>
+                  <p style={{color: COLORS.text.secondary}}>
+                    현재 음악 실력과 개선 영역을 정확하게 분석합니다
+                  </p>
+                  <div className="mt-3">
+                    <span className="badge me-2" style={BADGE_STYLES.success}>강점 분석</span>
+                    <span className="badge me-2" style={BADGE_STYLES.danger}>약점 파악</span>
+                    <span className="badge" style={BADGE_STYLES.info}>개선 방향</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="col-md-4">
+              <div className="card h-100" style={CARD_STYLES.large}>
+                <div className="card-body text-center p-4">
+                  <div className="mb-3" style={{
+                    width: '80px',
+                    height: '80px',
+                    background: GRADIENTS.success,
+                    borderRadius: '50%',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    margin: '0 auto'
+                  }}>
+                    <span className="fs-2">📅</span>
+                  </div>
+                  <h5 className="mb-3" style={{color: COLORS.text.primary}}>맞춤형 커리큘럼</h5>
+                  <p style={{color: COLORS.text.secondary}}>
+                    개인 수준과 목표에 맞는 체계적인 연습 계획을 생성합니다
+                  </p>
+                  <div className="mt-3">
+                    <span className="badge me-2" style={BADGE_STYLES.primary}>주간 계획</span>
+                    <span className="badge me-2" style={BADGE_STYLES.info}>일일 연습</span>
+                    <span className="badge" style={BADGE_STYLES.warning}>목표 설정</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="col-md-4">
+              <div className="card h-100" style={CARD_STYLES.large}>
+                <div className="card-body text-center p-4">
+                  <div className="mb-3" style={{
+                    width: '80px',
+                    height: '80px',
+                    background: GRADIENTS.warning,
+                    borderRadius: '50%',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    margin: '0 auto'
+                  }}>
+                    <span className="fs-2">📈</span>
+                  </div>
+                  <h5 className="mb-3" style={{color: COLORS.text.primary}}>진도 추적</h5>
+                  <p style={{color: COLORS.text.secondary}}>
+                    연습 진행 상황과 목표 달성도를 실시간으로 확인합니다
+                  </p>
+                  <div className="mt-3">
+                    <span className="badge me-2" style={BADGE_STYLES.primary}>진행률</span>
+                    <span className="badge me-2" style={BADGE_STYLES.info}>성취도</span>
+                    <span className="badge" style={BADGE_STYLES.warning}>통계</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className="text-center mb-5">
+            <a href="/practice-plan" className="btn px-4 py-3 fw-bold text-decoration-none" style={{
+              ...BUTTON_STYLES.warning,
+              fontSize: '1.2rem',
+              borderRadius: '25px'
+            }}>
+              <i className="bi bi-calendar-check me-2"></i>
+              맞춤 연습 계획 시작하기
+            </a>
+          </div>
       </div>
     </div>
   );
