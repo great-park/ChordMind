@@ -99,79 +99,167 @@ export default function Home() {
           </div>
         </div>
 
-        {/* 히어로 섹션 */}
+        {/* 개선된 히어로 섹션 */}
         <section
           className={`hero-section mb-5 fade-in ${isVisible ? 'visible' : ''}`}
           aria-labelledby="hero-title"
           style={{
-            background: GRADIENTS.card,
+            background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
             borderRadius: '24px',
-            padding: '3rem',
-            color: 'white'
+            padding: '4rem 3rem',
+            color: 'white',
+            position: 'relative',
+            overflow: 'hidden'
           }}
         >
-          <div className="text-center">
-            <span className="badge px-3 py-2 rounded-pill mb-3" style={{
-              ...BADGE_STYLES.primary,
-              fontSize: '0.875rem',
-              fontWeight: '500'
-            }}>
-              🎵 AI 기반 음악 연주 분석
-            </span>
-            <h1 className="display-4 fw-bold mb-4" style={{
+          {/* 배경 파티클 효과 */}
+          <div className="position-absolute top-0 start-0 w-100 h-100" style={{
+            background: 'radial-gradient(circle at 20% 80%, rgba(120, 119, 198, 0.3) 0%, transparent 50%), radial-gradient(circle at 80% 20%, rgba(255, 119, 198, 0.3) 0%, transparent 50%)',
+            pointerEvents: 'none'
+          }}></div>
+          
+          <div className="text-center position-relative">
+            {/* 동적 배지 */}
+            <div className="mb-4">
+              <span className="badge px-4 py-3 rounded-pill mb-3" style={{
+                background: 'rgba(255, 255, 255, 0.2)',
+                color: 'white',
+                fontSize: '1rem',
+                fontWeight: '600',
+                border: '1px solid rgba(255, 255, 255, 0.3)',
+                backdropFilter: 'blur(10px)',
+                animation: 'pulse 2s infinite'
+              }}>
+                🎵 AI 기반 음악 연주 분석
+              </span>
+            </div>
+            
+            {/* 메인 제목 */}
+            <h1 className="display-3 fw-bold mb-4" style={{
               color: 'white',
-              fontSize: '3.5rem',
-              lineHeight: '1.2'
+              fontSize: '4rem',
+              lineHeight: '1.1',
+              textShadow: '0 4px 20px rgba(0,0,0,0.3)',
+              animation: 'fadeInUp 1s ease-out'
             }}>
-              당신의 <span style={{color: '#a78bfa'}}>음악 여정</span>을<br />
-              <span style={{color: '#a78bfa'}}>AI와 함께</span>하세요
+              당신의 <span style={{color: '#fbbf24', textShadow: '0 2px 10px rgba(251, 191, 36, 0.5)'}}>음악 여정</span>을<br />
+              <span style={{color: '#fbbf24', textShadow: '0 2px 10px rgba(251, 191, 36, 0.5)'}}>AI와 함께</span>하세요
             </h1>
+            
+            {/* 설명 */}
             <p className="lead mb-5" style={{
-              color: '#e2e8f0',
-              fontSize: '1.25rem',
-              lineHeight: '1.6'
+              color: '#f1f5f9',
+              fontSize: '1.4rem',
+              lineHeight: '1.6',
+              maxWidth: '800px',
+              margin: '0 auto',
+              animation: 'fadeInUp 1s ease-out 0.2s both'
             }}>
               실시간 연주 분석, 개인화된 피드백, 그리고 AI 코칭으로<br />
               음악 실력을 한 단계 끌어올리세요
             </p>
-            <div className="d-flex gap-3 justify-content-center flex-wrap">
-              <a href="/practice" className="btn px-4 py-3 fw-bold text-decoration-none" style={{
-                ...BUTTON_STYLES.primary,
-                fontSize: '1.1rem',
-                boxShadow: '0 8px 25px rgba(139, 92, 246, 0.3)'
+            
+            {/* 액션 버튼들 */}
+            <div className="d-flex gap-4 justify-content-center flex-wrap" style={{
+              animation: 'fadeInUp 1s ease-out 0.4s both'
+            }}>
+              <a href="/practice" className="btn px-5 py-3 fw-bold text-decoration-none" style={{
+                background: 'linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%)',
+                color: '#1f2937',
+                border: 'none',
+                borderRadius: '50px',
+                fontSize: '1.2rem',
+                boxShadow: '0 8px 30px rgba(251, 191, 36, 0.4)',
+                transition: 'all 0.3s ease',
+                transform: 'translateY(0)'
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.transform = 'translateY(-3px)';
+                e.currentTarget.style.boxShadow = '0 12px 40px rgba(251, 191, 36, 0.6)';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.transform = 'translateY(0)';
+                e.currentTarget.style.boxShadow = '0 8px 30px rgba(251, 191, 36, 0.4)';
               }}>
                 <i className="bi bi-play-circle me-2"></i>
                 시작하기
               </a>
-              <button className="btn px-4 py-3 fw-bold" style={{
-                ...BUTTON_STYLES.outline,
-                fontSize: '1.1rem'
+              
+              <button className="btn px-5 py-3 fw-bold" style={{
+                background: 'rgba(255, 255, 255, 0.1)',
+                color: 'white',
+                border: '2px solid rgba(255, 255, 255, 0.3)',
+                borderRadius: '50px',
+                fontSize: '1.2rem',
+                backdropFilter: 'blur(10px)',
+                transition: 'all 0.3s ease',
+                transform: 'translateY(0)'
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.transform = 'translateY(-3px)';
+                e.currentTarget.style.background = 'rgba(255, 255, 255, 0.2)';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.transform = 'translateY(0)';
+                e.currentTarget.style.background = 'rgba(255, 255, 255, 0.1)';
               }}>
                 <i className="bi bi-person-circle me-2"></i>
                 로그인
               </button>
+              
               {!user && (
                 <button 
-                  className="btn px-4 py-3 fw-bold" 
+                  className="btn px-5 py-3 fw-bold" 
                   style={{
-                    background: '#10b981',
+                    background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
                     color: 'white',
                     border: 'none',
-                    borderRadius: '8px',
-                    fontWeight: '500',
-                    fontSize: '1.1rem'
+                    borderRadius: '50px',
+                    fontWeight: '600',
+                    fontSize: '1.2rem',
+                    boxShadow: '0 8px 30px rgba(16, 185, 129, 0.4)',
+                    transition: 'all 0.3s ease',
+                    transform: 'translateY(0)'
                   }}
                   onClick={loginAsTestUser}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.transform = 'translateY(-3px)';
+                    e.currentTarget.style.boxShadow = '0 12px 40px rgba(16, 185, 129, 0.6)';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.transform = 'translateY(0)';
+                    e.currentTarget.style.boxShadow = '0 8px 30px rgba(16, 185, 129, 0.4)';
+                  }}
                 >
                   <i className="bi bi-person-check me-2"></i>
                   테스트 계정으로 로그인
                 </button>
               )}
             </div>
+            
+            {/* 추가 정보 */}
+            <div className="mt-5" style={{
+              animation: 'fadeInUp 1s ease-out 0.6s both'
+            }}>
+              <div className="d-flex justify-content-center gap-5 text-white-50">
+                <div className="text-center">
+                  <div className="fs-3 fw-bold text-white">10,000+</div>
+                  <small>활성 사용자</small>
+                </div>
+                <div className="text-center">
+                  <div className="fs-3 fw-bold text-white">50,000+</div>
+                  <small>완료된 연습</small>
+                </div>
+                <div className="text-center">
+                  <div className="fs-3 fw-bold text-white">95%</div>
+                  <small>만족도</small>
+                </div>
+              </div>
+            </div>
           </div>
         </section>
 
-        {/* 주요 기능 카드 */}
+        {/* 개선된 주요 기능 카드 */}
         <section 
           className={`mb-5 fade-in ${isVisible ? 'visible' : ''}`}
           id="features" 
@@ -179,70 +267,120 @@ export default function Home() {
           style={{ animationDelay: '0.1s' }}
         >
           <div className="text-center mb-5">
-            <span className="badge px-3 py-2 rounded-pill mb-3" style={{
-              ...BADGE_STYLES.primary,
-              fontSize: '0.875rem',
-              fontWeight: '500'
+            <span className="badge px-4 py-3 rounded-pill mb-3" style={{
+              background: 'linear-gradient(135deg, #8b5cf6 0%, #a78bfa 100%)',
+              color: 'white',
+              fontSize: '1rem',
+              fontWeight: '600',
+              boxShadow: '0 4px 15px rgba(139, 92, 246, 0.3)'
             }}>
               ✨ 혁신적인 기능들
             </span>
-            <h2 id="features-title" className="display-5 fw-bold mb-3" style={{color: COLORS.text.primary}}>
-              AI가 만드는 <span style={{color: COLORS.primary.light}}>음악 학습의 미래</span>
+            <h2 id="features-title" className="display-4 fw-bold mb-3" style={{color: COLORS.text.primary}}>
+              AI가 만드는 <span style={{color: '#8b5cf6'}}>음악 학습의 미래</span>
             </h2>
-            <p className="lead mb-0" style={{color: COLORS.text.secondary}}>
+            <p className="lead mb-0" style={{color: COLORS.text.secondary, fontSize: '1.2rem'}}>
               첨단 기술과 음악 교육의 완벽한 만남으로 당신의 연주 실력을 한 단계 끌어올리세요
             </p>
           </div>
           <div className="row g-4">
             {FEATURES.map((feature, index) => (
-              <div key={index} className="col-lg-4 col-md-6">
-                <div className="card h-100 border-0 hover-shadow position-relative overflow-hidden" style={CARD_STYLES.dark}>
+              <div key={index} className="col-lg-4 col-md-6" style={{
+                animation: `fadeInUp 0.8s ease-out ${0.2 + index * 0.1}s both`
+              }}>
+                <div className="card h-100 border-0 position-relative overflow-hidden feature-card" style={{
+                  ...CARD_STYLES.dark,
+                  transition: 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)',
+                  transform: 'translateY(0)',
+                  boxShadow: '0 4px 20px rgba(0,0,0,0.1)'
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.transform = 'translateY(-10px) scale(1.02)';
+                  e.currentTarget.style.boxShadow = '0 20px 40px rgba(0,0,0,0.15)';
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.transform = 'translateY(0) scale(1)';
+                  e.currentTarget.style.boxShadow = '0 4px 20px rgba(0,0,0,0.1)';
+                }}>
+                  {/* 카드 번호 */}
                   <div className="position-absolute top-0 end-0 p-3">
-                    <div className="badge rounded-circle p-2" style={{
-                      background: COLORS.primary.background,
-                      color: COLORS.primary.main,
-                      fontSize: '0.875rem',
-                      fontWeight: '600'
+                    <div className="badge rounded-circle p-3" style={{
+                      background: 'linear-gradient(135deg, #8b5cf6 0%, #a78bfa 100%)',
+                      color: 'white',
+                      fontSize: '1rem',
+                      fontWeight: '600',
+                      width: '40px',
+                      height: '40px',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center'
                     }}>
                       {index + 1}
                     </div>
                   </div>
+                  
+                  {/* 카드 내용 */}
                   <div className="card-body p-4">
-                    <div className="d-flex align-items-center mb-3">
+                    <div className="d-flex align-items-center mb-4">
                       <div className="feature-icon me-3" style={{
-                        width: '60px',
-                        height: '60px',
-                        background: `rgba(${feature.color === 'primary' ? '139, 92, 246' : feature.color === 'success' ? '34, 197, 94' : feature.color === 'warning' ? '245, 158, 11' : '59, 130, 246'}, 0.15)`,
-                        borderRadius: '16px',
+                        width: '70px',
+                        height: '70px',
+                        background: `linear-gradient(135deg, ${feature.color === 'primary' ? '#8b5cf6, #a78bfa' : feature.color === 'success' ? '#10b981, #34d399' : feature.color === 'warning' ? '#f59e0b, #fbbf24' : '#3b82f6, #60a5fa'})`,
+                        borderRadius: '20px',
                         display: 'flex',
                         alignItems: 'center',
-                        justifyContent: 'center'
+                        justifyContent: 'center',
+                        boxShadow: '0 8px 25px rgba(0,0,0,0.15)',
+                        transition: 'all 0.3s ease'
                       }}>
-                        <i className={`bi ${feature.icon} fs-2`} style={{
-                          color: feature.color === 'primary' ? COLORS.primary.light : feature.color === 'success' ? COLORS.success.light : feature.color === 'warning' ? COLORS.warning.light : COLORS.info.light
-                        }}></i>
+                        <i className={`bi ${feature.icon} fs-1`} style={{color: 'white'}}></i>
                       </div>
-                      <h5 className="mb-0 fw-bold" style={{color: COLORS.text.primary}}>{feature.title}</h5>
+                      <h5 className="mb-0 fw-bold" style={{
+                        color: COLORS.text.primary,
+                        fontSize: '1.3rem'
+                      }}>{feature.title}</h5>
                     </div>
-                    <p className="mb-3" style={{color: COLORS.text.secondary, lineHeight: '1.6'}}>{feature.description}</p>
+                    
+                    <p className="mb-4" style={{
+                      color: COLORS.text.secondary,
+                      lineHeight: '1.7',
+                      fontSize: '1rem'
+                    }}>{feature.description}</p>
+                    
                     <div className="d-flex align-items-center justify-content-between">
-                      <span className="badge px-2 py-1 rounded-pill" style={{
-                        background: `rgba(${feature.color === 'primary' ? '139, 92, 246' : feature.color === 'success' ? '34, 197, 94' : feature.color === 'warning' ? '245, 158, 11' : '59, 130, 246'}, 0.2)`,
-                        color: feature.color === 'primary' ? COLORS.primary.light : feature.color === 'success' ? COLORS.success.light : feature.color === 'warning' ? COLORS.warning.light : COLORS.info.light,
-                        fontSize: '0.75rem'
+                      <span className="badge px-3 py-2 rounded-pill" style={{
+                        background: `rgba(${feature.color === 'primary' ? '139, 92, 246' : feature.color === 'success' ? '16, 185, 129' : feature.color === 'warning' ? '245, 158, 11' : '59, 130, 246'}, 0.15)`,
+                        color: feature.color === 'primary' ? '#8b5cf6' : feature.color === 'success' ? '#10b981' : feature.color === 'warning' ? '#f59e0b' : '#3b82f6',
+                        fontSize: '0.8rem',
+                        fontWeight: '600',
+                        border: `1px solid rgba(${feature.color === 'primary' ? '139, 92, 246' : feature.color === 'success' ? '16, 185, 129' : feature.color === 'warning' ? '245, 158, 11' : '59, 130, 246'}, 0.3)`
                       }}>
                         {feature.tag}
                       </span>
-                      <a href={feature.link} className="text-decoration-none" style={{color: COLORS.primary.light}}>
-                        자세히 보기 <i className="bi bi-arrow-right ms-1"></i>
+                      
+                      <a href={feature.link} className="text-decoration-none d-flex align-items-center" style={{
+                        color: '#8b5cf6',
+                        fontWeight: '600',
+                        transition: 'all 0.3s ease',
+                        transform: 'translateX(0)'
+                      }}
+                      onMouseEnter={(e) => {
+                        e.currentTarget.style.transform = 'translateX(5px)';
+                      }}
+                      onMouseLeave={(e) => {
+                        e.currentTarget.style.transform = 'translateX(0)';
+                      }}>
+                        자세히 보기 <i className="bi bi-arrow-right ms-2" style={{transition: 'all 0.3s ease'}}></i>
                       </a>
                     </div>
                   </div>
+                  
                   {/* 카드 배경 그라디언트 효과 */}
                   <div className="position-absolute bottom-0 start-0 w-100" 
                        style={{
-                         height: '3px',
-                         background: GRADIENTS.primary
+                         height: '4px',
+                         background: `linear-gradient(90deg, ${feature.color === 'primary' ? '#8b5cf6' : feature.color === 'success' ? '#10b981' : feature.color === 'warning' ? '#f59e0b' : '#3b82f6'} 0%, ${feature.color === 'primary' ? '#a78bfa' : feature.color === 'success' ? '#34d399' : feature.color === 'warning' ? '#fbbf24' : '#60a5fa'} 100%)`,
+                         transition: 'all 0.3s ease'
                        }}></div>
                 </div>
               </div>
@@ -868,6 +1006,43 @@ export default function Home() {
             </a>
           </div>
       </div>
+      
+      {/* CSS 애니메이션 스타일 */}
+      <style jsx>{`
+        @keyframes fadeInUp {
+          from {
+            opacity: 0;
+            transform: translateY(30px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+        
+        @keyframes pulse {
+          0%, 100% { transform: scale(1); }
+          50% { transform: scale(1.05); }
+        }
+        
+        .hero-section {
+          transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        .hero-section.visible {
+          opacity: 1;
+          transform: translateY(0);
+        }
+        
+        .hero-section:not(.visible) {
+          opacity: 0;
+          transform: translateY(30px);
+        }
+        
+        .feature-card:hover .feature-icon {
+          transform: scale(1.1) rotate(5deg);
+        }
+      `}</style>
     </div>
   );
 } 
