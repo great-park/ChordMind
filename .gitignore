@@ -288,4 +288,8 @@ secrets.json
 
 # 모든 위치의 out 폴더 무시
 out/
-**/out/ 
+**/out/ backend/When-in-Rome/
+
+# External projects
+backend/When-in-Rome/
+backend/When-in-Rome/**
