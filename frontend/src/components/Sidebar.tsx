@@ -113,12 +113,7 @@ export default function Sidebar() {
             }}></div>
           </div>
           <ul className="list-unstyled">
-            <li className="mb-2">
-              <a href="/corpus" className="text-light text-decoration-none d-flex align-items-center" style={{opacity: 0.8, fontSize: '0.9rem'}}>
-                <i className="bi bi-music-note-list me-2"></i>
-                When-in-Rome 코퍼스
-              </a>
-            </li>
+
             <li className="mb-2">
               <a href="/practice-modes" className="text-light text-decoration-none d-flex align-items-center" style={{opacity: 0.8, fontSize: '0.9rem'}}>
                 <i className="bi bi-music-note-beamed me-2"></i>
