@@ -287,7 +287,7 @@ const AIMusicLearningDashboard: React.FC = () => {
                 <div className="me-2">
                   <div className="bg-success rounded-circle" style={{ width: '12px', height: '12px' }}></div>
                 </div>
-                <span>When-in-Rome 코퍼스</span>
+                <span>AI 음악 데이터베이스</span>
                 <Badge bg="success" className="ms-auto">연결됨</Badge>
               </div>
             </Col>
