@@ -365,53 +365,75 @@ export default function Home() {
 
 
 
-        {/* 🏆 개선된 커뮤니티 리더보드 섹션 */}
+        {/* 🏆 커뮤니티 리더보드 & 📊 실시간 대시보드 - 나란히 배치 */}
         <section className={`mb-5 fade-in ${isVisible ? 'visible' : ''}`} style={{ animationDelay: '0.4s' }}>
           <div className="text-center mb-5">
-            <div className="d-inline-flex align-items-center gap-2 mb-3">
-              <div className="pulse-dot" style={{
-                width: '8px',
-                height: '8px',
-                background: '#f59e0b',
-                borderRadius: '50%',
-                animation: 'pulse 2s infinite'
-              }}></div>
-              <span className="badge px-4 py-2 rounded-pill" style={{
-                background: 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)',
-                color: 'white',
-                fontSize: '0.875rem',
-                fontWeight: '600',
-                border: 'none',
-                boxShadow: '0 4px 15px rgba(245, 158, 11, 0.3)'
-              }}>
-                🏆 커뮤니티 리더보드
-              </span>
+            <div className="d-inline-flex align-items-center gap-3 mb-3">
+              <div className="d-flex align-items-center gap-2">
+                <div className="pulse-dot" style={{
+                  width: '8px',
+                  height: '8px',
+                  background: '#f59e0b',
+                  borderRadius: '50%',
+                  animation: 'pulse 2s infinite'
+                }}></div>
+                <span className="badge px-4 py-2 rounded-pill" style={{
+                  background: 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)',
+                  color: 'white',
+                  fontSize: '0.875rem',
+                  fontWeight: '600',
+                  border: 'none',
+                  boxShadow: '0 4px 15px rgba(245, 158, 11, 0.3)'
+                }}>
+                  🏆 커뮤니티 리더보드
+                </span>
+              </div>
+              <div className="d-flex align-items-center gap-2">
+                <div className="pulse-dot" style={{
+                  width: '8px',
+                  height: '8px',
+                  background: '#10b981',
+                  borderRadius: '50%',
+                  animation: 'pulse 2s infinite'
+                }}></div>
+                <span className="badge px-4 py-2 rounded-pill" style={{
+                  background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
+                  color: 'white',
+                  fontSize: '0.875rem',
+                  fontWeight: '600',
+                  border: 'none',
+                  boxShadow: '0 4px 15px rgba(16, 185, 129, 0.3)'
+                }}>
+                  📊 실시간 대시보드
+                </span>
+              </div>
             </div>
             <h2 className="display-6 fw-bold mb-3" style={{
               color: COLORS.text.primary,
               fontSize: '2.5rem',
               lineHeight: '1.2',
-              background: 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)',
+              background: 'linear-gradient(135deg, #f59e0b 0%, #10b981 100%)',
               WebkitBackgroundClip: 'text',
               WebkitTextFillColor: 'transparent',
               backgroundClip: 'text'
             }}>
-              이번 주 <span style={{color: '#fbbf24'}}>최고의 연주자들</span>
+              <span style={{color: '#fbbf24'}}>커뮤니티</span>와 <span style={{color: '#34d399'}}>성장</span>을 한눈에
             </h2>
             <p className="lead mb-0" style={{
               color: COLORS.text.secondary,
               fontSize: '1.125rem',
               lineHeight: '1.6',
-              maxWidth: '700px',
+              maxWidth: '800px',
               margin: '0 auto'
             }}>
-              열정적인 음악인들과 함께 성장하고 경쟁해보세요
+              최고의 연주자들과 함께하고, 당신의 음악 여정을 추적해보세요
             </p>
           </div>
           
-          <div className="row">
-            <div className="col-12">
-              <div className="card border-0 shadow-lg hover-shadow" style={{
+          <div className="row g-4">
+            {/* 🏆 커뮤니티 리더보드 - 왼쪽 */}
+            <div className="col-lg-6">
+              <div className="card border-0 shadow-lg hover-shadow h-100" style={{
                 background: 'linear-gradient(135deg, #1e293b 0%, #334155 100%)',
                 borderRadius: '24px',
                 border: '1px solid rgba(245, 158, 11, 0.15)',
@@ -571,137 +593,23 @@ export default function Home() {
                       { id: '2', rank: 2, name: '🎸 기타 히어로', score: 2720, category: '⭐ 톱 연주자', change: 1 },
                       { id: '3', rank: 3, name: '🎻 바이올린 아티스트', score: 2650, category: '⭐ 톱 연주자', change: -1 },
                       { id: '4', rank: 4, name: '🥁 드럼 비트', score: 2580, category: '🎵 열정적인 연주자', change: 2 },
-                      { id: '5', rank: 5, name: '🎺 트럼펫 마스터', score: 2490, category: '🎵 열정적인 연주자', change: 0 }
+                      { id: '5', rank: 5, name: '🎺 트럼펫 마스터', score: 2490, category: '🎵 열정적인 연주자', change: 0 },
+                      { id: '6', rank: 6, name: '🎷 색소폰 플레이어', score: 2410, category: '🎵 열정적인 연주자', change: 4 },
+                      { id: '7', rank: 7, name: '🎼 작곡가 드림', score: 2350, category: '🎵 열정적인 연주자', change: -2 },
+                      { id: '8', rank: 8, name: '🎤 보컬리스트', score: 2280, category: '🎵 열정적인 연주자', change: 1 },
+                      { id: '9', rank: 9, name: '🎹 클래식 피아니스트', score: 2210, category: '🎵 열정적인 연주자', change: 0 },
+                      { id: '10', rank: 10, name: '🎸 베이스 마스터', score: 2140, category: '🎵 열정적인 연주자', change: 2 }
                     ]}
                   />
                 </div>
               </div>
             </div>
-          </div>
-        </section>
 
-
-
-        {/* 🚀 개선된 실시간 대시보드 섹션 */}
-        <section className={`mb-5 fade-in ${isVisible ? 'visible' : ''}`} style={{ animationDelay: '0.3s' }}>
-          <div className="text-center mb-5">
-            <div className="d-inline-flex align-items-center gap-2 mb-3">
-              <div className="pulse-dot" style={{
-                width: '8px',
-                height: '8px',
-                background: '#10b981',
-                borderRadius: '50%',
-                animation: 'pulse 2s infinite'
-              }}></div>
-              <span className="badge px-4 py-2 rounded-pill" style={{
-                background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
-                color: 'white',
-                fontSize: '0.875rem',
-                fontWeight: '600',
-                border: 'none',
-                boxShadow: '0 4px 15px rgba(16, 185, 129, 0.3)'
-              }}>
-                📊 실시간 대시보드
-              </span>
-            </div>
-            <h2 className="display-6 fw-bold mb-3" style={{
-              color: COLORS.text.primary,
-              fontSize: '2.5rem',
-              lineHeight: '1.2',
-              background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-              WebkitBackgroundClip: 'text',
-              WebkitTextFillColor: 'transparent',
-              backgroundClip: 'text'
-            }}>
-              당신의 <span style={{color: COLORS.primary.light}}>성장을 한눈에</span>
-            </h2>
-            <p className="lead mb-0" style={{
-              color: COLORS.text.secondary,
-              fontSize: '1.125rem',
-              lineHeight: '1.6',
-              maxWidth: '700px',
-              margin: '0 auto'
-            }}>
-              AI가 분석한 연습 데이터를 통해 개인화된 인사이트를 확인하세요
-            </p>
-          </div>
-          
-          <div className="row g-4 mb-5">
-            {/* 📈 학습 진행 상황 카드 */}
-            <div className="col-lg-8">
-              <div className="card border-0 shadow-lg hover-shadow" style={{
-                background: 'linear-gradient(135deg, #1e293b 0%, #334155 100%)',
-                borderRadius: '20px',
-                border: '1px solid rgba(139, 92, 246, 0.15)',
-                overflow: 'hidden',
-                transition: 'all 0.3s ease',
-                transform: 'translateY(0)'
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.transform = 'translateY(-5px)';
-                e.currentTarget.style.boxShadow = '0 20px 40px rgba(0, 0, 0, 0.3)';
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.transform = 'translateY(0)';
-                e.currentTarget.style.boxShadow = '0 8px 20px rgba(0, 0, 0, 0.2)';
-              }}>
-                <div className="card-header border-0 bg-transparent d-flex align-items-center justify-content-between p-4" style={{
-                  background: 'linear-gradient(90deg, rgba(139, 92, 246, 0.1) 0%, rgba(59, 130, 246, 0.1) 100%)'
-                }}>
-                  <div className="d-flex align-items-center gap-3">
-                    <div className="section-icon" style={{
-                      width: '40px',
-                      height: '40px',
-                      background: 'linear-gradient(135deg, #8b5cf6 0%, #a78bfa 100%)',
-                      borderRadius: '12px',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      boxShadow: '0 4px 15px rgba(139, 92, 246, 0.3)'
-                    }}>
-                      <i className="bi bi-graph-up text-white fs-5"></i>
-                    </div>
-                    <div>
-                      <h5 className="mb-1 text-white" style={{
-                        fontSize: '1.25rem',
-                        fontWeight: '600'
-                      }}>📈 학습 진행 상황</h5>
-                      <small style={{
-                        color: 'rgba(255, 255, 255, 0.7)',
-                        fontSize: '0.875rem'
-                      }}>이번 주 목표 달성도</small>
-                    </div>
-                  </div>
-                  <div className="badge px-3 py-2" style={{
-                    background: 'linear-gradient(135deg, #ef4444 0%, #dc2626 100%)',
-                    color: 'white',
-                    fontSize: '0.75rem',
-                    fontWeight: '600',
-                    border: 'none',
-                    animation: 'pulse 2s infinite'
-                  }}>
-                    <i className="bi bi-circle-fill me-1" style={{fontSize: '6px'}}></i>
-                    Live
-                  </div>
-                </div>
-                <div className="card-body p-4">
-                  <ProgressChart 
-                    title="이번 주 연습 시간"
-                    progress={userSummary?.totalPracticeTime || 0}
-                    target={1000}
-                    unit="분"
-                    color="primary"
-                    description="꾸준한 연습으로 목표에 가까워지고 있어요! 💪"
-                  />
-                </div>
-              </div>
-            </div>
-
-            {/* 🎯 최근 활동 카드 */}
-            <div className="col-lg-4">
+            {/* 📊 실시간 대시보드 - 오른쪽 */}
+            <div className="col-lg-6">
               <div className="card border-0 shadow-lg hover-shadow h-100" style={{
                 background: 'linear-gradient(135deg, #1e293b 0%, #334155 100%)',
-                borderRadius: '20px',
+                borderRadius: '24px',
                 border: '1px solid rgba(16, 185, 129, 0.15)',
                 overflow: 'hidden',
                 transition: 'all 0.3s ease',
@@ -729,65 +637,90 @@ export default function Home() {
                       justifyContent: 'center',
                       boxShadow: '0 4px 15px rgba(16, 185, 129, 0.3)'
                     }}>
-                      <i className="bi bi-target text-white fs-5"></i>
+                      <i className="bi bi-graph-up text-white fs-5"></i>
                     </div>
                     <div>
                       <h5 className="mb-1 text-white" style={{
                         fontSize: '1.25rem',
                         fontWeight: '600'
-                      }}>🎯 최근 활동</h5>
+                      }}>📊 실시간 대시보드</h5>
                       <small style={{
                         color: 'rgba(255, 255, 255, 0.7)',
                         fontSize: '0.875rem'
-                      }}>오늘의 연습 기록</small>
+                      }}>당신의 성장을 한눈에</small>
                     </div>
                   </div>
-                  <div className="badge px-2 py-1" style={{
-                    background: 'linear-gradient(135deg, #10b981 0%, #34d399 100%)',
+                  <div className="badge px-3 py-2" style={{
+                    background: 'linear-gradient(135deg, #ef4444 0%, #dc2626 100%)',
                     color: 'white',
                     fontSize: '0.75rem',
-                    border: 'none'
+                    fontWeight: '600',
+                    border: 'none',
+                    animation: 'pulse 2s infinite'
                   }}>
-                    <i className="bi bi-circle-fill" style={{fontSize: '6px'}}></i>
+                    <i className="bi bi-circle-fill me-1" style={{fontSize: '6px'}}></i>
+                    Live
                   </div>
                 </div>
+                
                 <div className="card-body p-4">
-                  <ActivityFeed 
-                    activities={[
-                      {
-                        id: '1',
-                        type: 'practice',
-                        title: 'C Major Scale 연습',
-                        description: '정확도 85% 달성 🎯',
-                        time: '2시간 전',
-                        icon: 'bi-music-note',
-                        color: 'primary'
-                      },
-                      {
-                        id: '2',
-                        type: 'achievement',
-                        title: '첫 번째 곡 완주',
-                        description: '새로운 업적 획득 🏆',
-                        time: '1일 전',
-                        icon: 'bi-trophy',
-                        color: 'warning'
-                      },
-                      {
-                        id: '3',
-                        type: 'goal',
-                        title: '주간 목표 50% 달성',
-                        description: '계속 화이팅! 💪',
-                        time: '3시간 전',
-                        icon: 'bi-flag',
-                        color: 'success'
-                      }
-                    ]}
-                  />
+                  {/* 📈 학습 진행 상황 */}
+                  <div className="mb-4">
+                    <h6 className="fw-bold mb-3 text-white">📈 학습 진행 상황</h6>
+                    <ProgressChart 
+                      title="이번 주 연습 시간"
+                      progress={userSummary?.totalPracticeTime || 0}
+                      target={1000}
+                      unit="분"
+                      color="primary"
+                      description="꾸준한 연습으로 목표에 가까워지고 있어요! 💪"
+                    />
+                  </div>
+                  
+                  {/* 🎯 최근 활동 */}
+                  <div>
+                    <h6 className="fw-bold mb-3 text-white">🎯 최근 활동</h6>
+                    <ActivityFeed 
+                      activities={[
+                        {
+                          id: '1',
+                          type: 'practice',
+                          title: 'C Major Scale 연습',
+                          description: '정확도 85% 달성 🎯',
+                          time: '2시간 전',
+                          icon: 'bi-music-note',
+                          color: 'primary'
+                        },
+                        {
+                          id: '2',
+                          type: 'achievement',
+                          title: '첫 번째 곡 완주',
+                          description: '새로운 업적 획득 🏆',
+                          time: '1일 전',
+                          icon: 'bi-trophy',
+                          color: 'warning'
+                        },
+                        {
+                          id: '3',
+                          type: 'goal',
+                          title: '주간 목표 50% 달성',
+                          description: '계속 화이팅! 💪',
+                          time: '3시간 전',
+                          icon: 'bi-flag',
+                          color: 'success'
+                        }
+                      ]}
+                    />
+                  </div>
                 </div>
               </div>
             </div>
           </div>
         </section>
+
+
+
+
 
           {/* AI 작곡 어시스턴트 섹션 */}
           <div className="row g-4 mb-5">
@@ -803,7 +736,7 @@ export default function Home() {
                   AI 작곡 어시스턴트
                 </h2>
                 <p className="lead mb-0" style={{color: COLORS.text.secondary}}>
-                  When-in-Rome 기반의 전문적인 화성학 지식으로 작곡을 도와드립니다
+                  AI 기반의 전문적인 화성학 지식으로 작곡을 도와드립니다
                 </p>
               </div>
             </div>
@@ -918,7 +851,7 @@ export default function Home() {
                   음악 이론 학습 시스템
                 </h2>
                 <p className="lead mb-0" style={{color: COLORS.text.secondary}}>
-                  When-in-Rome 기반의 체계적인 화성학 학습으로 음악적 이해를 높여보세요
+                  AI 기반의 체계적인 화성학 학습으로 음악적 이해를 높여보세요
                 </p>
               </div>
             </div>
