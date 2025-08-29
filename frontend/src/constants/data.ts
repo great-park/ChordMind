@@ -44,14 +44,7 @@ export const FEATURES = [
     tag: '추적',
     link: '/progress'
   },
-  {
-    title: 'When-in-Rome 코퍼스',
-    description: '체계적인 화성학 학습을 위한 전문 코퍼스 데이터를 제공합니다.',
-    icon: 'bi-music-note-list',
-    color: 'warning',
-    tag: '코퍼스',
-    link: '/corpus'
-  },
+
   {
     title: '커뮤니티',
     description: '다른 학습자들과 경험을 공유하고 소통할 수 있습니다.',
