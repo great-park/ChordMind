@@ -25,7 +25,7 @@ const Sidebar = () => {
         zIndex: 1
       }}></div>
 
-                    {/* 🎵 ChordMind 브랜드 섹션 - 최상단 */}
+      {/* 🎵 ChordMind 브랜드 섹션 - 최상단 */}
       <div className="brand-section mb-5" style={{position: 'relative', zIndex: 2}}>
         <div className="d-flex align-items-center mb-4">
           <div className="brand-icon me-3" style={{
@@ -159,33 +159,9 @@ const Sidebar = () => {
             justifyContent: 'center',
             boxShadow: '0 4px 15px rgba(236, 72, 153, 0.3)'
           }}>
-            <i className="bi bi-lightbulb text-white"></i>
+            <i className="bi bi-brain text-white"></i>
           </div>
-          <h6 className="mb-0 fw-bold" style={{color: '#ec4899'}}>퀴즈 & 통계</h6>
-          <div className="section-line ms-auto" style={{
-            width: '40px',
-            height: '2px',
-            background: 'linear-gradient(90deg, #ec4899 0%, transparent 100%)',
-            borderRadius: '1px'
-          }}></div>
-        </div>
-
-              {/* 퀴즈 & 통계 섹션 */}
-        <div className="service-section mb-5" style={{position: 'relative', zIndex: 2}}>
-        <div className="section-header d-flex align-items-center mb-4">
-          <div className="section-icon me-3" style={{
-            width: '32px',
-            height: '32px',
-            background: 'linear-gradient(135deg, #ec4899 0%, #db2777 100%)',
-            borderRadius: '8px',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            boxShadow: '0 4px 15px rgba(236, 72, 153, 0.3)'
-          }}>
-            <i className="bi bi-lightbulb text-white"></i>
-          </div>
-          <h6 className="mb-0 fw-bold" style={{color: '#ec4899'}}>퀴즈 & 통계</h6>
+          <h6 className="mb-0 fw-bold" style={{color: '#ec4899'}}>🧠 퀴즈 & 통계</h6>
           <div className="section-line ms-auto" style={{
             width: '40px',
             height: '2px',
@@ -203,7 +179,7 @@ const Sidebar = () => {
           <div className="card-body p-3">
             <div className="d-flex align-items-center justify-content-between mb-2">
               <div className="d-flex align-items-center">
-                <i className="bi bi-brain me-2" style={{color: '#ec4899', fontSize: '1rem'}}></i>
+                <i className="bi bi-question-circle me-2" style={{color: '#ec4899', fontSize: '1rem'}}></i>
                 <small className="fw-bold" style={{color: '#ec4899'}}>오늘의 퀴즈</small>
               </div>
               <span className="badge px-2 py-1" style={{
@@ -287,8 +263,8 @@ const Sidebar = () => {
         </div>
       </div>
 
-              {/* 핵심 기능 */}
-        <div className="service-section mb-5" style={{position: 'relative', zIndex: 2}}>
+      {/* ⭐ 핵심 기능 */}
+      <div className="service-section mb-5" style={{position: 'relative', zIndex: 2}}>
         <div className="section-header d-flex align-items-center mb-4">
           <div className="section-icon me-3" style={{
             width: '32px',
@@ -363,8 +339,8 @@ const Sidebar = () => {
         </ul>
       </div>
 
-              {/* AI 서비스 */}
-        <div className="service-section mb-5" style={{position: 'relative', zIndex: 2}}>
+      {/* 🤖 AI 서비스 */}
+      <div className="service-section mb-5" style={{position: 'relative', zIndex: 2}}>
         <div className="section-header d-flex align-items-center mb-4">
           <div className="section-icon me-3" style={{
             width: '32px',
@@ -389,14 +365,14 @@ const Sidebar = () => {
 
         <ul className="nav flex-column gap-2">
           <li className="nav-item">
-            <a href="/ai-dashboard" className="nav-link-item d-flex align-items-center p-3 rounded" style={{
+            <a href="/ai-analysis" className="nav-link-item d-flex align-items-center p-3 rounded" style={{
               background: 'rgba(16, 185, 129, 0.1)',
               border: '1px solid rgba(16, 185, 129, 0.2)',
               color: 'rgba(255, 255, 255, 0.9)',
               textDecoration: 'none',
               transition: 'all 0.3s ease'
             }}>
-              <i className="bi bi-graph-up me-3" style={{color: '#10b981', fontSize: '1.2rem'}}></i>
+              <i className="bi bi-cpu me-3" style={{color: '#10b981', fontSize: '1.2rem'}}></i>
               <span className="fw-medium">실시간 분석</span>
             </a>
           </li>
@@ -427,8 +403,8 @@ const Sidebar = () => {
         </ul>
       </div>
 
-              {/* 학습 도구 */}
-        <div className="service-section mb-5" style={{position: 'relative', zIndex: 2}}>
+      {/* 🔧 학습 도구 */}
+      <div className="service-section mb-5" style={{position: 'relative', zIndex: 2}}>
         <div className="section-header d-flex align-items-center mb-4">
           <div className="section-icon me-3" style={{
             width: '32px',
@@ -452,18 +428,7 @@ const Sidebar = () => {
         </div>
 
         <ul className="nav flex-column gap-2">
-          <li className="nav-item">
-            <a href="/corpus" className="nav-link-item d-flex align-items-center p-3 rounded" style={{
-              background: 'rgba(245, 158, 11, 0.1)',
-              border: '1px solid rgba(245, 158, 11, 0.2)',
-              color: 'rgba(255, 255, 255, 0.9)',
-              textDecoration: 'none',
-              transition: 'all 0.3s ease'
-            }}>
-              <i className="bi bi-collection me-3" style={{color: '#f59e0b', fontSize: '1.2rem'}}></i>
-              <span className="fw-medium">코퍼스 탐색</span>
-            </a>
-          </li>
+
           <li className="nav-item">
             <a href="/practice-modes" className="nav-link-item d-flex align-items-center p-3 rounded" style={{
               background: 'rgba(245, 158, 11, 0.1)',
@@ -491,8 +456,8 @@ const Sidebar = () => {
         </ul>
       </div>
 
-              {/* 커뮤니티 & 관리 */}
-        <div className="service-section mb-5" style={{position: 'relative', zIndex: 2}}>
+      {/* 👥 커뮤니티 & 관리 */}
+      <div className="service-section mb-5" style={{position: 'relative', zIndex: 2}}>
         <div className="section-header d-flex align-items-center mb-4">
           <div className="section-icon me-3" style={{
             width: '32px',
@@ -524,7 +489,7 @@ const Sidebar = () => {
               textDecoration: 'none',
               transition: 'all 0.3s ease'
             }}>
-              <i className="bi bi-chat-dots me-3" style={{color: '#3b82f6', fontSize: '1.2rem'}}></i>
+              <i className="bi bi-people me-3" style={{color: '#3b82f6', fontSize: '1.2rem'}}></i>
               <span className="fw-medium">커뮤니티</span>
             </a>
           </li>
@@ -537,7 +502,7 @@ const Sidebar = () => {
               transition: 'all 0.3s ease'
             }}>
               <i className="bi bi-trophy me-3" style={{color: '#3b82f6', fontSize: '1.2rem'}}></i>
-              <span className="fw-medium">업적</span>
+              <span className="fw-medium">업적 시스템</span>
             </a>
           </li>
           <li className="nav-item">
@@ -548,7 +513,7 @@ const Sidebar = () => {
               textDecoration: 'none',
               transition: 'all 0.3s ease'
             }}>
-              <i className="bi bi-chat-square-text me-3" style={{color: '#3b82f6', fontSize: '1.2rem'}}></i>
+              <i className="bi bi-chat-dots me-3" style={{color: '#3b82f6', fontSize: '1.2rem'}}></i>
               <span className="fw-medium">피드백</span>
             </a>
           </li>
@@ -560,7 +525,7 @@ const Sidebar = () => {
               textDecoration: 'none',
               transition: 'all 0.3s ease'
             }}>
-              <i className="bi bi-speedometer2 me-3" style={{color: '#3b82f6', fontSize: '1.2rem'}}></i>
+              <i className="bi bi-graph-up me-3" style={{color: '#3b82f6', fontSize: '1.2rem'}}></i>
               <span className="fw-medium">대시보드</span>
             </a>
           </li>
@@ -579,92 +544,172 @@ const Sidebar = () => {
         </ul>
       </div>
 
-              {/* 지원 섹션 */}
-        <div className="service-section mb-5" style={{position: 'relative', zIndex: 2}}>
-        <div className="section-header d-flex align-items-center mb-4">
-          <div className="section-icon me-3" style={{
-            width: '32px',
-            height: '32px',
-            background: 'linear-gradient(135deg, #6b7280 0%, #9ca3af 100%)',
-            borderRadius: '8px',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            boxShadow: '0 4px 15px rgba(107, 114, 128, 0.3)'
-          }}>
-            <i className="bi bi-question-circle text-white"></i>
-          </div>
-          <h6 className="mb-0 fw-bold" style={{color: '#6b7280'}}>❓ 지원</h6>
-          <div className="section-line ms-auto" style={{
-            width: '40px',
+      {/* ❓ 지원 섹션 */}
+      <div className="support-section mb-5">
+        <div className="section-header d-flex align-items-center mb-3">
+          <i className="bi bi-headphones me-2 text-purple"></i>
+          <h6 className="mb-0 fw-bold">❓ 지원</h6>
+          <div className="purple-underline ms-2" style={{
+            width: '20px',
             height: '2px',
-            background: 'linear-gradient(90deg, #6b7280 0%, transparent 100%)',
+            background: '#8b5cf6',
             borderRadius: '1px'
           }}></div>
         </div>
-
-        <ul className="nav flex-column gap-2">
-          <li className="nav-item">
-            <a href="/help" className="nav-link-item d-flex align-items-center p-3 rounded" style={{
-              background: 'rgba(107, 114, 128, 0.1)',
-              border: '1px solid rgba(107, 114, 128, 0.2)',
-              color: 'rgba(255, 255, 255, 0.9)',
-              textDecoration: 'none',
-              transition: 'all 0.3s ease'
-            }}>
-              <i className="bi bi-question-circle me-3" style={{color: '#6b7280', fontSize: '1.2rem'}}></i>
-              <span className="fw-medium">도움말</span>
+        <ul className="list-unstyled">
+          <li className="mb-2">
+            <a href="/help" className="text-light text-decoration-none" style={{opacity: 0.8, fontSize: '0.9rem'}}>
+              도움말
             </a>
           </li>
-          <li className="nav-item">
-            <a href="/contact" className="nav-link-item d-flex align-items-center p-3 rounded" style={{
-              background: 'rgba(107, 114, 128, 0.1)',
-              border: '1px solid rgba(107, 114, 128, 0.2)',
-              color: 'rgba(255, 255, 255, 0.9)',
-              textDecoration: 'none',
-              transition: 'all 0.3s ease'
-            }}>
-              <i className="bi bi-envelope me-3" style={{color: '#6b7280', fontSize: '1.2rem'}}></i>
-              <span className="fw-medium">문의하기</span>
+          <li className="mb-2">
+            <a href="/contact" className="text-light text-decoration-none" style={{opacity: 0.8, fontSize: '0.9rem'}}>
+              문의하기
+            </a>
+          </li>
+          <li className="mb-2">
+            <a href="/faq" className="text-light text-decoration-none" style={{opacity: 0.8, fontSize: '0.9rem'}}>
+              자주 묻는 질문
+            </a>
+          </li>
+          <li className="mb-2">
+            <a href="/tutorial" className="text-light text-decoration-none" style={{opacity: 0.8, fontSize: '0.9rem'}}>
+              튜토리얼
             </a>
           </li>
         </ul>
       </div>
 
+      {/* 📄 법적 고지 섹션 */}
+      <div className="legal-section mb-5">
+        <div className="section-header d-flex align-items-center mb-3">
+          <i className="bi bi-file-text me-2 text-purple"></i>
+          <h6 className="mb-0 fw-bold">📄 법적 고지</h6>
+          <div className="purple-underline ms-2" style={{
+            width: '20px',
+            height: '2px',
+            background: '#8b5cf6',
+            borderRadius: '1px'
+          }}></div>
+        </div>
+        <ul className="list-unstyled">
+          <li className="mb-2">
+            <a href="/privacy" className="text-light text-decoration-none" style={{opacity: 0.8, fontSize: '0.9rem'}}>
+              개인정보처리방침
+            </a>
+          </li>
+          <li className="mb-2">
+            <a href="/terms" className="text-light text-decoration-none" style={{opacity: 0.8, fontSize: '0.9rem'}}>
+              이용약관
+            </a>
+          </li>
+          <li className="mb-2">
+            <a href="/license" className="text-light text-decoration-none" style={{opacity: 0.8, fontSize: '0.9rem'}}>
+              라이선스
+            </a>
+          </li>
+        </ul>
+      </div>
+
+      {/* 🔔 소식받기 섹션 */}
+      <div className="newsletter-section">
+        <div className="section-header d-flex align-items-center mb-3">
+          <i className="bi bi-bell me-2 text-purple"></i>
+          <h6 className="mb-0 fw-bold">🔔 소식받기</h6>
+          <div className="purple-underline ms-2" style={{
+            width: '20px',
+            height: '2px',
+            background: '#8b5cf6',
+            borderRadius: '1px'
+          }}></div>
+        </div>
+        <p className="text-light mb-3" style={{fontSize: '0.9rem', opacity: 0.8}}>
+          새로운 기능과 팁을 가장 먼저 받아보세요!
+        </p>
+        <div className="input-group">
+          <input 
+            type="email" 
+            className="form-control" 
+            placeholder="이메일 주소"
+            style={{
+              background: 'rgba(255, 255, 255, 0.1)',
+              border: '1px solid rgba(255, 255, 255, 0.2)',
+              color: 'white',
+              borderRadius: '8px 0 0 8px'
+            }}
+          />
+          <button 
+            className="btn btn-purple" 
+            type="button"
+            style={{
+              background: '#8b5cf6',
+              border: '1px solid #8b5cf6',
+              color: 'white',
+              borderRadius: '0 8px 8px 0'
+            }}
+          >
+            <i className="bi bi-send text-white"></i>
+          </button>
+        </div>
+      </div>
+
       <style jsx>{`
+        .sidebar {
+          animation: slideRight 0.5s ease-out;
+        }
+
         @keyframes slideRight {
-          0% { transform: translateX(-100%); }
-          100% { transform: translateX(100%); }
+          from {
+            transform: translateX(-100%);
+            opacity: 0;
+          }
+          to {
+            transform: translateX(0);
+            opacity: 1;
+          }
         }
-        
+
+        .brand-icon {
+          animation: pulse 2s infinite;
+        }
+
         @keyframes pulse {
-          0%, 100% { opacity: 1; }
-          50% { opacity: 0.5; }
+          0%, 100% { transform: scale(1); }
+          50% { transform: scale(1.05); }
         }
-        
+
+        .nav-link-item {
+          transition: all 0.3s ease;
+        }
+
+        .nav-link-item:hover {
+          transform: translateX(8px);
+          box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+
         /* 핵심 기능 호버 효과 */
-        .service-section:nth-child(3) .nav-link-item:hover {
+        .service-section:nth-child(4) .nav-link-item:hover {
           background: rgba(139, 92, 246, 0.15) !important;
           border-color: rgba(139, 92, 246, 0.3) !important;
           box-shadow: 0 4px 15px rgba(139, 92, 246, 0.2);
         }
-        
+
         /* AI 서비스 호버 효과 */
-        .service-section:nth-child(4) .nav-link-item:hover {
+        .service-section:nth-child(5) .nav-link-item:hover {
           background: rgba(16, 185, 129, 0.15) !important;
           border-color: rgba(16, 185, 129, 0.3) !important;
           box-shadow: 0 4px 15px rgba(16, 185, 129, 0.2);
         }
-        
+
         /* 학습 도구 호버 효과 */
-        .service-section:nth-child(5) .nav-link-item:hover {
+        .service-section:nth-child(6) .nav-link-item:hover {
           background: rgba(245, 158, 11, 0.15) !important;
           border-color: rgba(245, 158, 11, 0.3) !important;
           box-shadow: 0 4px 15px rgba(245, 158, 11, 0.2);
         }
-        
+
         /* 커뮤니티 & 관리 호버 효과 */
-        .service-section:nth-child(6) .nav-link-item:hover {
+        .service-section:nth-child(7) .nav-link-item:hover {
           background: rgba(59, 130, 246, 0.15) !important;
           border-color: rgba(59, 130, 246, 0.3) !important;
           box-shadow: 0 4px 15px rgba(59, 130, 246, 0.2);
@@ -674,7 +719,7 @@ const Sidebar = () => {
           position: relative;
           overflow: hidden;
         }
-        
+
         .nav-link-item::before {
           content: '';
           position: absolute;
@@ -685,64 +730,64 @@ const Sidebar = () => {
           background: linear-gradient(90deg, transparent, rgba(251, 191, 36, 0.1), transparent);
           transition: left 0.5s ease;
         }
-        
+
         .nav-link-item:hover::before {
           left: 100%;
         }
-        
+
         .section-header:hover .section-icon {
           transform: scale(1.1) rotate(5deg);
         }
-        
+
         .section-icon {
           transition: all 0.3s ease;
         }
-        
+
         .text-purple {
           color: #8b5cf6 !important;
         }
-        
+
         .text-warning {
           color: #fbbf24 !important;
         }
-        
+
         .text-primary {
           color: #8b5cf6 !important;
         }
-        
+
         .text-success {
           color: #10b981 !important;
         }
-        
+
         .text-info {
           color: #3b82f6 !important;
         }
-        
+
         .btn-purple:hover {
           background: #7c3aed !important;
           border-color: #7c3aed !important;
         }
-        
+
         .form-control::placeholder {
           color: rgba(255, 255, 255, 0.6) !important;
         }
-        
+
         .form-control:focus {
           background: rgba(255, 255, 255, 0.15) !important;
           border-color: rgba(255, 255, 255, 0.4) !important;
           box-shadow: 0 0 0 0.2rem rgba(139, 92, 246, 0.25) !important;
           color: white !important;
         }
-        
+
         .service-section {
           animation: fadeInUp 0.6s ease-out;
         }
-        
+
         .service-section:nth-child(1) { animation-delay: 0.1s; }
         .service-section:nth-child(2) { animation-delay: 0.2s; }
         .service-section:nth-child(3) { animation-delay: 0.3s; }
         .service-section:nth-child(4) { animation-delay: 0.4s; }
-        
+
         @keyframes fadeInUp {
           from {
             opacity: 0;
