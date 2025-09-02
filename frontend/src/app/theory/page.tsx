@@ -4,10 +4,11 @@ import React, { useState } from 'react';
 import { Container, Row, Col, Card, Button, Nav, Tab } from 'react-bootstrap';
 import TheoryLearningDashboard from '../../components/TheoryLearningDashboard';
 import MusicTheoryQuiz from '../../components/MusicTheoryQuiz';
+import HarmonyGame from '../../components/HarmonyGame';
 import { GRADIENTS, COLORS, CARD_STYLES, BADGE_STYLES, BUTTON_STYLES } from '../../constants/styles';
 
 export default function TheoryPage() {
-  const [activeTab, setActiveTab] = useState<'learning' | 'quiz'>('learning');
+  const [activeTab, setActiveTab] = useState<'learning' | 'quiz' | 'game'>('learning');
 
   return (
     <div style={{ background: GRADIENTS.dark, minHeight: '100vh', padding: '2rem 0' }}>
@@ -32,7 +33,7 @@ export default function TheoryPage() {
 
         {/* 탭 네비게이션 */}
         <div className="d-flex justify-content-center mb-5">
-          <div className="d-flex gap-2">
+          <div className="d-flex gap-2 flex-wrap">
             <Button
               variant={activeTab === 'learning' ? 'primary' : 'outline-primary'}
               onClick={() => setActiveTab('learning')}
@@ -54,6 +55,17 @@ export default function TheoryPage() {
               }}
             >
               🎯 퀴즈하기
+            </Button>
+            <Button
+              variant={activeTab === 'game' ? 'primary' : 'outline-primary'}
+              onClick={() => setActiveTab('game')}
+              style={{
+                ...(activeTab === 'game' ? BUTTON_STYLES.primary : BUTTON_STYLES.outline),
+                padding: '0.75rem 1.5rem',
+                borderRadius: '25px'
+              }}
+            >
+              🎮 게임하기
             </Button>
           </div>
         </div>
@@ -140,6 +152,10 @@ export default function TheoryPage() {
 
         {activeTab === 'quiz' && (
           <MusicTheoryQuiz />
+        )}
+
+        {activeTab === 'game' && (
+          <HarmonyGame />
         )}
 
         {/* 추가 정보 섹션 */}
