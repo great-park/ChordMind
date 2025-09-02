@@ -1,13 +1,17 @@
 'use client'
 
-import React from 'react';
+import React, { useState } from 'react';
+import { Container, Row, Col, Card, Button, Nav, Tab } from 'react-bootstrap';
 import TheoryLearningDashboard from '../../components/TheoryLearningDashboard';
+import MusicTheoryQuiz from '../../components/MusicTheoryQuiz';
 import { GRADIENTS, COLORS, CARD_STYLES, BADGE_STYLES, BUTTON_STYLES } from '../../constants/styles';
 
 export default function TheoryPage() {
+  const [activeTab, setActiveTab] = useState<'learning' | 'quiz'>('learning');
+
   return (
     <div style={{ background: GRADIENTS.dark, minHeight: '100vh', padding: '2rem 0' }}>
-      <div className="container">
+      <Container>
         {/* 헤더 섹션 */}
         <div className="text-center mb-5">
           <div className="mb-3">
@@ -22,84 +26,121 @@ export default function TheoryPage() {
             음악 이론 학습 시스템
           </h1>
           <p className="lead mb-0" style={{color: COLORS.text.secondary, fontSize: '1.2rem'}}>
-            When-in-Rome 기반의 체계적인 화성학 학습으로 음악적 이해를 높여보세요
+            AI 기반의 체계적인 화성학 학습으로 음악적 이해를 높여보세요
           </p>
         </div>
 
-        {/* 학습 시스템 소개 */}
-        <div className="row g-4 mb-5">
-          <div className="col-md-4">
-            <div className="card h-100" style={CARD_STYLES.large}>
-              <div className="card-body text-center p-4">
-                <div className="mb-3" style={{
-                  width: '60px',
-                  height: '60px',
-                  background: GRADIENTS.primary,
-                  borderRadius: '50%',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  margin: '0 auto'
-                }}>
-                  <i className="bi bi-book fs-3 text-white"></i>
-                </div>
-                <h5 style={{color: COLORS.text.primary}}>체계적 커리큘럼</h5>
-                <p style={{color: COLORS.text.secondary}}>
-                  초급부터 고급까지 단계별로 구성된 체계적인 학습 경로
-                </p>
-              </div>
-            </div>
-          </div>
-
-          <div className="col-md-4">
-            <div className="card h-100" style={CARD_STYLES.large}>
-              <div className="card-body text-center p-4">
-                <div className="mb-3" style={{
-                  width: '60px',
-                  height: '60px',
-                  background: GRADIENTS.success,
-                  borderRadius: '50%',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  margin: '0 auto'
-                }}>
-                  <i className="bi bi-arrow-repeat fs-3 text-white"></i>
-                </div>
-                <h5 style={{color: COLORS.text.primary}}>진행 패턴 연습</h5>
-                <p style={{color: COLORS.text.secondary}}>
-                  실제 곡 예시와 함께하는 화성 진행 패턴 학습
-                </p>
-              </div>
-            </div>
-          </div>
-
-          <div className="col-md-4">
-            <div className="card h-100" style={CARD_STYLES.large}>
-              <div className="card-body text-center p-4">
-                <div className="mb-3" style={{
-                  width: '60px',
-                  height: '60px',
-                  background: GRADIENTS.warning,
-                  borderRadius: '50%',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  margin: '0 auto'
-                }}>
-                  <i className="bi bi-palette fs-3 text-white"></i>
-                </div>
-                <h5 style={{color: COLORS.text.primary}}>모달 믹스처 가이드</h5>
-                <p style={{color: COLORS.text.secondary}}>
-                  고급 화성 기법을 단계별로 학습하는 전문 가이드
-                </p>
-              </div>
-            </div>
+        {/* 탭 네비게이션 */}
+        <div className="d-flex justify-content-center mb-5">
+          <div className="d-flex gap-2">
+            <Button
+              variant={activeTab === 'learning' ? 'primary' : 'outline-primary'}
+              onClick={() => setActiveTab('learning')}
+              style={{
+                ...(activeTab === 'learning' ? BUTTON_STYLES.primary : BUTTON_STYLES.outline),
+                padding: '0.75rem 1.5rem',
+                borderRadius: '25px'
+              }}
+            >
+              📚 학습하기
+            </Button>
+            <Button
+              variant={activeTab === 'quiz' ? 'primary' : 'outline-primary'}
+              onClick={() => setActiveTab('quiz')}
+              style={{
+                ...(activeTab === 'quiz' ? BUTTON_STYLES.primary : BUTTON_STYLES.outline),
+                padding: '0.75rem 1.5rem',
+                borderRadius: '25px'
+              }}
+            >
+              🎯 퀴즈하기
+            </Button>
           </div>
         </div>
 
-        {/* 음악 이론 학습 대시보드 */}
-        <TheoryLearningDashboard />
+        {/* 탭 콘텐츠 */}
+        {activeTab === 'learning' && (
+          <>
+            {/* 학습 시스템 소개 */}
+            <div className="row g-4 mb-5">
+              <div className="col-md-4">
+                <div className="card h-100" style={CARD_STYLES.large}>
+                  <div className="card-body text-center p-4">
+                    <div className="mb-3" style={{
+                      width: '60px',
+                      height: '60px',
+                      background: GRADIENTS.primary,
+                      borderRadius: '50%',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      margin: '0 auto'
+                    }}>
+                      <i className="bi bi-book fs-3 text-white"></i>
+                    </div>
+                    <h5 style={{color: COLORS.text.primary}}>체계적 커리큘럼</h5>
+                    <p style={{color: COLORS.text.secondary}}>
+                      초급부터 고급까지 단계별로 구성된 체계적인 학습 경로
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="col-md-4">
+                <div className="card h-100" style={CARD_STYLES.large}>
+                  <div className="card-body text-center p-4">
+                    <div className="mb-3" style={{
+                      width: '60px',
+                      height: '60px',
+                      background: GRADIENTS.success,
+                      borderRadius: '50%',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      margin: '0 auto'
+                    }}>
+                      <i className="bi bi-arrow-repeat fs-3 text-white"></i>
+                    </div>
+                    <h5 style={{color: COLORS.text.primary}}>진행 패턴 연습</h5>
+                    <p style={{color: COLORS.text.secondary}}>
+                      실제 곡 예시와 함께하는 화성 진행 패턴 학습
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="col-md-4">
+                <div className="card h-100" style={CARD_STYLES.large}>
+                  <div className="card-body text-center p-4">
+                    <div className="mb-3" style={{
+                      width: '60px',
+                      height: '60px',
+                      background: GRADIENTS.warning,
+                      borderRadius: '50%',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      margin: '0 auto'
+                    }}>
+                      <i className="bi bi-palette fs-3 text-white"></i>
+                    </div>
+                    <h5 style={{color: COLORS.text.primary}}>모달 믹스처 가이드</h5>
+                    <p style={{color: COLORS.text.secondary}}>
+                      고급 화성 기법을 단계별로 학습하는 전문 가이드
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* 음악 이론 학습 대시보드 */}
+            <TheoryLearningDashboard />
+          </>
+        )}
+
+        {activeTab === 'quiz' && (
+          <MusicTheoryQuiz />
+        )}
 
         {/* 추가 정보 섹션 */}
         <div className="mt-5">
