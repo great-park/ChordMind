@@ -4,6 +4,8 @@ import React, { useState, useEffect, useRef } from 'react'
 import { Container, Row, Col, Card, Button, ProgressBar, Badge, Modal } from 'react-bootstrap'
 import { useAuth } from '../contexts/AuthContext'
 import { GRADIENTS, COLORS, CARD_STYLES, BADGE_STYLES, BUTTON_STYLES } from '../constants/styles'
+import VirtualPiano from './VirtualPiano'
+import Metronome from './Metronome'
 
 interface PracticeMode {
   id: string
@@ -37,6 +39,9 @@ const ModernPracticeWorkspace: React.FC = () => {
   const [currentSession, setCurrentSession] = useState<PracticeSession | null>(null)
   const [sessionTime, setSessionTime] = useState(0)
   const [showModeSelector, setShowModeSelector] = useState(false)
+  const [showPiano, setShowPiano] = useState(false)
+  const [showMetronome, setShowMetronome] = useState(false)
+  const [currentBeat, setCurrentBeat] = useState(1)
   
   // 메트로놈 설정
   const [metronome, setMetronome] = useState<MetronomeSettings>({
@@ -278,70 +283,68 @@ const ModernPracticeWorkspace: React.FC = () => {
                 </div>
               )}
 
-              {/* 메트로놈 컨트롤 */}
-              <div style={{
-                background: 'rgba(139, 92, 246, 0.1)',
-                borderRadius: '15px',
-                padding: '1.5rem',
-                marginBottom: '1rem'
-              }}>
-                <Row className="align-items-center">
-                  <Col md={4} className="text-center">
-                    <div style={{
-                      fontSize: '3rem',
-                      fontWeight: 'bold',
-                      color: COLORS.primary.main
-                    }}>{metronome.bpm}</div>
-                    <small style={{color: COLORS.text.tertiary}}>BPM</small>
-                  </Col>
-                  <Col md={4}>
-                    <Button
-                      style={{
-                        ...BUTTON_STYLES.outline,
-                        marginRight: '0.5rem'
-                      }}
-                      size="sm"
-                      onClick={() => setMetronome({...metronome, bpm: Math.max(60, metronome.bpm - 5)})}
-                    >
-                      -5
-                    </Button>
-                    <Button
-                      style={{
-                        ...BUTTON_STYLES.outline
-                      }}
-                      size="sm"
-                      onClick={() => setMetronome({...metronome, bpm: Math.min(200, metronome.bpm + 5)})}
-                    >
-                      +5
-                    </Button>
-                  </Col>
-                  <Col md={4} className="text-center">
-                    <div style={{color: COLORS.text.primary, fontSize: '1.5rem', fontWeight: 'bold'}}>{metronome.timeSignature}</div>
-                    <small style={{color: COLORS.text.tertiary}}>박자</small>
-                  </Col>
-                </Row>
-              </div>
-
-              {/* 컨트롤 버튼들 */}
+              {/* 도구 버튼들 */}
               <div className="text-center mb-4">
                 <Button
                   style={{
-                    width: '80px',
-                    height: '80px',
-                    borderRadius: '50%',
-                    border: 'none',
-                    fontSize: '1.5rem',
-                    transition: 'all 0.3s ease',
-                    margin: '0 10px',
-                    background: isMetronomeOn ? GRADIENTS.success : GRADIENTS.primary,
-                    color: 'white'
+                    ...BUTTON_STYLES.outline,
+                    margin: '0 0.5rem',
+                    borderRadius: '25px',
+                    padding: '10px 20px'
                   }}
-                  onClick={toggleMetronome}
-                  title="메트로놈"
+                  onClick={() => setShowPiano(!showPiano)}
                 >
-                  🎵
+                  {showPiano ? '🎹 피아노 숨기기' : '🎹 피아노 보기'}
                 </Button>
+                <Button
+                  style={{
+                    ...BUTTON_STYLES.outline,
+                    margin: '0 0.5rem',
+                    borderRadius: '25px',
+                    padding: '10px 20px'
+                  }}
+                  onClick={() => setShowMetronome(!showMetronome)}
+                >
+                  {showMetronome ? '🎵 메트로놈 숨기기' : '🎵 메트로놈 보기'}
+                </Button>
+              </div>
 
+              {/* 가상 피아노 */}
+              {showPiano && (
+                <div className="mb-4">
+                  <VirtualPiano
+                    onNotePlay={(note, frequency) => {
+                      console.log('음표 재생:', note, frequency);
+                    }}
+                    onNoteStop={(note) => {
+                      console.log('음표 정지:', note);
+                    }}
+                  />
+                </div>
+              )}
+
+              {/* 메트로놈 */}
+              {showMetronome && (
+                <div className="mb-4">
+                  <Metronome
+                    onBeat={(beat) => {
+                      setCurrentBeat(beat);
+                      console.log('박자:', beat);
+                    }}
+                    onStart={() => {
+                      setIsMetronomeOn(true);
+                      console.log('메트로놈 시작');
+                    }}
+                    onStop={() => {
+                      setIsMetronomeOn(false);
+                      console.log('메트로놈 정지');
+                    }}
+                  />
+                </div>
+              )}
+
+              {/* 컨트롤 버튼들 */}
+              <div className="text-center mb-4">
                 {currentSession?.isActive ? (
                   <Button
                     style={{
