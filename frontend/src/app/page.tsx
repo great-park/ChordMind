@@ -581,14 +581,14 @@ export default function Home() {
                   
                   {/* 리더보드 */}
                   <Leaderboard 
-                    items={topUsers?.map((user, index) => ({
+                    items={topUsers && topUsers.length > 0 ? topUsers.map((user, index) => ({
                       id: user.userId.toString(),
                       rank: index + 1,
                       name: user.username || `뮤지션 ${user.userId}`,
                       score: user.score,
                       category: index === 0 ? '🔥 이번 주 챔피언' : index < 3 ? '⭐ 톱 연주자' : '🎵 열정적인 연주자',
                       change: Math.floor(Math.random() * 10) - 5
-                    })) || [
+                    })) : [
                       { id: '1', rank: 1, name: '🎹 피아노 마에스트로', score: 2850, category: '🔥 이번 주 챔피언', change: 3 },
                       { id: '2', rank: 2, name: '🎸 기타 히어로', score: 2720, category: '⭐ 톱 연주자', change: 1 },
                       { id: '3', rank: 3, name: '🎻 바이올린 아티스트', score: 2650, category: '⭐ 톱 연주자', change: -1 },
@@ -1058,9 +1058,21 @@ export default function Home() {
 
           <div className="text-center mb-5">
             <a href="/practice-plan" className="btn px-4 py-3 fw-bold text-decoration-none" style={{
-              ...BUTTON_STYLES.warning,
+              background: COLORS.warning.main,
+              color: 'white',
+              border: 'none',
+              borderRadius: '25px',
               fontSize: '1.2rem',
-              borderRadius: '25px'
+              fontWeight: '500',
+              transition: 'all 0.3s ease'
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.background = COLORS.warning.dark;
+              e.currentTarget.style.transform = 'translateY(-2px)';
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.background = COLORS.warning.main;
+              e.currentTarget.style.transform = 'translateY(0)';
             }}>
               <i className="bi bi-calendar-check me-2"></i>
               맞춤 연습 계획 시작하기
