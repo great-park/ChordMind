@@ -5,10 +5,11 @@ import { Container, Row, Col, Card, Button, Nav, Tab } from 'react-bootstrap';
 import TheoryLearningDashboard from '../../components/TheoryLearningDashboard';
 import MusicTheoryQuiz from '../../components/MusicTheoryQuiz';
 import HarmonyGame from '../../components/HarmonyGame';
+import RhythmGame from '../../components/RhythmGame';
 import { GRADIENTS, COLORS, CARD_STYLES, BADGE_STYLES, BUTTON_STYLES } from '../../constants/styles';
 
 export default function TheoryPage() {
-  const [activeTab, setActiveTab] = useState<'learning' | 'quiz' | 'game'>('learning');
+  const [activeTab, setActiveTab] = useState<'learning' | 'quiz' | 'harmony' | 'rhythm'>('learning');
 
   return (
     <div style={{ background: GRADIENTS.dark, minHeight: '100vh', padding: '2rem 0' }}>
@@ -57,15 +58,26 @@ export default function TheoryPage() {
               🎯 퀴즈하기
             </Button>
             <Button
-              variant={activeTab === 'game' ? 'primary' : 'outline-primary'}
-              onClick={() => setActiveTab('game')}
+              variant={activeTab === 'harmony' ? 'primary' : 'outline-primary'}
+              onClick={() => setActiveTab('harmony')}
               style={{
-                ...(activeTab === 'game' ? BUTTON_STYLES.primary : BUTTON_STYLES.outline),
+                ...(activeTab === 'harmony' ? BUTTON_STYLES.primary : BUTTON_STYLES.outline),
                 padding: '0.75rem 1.5rem',
                 borderRadius: '25px'
               }}
             >
-              🎮 게임하기
+              🎹 화성게임
+            </Button>
+            <Button
+              variant={activeTab === 'rhythm' ? 'primary' : 'outline-primary'}
+              onClick={() => setActiveTab('rhythm')}
+              style={{
+                ...(activeTab === 'rhythm' ? BUTTON_STYLES.primary : BUTTON_STYLES.outline),
+                padding: '0.75rem 1.5rem',
+                borderRadius: '25px'
+              }}
+            >
+              🥁 리듬게임
             </Button>
           </div>
         </div>
@@ -154,8 +166,12 @@ export default function TheoryPage() {
           <MusicTheoryQuiz />
         )}
 
-        {activeTab === 'game' && (
+        {activeTab === 'harmony' && (
           <HarmonyGame />
+        )}
+
+        {activeTab === 'rhythm' && (
+          <RhythmGame />
         )}
 
         {/* 추가 정보 섹션 */}
